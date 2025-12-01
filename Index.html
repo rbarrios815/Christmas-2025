@@ -53,6 +53,11 @@
         overflow: hidden;
       }
 
+      .personal-card {
+        border: 2px solid rgba(11, 139, 98, 0.2);
+        background: linear-gradient(180deg, rgba(248, 255, 250, 0.96), rgba(240, 252, 255, 0.96));
+      }
+
       .card::before {
         content: "";
         position: absolute;
@@ -256,6 +261,162 @@
         border: 1px dashed rgba(11, 139, 98, 0.25);
       }
 
+      .personal-topline {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+      }
+
+      .personal-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: linear-gradient(120deg, rgba(11, 139, 98, 0.16), rgba(244, 162, 97, 0.18));
+        color: #0c3f35;
+        font-weight: 800;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .personal-note {
+        font-size: 0.95rem;
+        color: #224139;
+      }
+
+      .personal-tree-wrap {
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) minmax(240px, 1fr);
+        gap: 14px;
+        margin-top: 10px;
+        align-items: start;
+      }
+
+      .personal-tree {
+        position: relative;
+        padding: 14px 14px 12px;
+        border-radius: 16px;
+        background: radial-gradient(circle at 40% 10%, rgba(255, 247, 210, 0.8), rgba(255, 255, 255, 0.9));
+        border: 2px solid rgba(244, 162, 97, 0.25);
+        box-shadow: inset 0 0 0 2px rgba(11, 139, 98, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
+      }
+
+      .tree-star {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ffd166, #f4a261);
+        display: grid;
+        place-items: center;
+        font-size: 1.5rem;
+        color: #7c3b00;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin: 0 auto 6px;
+      }
+
+      .tree-owner {
+        text-align: center;
+        font-weight: 800;
+        color: #0c4c39;
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+      }
+
+      .tree-branches {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 6px;
+      }
+
+      .tree-branches li {
+        background: rgba(11, 139, 98, 0.08);
+        border: 1px solid rgba(11, 139, 98, 0.2);
+        border-radius: 12px;
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: #0f372c;
+        cursor: default;
+      }
+
+      .tree-branches li:hover {
+        background: rgba(230, 57, 70, 0.08);
+        border-color: rgba(230, 57, 70, 0.2);
+      }
+
+      .personal-actions {
+        display: grid;
+        gap: 8px;
+      }
+
+      .cluster-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .tree-cluster {
+        position: relative;
+        padding: 12px 12px 10px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(236, 252, 249, 0.96));
+        border: 2px dashed rgba(11, 139, 98, 0.22);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+
+      .tree-count {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e63946, #f4a261);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      }
+
+      .cluster-star {
+        font-size: 1.25rem;
+      }
+
+      .cluster-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        color: #0c4c39;
+        margin-bottom: 6px;
+      }
+
+      .cluster-branches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .cluster-branches span {
+        padding: 6px 10px;
+        border-radius: 10px;
+        background: rgba(11, 139, 98, 0.08);
+        border: 1px solid rgba(11, 139, 98, 0.18);
+        font-weight: 600;
+        color: #0f372c;
+        cursor: default;
+      }
+
       .inviter-header {
         font-weight: 700;
         margin-bottom: 4px;
@@ -324,6 +485,9 @@
         .row {
           flex-direction: column;
         }
+        .personal-tree-wrap {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
@@ -346,12 +510,38 @@
         </div>
       </div>
 
+      <!-- Personalized owner card (Your Name first) -->
+      <div class="card personal-card">
+        <div class="personal-topline">
+          <div class="personal-chip" id="personalGreeting">🎁 Start with <strong>Your Name</strong> so we can grow your own tree.</div>
+          <div class="personal-note">We only show first name + last initial on this page.</div>
+        </div>
+
+        <label for="inviterInput">Your Name (Column K “Entered By”)</label>
+        <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
+
+        <div class="personal-tree-wrap">
+          <div>
+            <div class="personal-tree" id="personalTree">
+              <!-- filled by JS -->
+            </div>
+          </div>
+          <div class="personal-actions">
+            <button type="button" id="addGuestBtn" onclick="prepGuestAdd()" disabled>➕ Save your name to add guests</button>
+            <div class="inviter-group" id="myInviteSummary">
+              <div class="inviter-header">🎁 Who you've invited so far</div>
+              <div id="myInviteList" class="questions"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- RSVP / sign up card -->
       <div class="card">
         <h2>📝 RSVP & Food Signup 🎅</h2>
         <div class="subtitle">
-          Step 1) Tell us who is attending. Step 2) Add <strong>Your Name</strong> (Column K “Entered By”) so guests nest
-          under you. Step 3) pick age, food, and one vote. Only first name + last initial will show on the page. ✨
+          Step 1) Enter <strong>Your Name</strong> above. Step 2) Tell us <strong>Who is attending?</strong> (full name for the sheet).
+          Step 3) pick age, food, and one vote. Only first name + last initial will show on the page. ✨
         </div>
 
         <label for="fullNameInput">Who is attending?</label>
@@ -365,26 +555,12 @@
         </div>
         <div class="questions">Only first name + last initial will show on the page. Full names stay in the sheet for hosts.</div>
 
-        <label for="inviterInput">Who is inviting them?</label>
-        <div class="row" style="align-items:center;gap:8px;">
-          <div class="col-half">
-            <input type="text" id="inviterInput" placeholder="Type your own name or another inviter">
-          </div>
-          <div class="col-half" style="display:flex;flex-wrap:wrap;gap:8px;">
-            <button type="button" onclick="copySelfAsInviter()">🙋‍♂️ I'm inviting myself</button>
-            <button type="button" id="addGuestBtn" onclick="prepGuestAdd()" disabled>➕ Add a guest under me</button>
-          </div>
-        </div>
-
-        <label for="inviterInput">Your Name (who is entering this RSVP)</label>
-        <div class="row" style="align-items:center;gap:8px;">
-          <div class="col-half">
-            <input type="text" id="inviterInput" placeholder="Type your name for Column K (Entered By)">
-          </div>
-          <div class="col-half" style="display:flex;flex-wrap:wrap;gap:8px;">
-            <button type="button" id="addGuestBtn" onclick="prepGuestAdd()" disabled>➕ Add another guest I invited</button>
-          </div>
-        </div>
+        <label for="ageSelect">Age group</label>
+        <select id="ageSelect">
+          <option value="">Select an age group</option>
+          <option value="11+">11 or older</option>
+          <option value="10-">10 or younger 🎁</option>
+        </select>
 
         <div class="inviter-group" id="myInviteSummary">
           <div class="inviter-header">🎁 Who you've invited so far</div>
@@ -471,6 +647,7 @@
         refreshFoodSelect();
         updateGuestButton();
         renderMyInvites();
+        renderPersonalTree();
 
         showStatus('Loaded.', false);
       }
@@ -526,6 +703,12 @@
         // Christmasy emoji for 10 or younger
         if (ageGroup === '10-') return '🧸';
         return '🎄';
+      }
+
+      function ageLabel(ageGroup) {
+        if (ageGroup === '10-') return '10 or younger';
+        if (ageGroup === '11+') return '11 or older';
+        return 'Unknown age';
       }
 
       function enrichAttendees(list) {
@@ -603,21 +786,6 @@
         });
       }
 
-      function getVoteChoice() {
-        const radios = document.querySelectorAll('input[name="voteChoice"]');
-        for (let i = 0; i < radios.length; i++) {
-          if (radios[i].checked) return radios[i].value;
-        }
-        return 'none';
-      }
-
-      function setVoteChoice(value) {
-        const radios = document.querySelectorAll('input[name="voteChoice"]');
-        radios.forEach(function(r) {
-          r.checked = (r.value === value);
-        });
-      }
-
       function setAgeGroup(value) {
         $('ageSelect').value = value || '';
       }
@@ -644,7 +812,10 @@
       });
 
       $('inviterInput').addEventListener('input', function() {
+        lastSavedInviter = '';
+        updateGuestButton();
         renderMyInvites();
+        renderInviteTree();
       });
 
       function updateGuestButton() {
@@ -652,7 +823,7 @@
         if (!btn) return;
         if (lastSavedInviter) {
           btn.disabled = false;
-          btn.textContent = '➕ Add another guest invited by ' + toShortName(lastSavedInviter);
+          btn.textContent = '🎁 Invite someone under ' + toShortName(lastSavedInviter);
         } else {
           btn.disabled = true;
           btn.textContent = '➕ Save your name to add guests';
@@ -666,6 +837,10 @@
         const first = parts[0];
         const last = parts[parts.length - 1];
         return first + ' ' + (last.charAt(0).toUpperCase() || '') + '.';
+      }
+
+      function currentInviterName() {
+        return ($('inviterInput').value || lastSavedInviter || '').trim();
       }
 
       function hydrateExistingSignup(fullName) {
@@ -702,6 +877,7 @@
         lastSavedInviter = $('inviterInput').value.trim() || fullName;
         updateGuestButton();
         renderMyInvites();
+        renderPersonalTree();
 
         if (lastHydratedName !== lookup) {
           showStatus('Loaded existing signup for ' + toShortName(fullName) + '. Update and save if needed.', false);
@@ -709,13 +885,79 @@
         }
       }
 
+      function renderPersonalTree() {
+        const treeEl = $('personalTree');
+        const greeting = $('personalGreeting');
+        if (!treeEl || !greeting) return;
+
+        const inviterName = currentInviterName();
+        const shortInviter = inviterName ? toShortName(inviterName) : '';
+
+        greeting.innerHTML = inviterName
+          ? '⭐ Welcome, <strong>' + shortInviter + '</strong>! Here’s your invite tree.'
+          : '🎁 Start with <strong>Your Name</strong> so we can grow your own tree.';
+
+        treeEl.innerHTML = '';
+
+        if (!inviterName) {
+          treeEl.innerHTML = '<p class="questions">Type your name above to preview your star + branches.</p>';
+          return;
+        }
+
+        const matches = (state.attendees || []).filter(function(a) {
+          return (a.enteredBy || '').toLowerCase() === inviterName.toLowerCase();
+        });
+
+        const selfEntry = (state.attendees || []).find(function(a) {
+          return (a.fullName || '').toLowerCase() === inviterName.toLowerCase();
+        });
+
+        if (selfEntry && !matches.some(function(a) { return a.row === selfEntry.row; })) {
+          matches.unshift(selfEntry);
+        }
+
+        if (!matches.length) {
+          treeEl.innerHTML = '<p class="questions">Save yourself first, then add guests beneath your star.</p>';
+          return;
+        }
+
+        const star = document.createElement('div');
+        star.className = 'tree-star';
+        star.textContent = '⭐';
+        treeEl.appendChild(star);
+
+        const owner = document.createElement('div');
+        owner.className = 'tree-owner';
+        owner.textContent = shortInviter + ' • ' + matches.length + ' attending in your cluster';
+        treeEl.appendChild(owner);
+
+        const ul = document.createElement('ul');
+        ul.className = 'tree-branches';
+
+        matches
+          .slice()
+          .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
+          .forEach(function(a) {
+            const li = document.createElement('li');
+            li.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
+            li.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nFood: ' + a.food : '');
+            li.addEventListener('click', function() {
+              showStatus('Age for ' + displayName(a) + ': ' + ageLabel(a.ageGroup) + '. Edit above then save.', false);
+            });
+            ul.appendChild(li);
+          });
+
+        treeEl.appendChild(ul);
+      }
+
       function renderMyInvites() {
         const listEl = $('myInviteList');
         if (!listEl) return;
 
-        const inviterName = ($('inviterInput').value || lastSavedInviter || '').trim();
+        const inviterName = currentInviterName();
         if (!inviterName) {
           listEl.textContent = 'Type your name to see who is linked to you (Column K: Entered By).';
+          renderPersonalTree();
           return;
         }
 
@@ -725,6 +967,7 @@
 
         if (!matches.length) {
           listEl.textContent = 'No guests linked yet. Save yourself, then add guests beneath you.';
+          renderPersonalTree();
           return;
         }
 
@@ -739,13 +982,14 @@
           .forEach(function(a) {
             const li = document.createElement('li');
             li.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
-            li.title = (a.food ? 'Bringing: ' + a.food + '\n' : '') +
-              (a.gameVote ? 'White Elephant: 👍\n' : a.cashVote ? 'Cash donation: 👍\n' : '') +
-              'Entered by: ' + toShortName(inviterName);
+            li.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nBringing: ' + a.food : '') +
+              (a.gameVote ? '\nWhite Elephant: 👍' : a.cashVote ? '\nCash donation: 👍' : '') +
+              '\nEntered by: ' + toShortName(inviterName);
             ul.appendChild(li);
           });
 
         listEl.appendChild(ul);
+        renderPersonalTree();
       }
 
       function prepGuestAdd() {
@@ -823,6 +1067,7 @@
             lastSavedInviter = inviter;
             updateGuestButton();
             renderMyInvites();
+            renderPersonalTree();
             lastHydratedName = lookup;
 
             $('saveBtn').disabled = false;
@@ -858,35 +1103,55 @@
           groups[inviter].push(a);
         });
 
-        Object.keys(groups).sort().forEach(function(inviter) {
-          const groupDiv = document.createElement('div');
-          groupDiv.className = 'inviter-group';
+        const personalInviter = currentInviterName().toLowerCase();
+        const clusterWrap = document.createElement('div');
+        clusterWrap.className = 'cluster-grid';
 
-          const header = document.createElement('div');
-          header.className = 'inviter-header';
-          header.textContent = '🎁 Invited by ' + toShortName(inviter || 'Host');
-          groupDiv.appendChild(header);
-
-          const list = document.createElement('ul');
-          const arr = groups[inviter]
-            .slice()
-            .sort(function(a, b) {
-              return displayName(a).localeCompare(displayName(b));
-            });
-
-          arr.forEach(function(a) {
-            const li = document.createElement('li');
-            li.textContent = '↳ ' + ageEmoji(a.ageGroup) + ' ' + displayName(a);
-            li.title =
-              (a.food ? 'Bringing: ' + a.food + '\n' : '') +
-              (a.gameVote ? 'White Elephant: 👍\n' : a.cashVote ? 'Cash donation: 👍\n' : '') +
-              (a.enteredBy ? 'Invited by: ' + toShortName(a.enteredBy) : '');
-            list.appendChild(li);
+        const remainingInviters = Object.keys(groups)
+          .sort()
+          .filter(function(inviter) {
+            return personalInviter ? inviter.toLowerCase() !== personalInviter : true;
           });
 
-          groupDiv.appendChild(list);
-          container.appendChild(groupDiv);
+        if (!remainingInviters.length) {
+          const p = document.createElement('p');
+          p.textContent = 'Only your tree is showing above. As others join, their clusters will sprout here.';
+          container.appendChild(p);
+          return;
+        }
+
+        remainingInviters.forEach(function(inviter) {
+          const card = document.createElement('div');
+          card.className = 'tree-cluster';
+
+          const count = document.createElement('div');
+          count.className = 'tree-count';
+          count.textContent = groups[inviter].length;
+          card.appendChild(count);
+
+          const header = document.createElement('div');
+          header.className = 'cluster-header';
+          header.innerHTML = '<span class="cluster-star">⭐</span> <span>' + toShortName(inviter || 'Host') + '</span>';
+          card.appendChild(header);
+
+          const branches = document.createElement('div');
+          branches.className = 'cluster-branches';
+
+          groups[inviter]
+            .slice()
+            .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
+            .forEach(function(a) {
+              const span = document.createElement('span');
+              span.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
+              span.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nFood: ' + a.food : '');
+              branches.appendChild(span);
+            });
+
+          card.appendChild(branches);
+          clusterWrap.appendChild(card);
         });
+
+        container.appendChild(clusterWrap);
       }
 
       function renderFoodList() {
