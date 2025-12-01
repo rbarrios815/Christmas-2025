@@ -53,11 +53,6 @@
         overflow: hidden;
       }
 
-      .personal-card {
-        border: 2px solid rgba(11, 139, 98, 0.2);
-        background: linear-gradient(180deg, rgba(248, 255, 250, 0.96), rgba(240, 252, 255, 0.96));
-      }
-
       .card::before {
         content: "";
         position: absolute;
@@ -262,23 +257,6 @@
         text-overflow: ellipsis;
       }
 
-      .inviter-group {
-        margin-top: 8px;
-        padding: 10px 12px;
-        border-radius: 14px;
-        background: linear-gradient(90deg, rgba(231, 248, 255, 0.92), rgba(247, 241, 255, 0.92));
-        border: 1px dashed rgba(11, 139, 98, 0.25);
-      }
-
-      .personal-topline {
-        display: flex;
-        justify-content: space-between;
-        gap: 12px;
-        align-items: center;
-        flex-wrap: wrap;
-        margin-bottom: 6px;
-      }
-
       .personal-chip {
         display: inline-flex;
         align-items: center;
@@ -298,8 +276,8 @@
 
       .personal-tree-wrap {
         display: grid;
-        grid-template-columns: minmax(220px, 1fr) minmax(240px, 1fr);
-        gap: 14px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 16px;
         margin-top: 10px;
         align-items: start;
       }
@@ -353,6 +331,27 @@
         font-weight: 600;
         color: #0f372c;
         cursor: default;
+        justify-content: space-between;
+      }
+
+      .tagline {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 6px 0 10px;
+      }
+
+      .merged-top {
+        display: grid;
+        gap: 10px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 14px 18px;
+        align-items: start;
       }
 
       .tree-branches li:hover {
@@ -426,13 +425,6 @@
         cursor: default;
       }
 
-      .inviter-header {
-        font-weight: 700;
-        margin-bottom: 4px;
-        font-size: 1rem;
-        color: var(--evergreen);
-      }
-
       .meta-line {
         display: flex;
         flex-wrap: wrap;
@@ -502,7 +494,7 @@
   </head>
   <body onload="init()">
     <div id="app">
-      <!-- Meta / header card -->
+      <!-- Unified welcome + RSVP card -->
       <div class="card">
         <div class="garland" aria-hidden="true">
           <span>🧦</span><span>✨</span><span>🎄</span><span>🦌</span><span>🎁</span><span>☃️</span><span>🍪</span><span>✨</span><span>🧦</span>
@@ -514,100 +506,81 @@
         </div>
         <div class="questions" id="questionsText"></div>
         <div class="subtitle">
-          Add yourself, pick your age group, claim a food from the menu, and vote with festive thumbs-ups. The more names,
-          the merrier the tree! 🎁
-        </div>
-      </div>
-
-      <!-- Personalized owner card (Your Name first) -->
-      <div class="card personal-card">
-        <div class="personal-topline">
-          <div class="personal-chip" id="personalGreeting">🎁 Start with <strong>Your Name</strong> so we can grow your own tree.</div>
-          <div class="personal-note">We only show first name + last initial on this page.</div>
-        </div>
-
-        <label for="inviterInput">Your Name (Column K “Entered By”)</label>
-        <div class="row" style="align-items:center;gap:8px;">
-          <div class="col-half">
-            <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
-          </div>
-          <div class="col-half" style="display:flex;gap:8px;justify-content:flex-end;">
-            <button type="button" class="ghost" id="confirmInviterBtn" onclick="confirmInviter()">🎉 That's me</button>
-          </div>
+          Confirm <strong>Your Name</strong>, add who is attending, choose an age group + dish, and pick one vote. We only ever show
+          first name + last initial on the page.
         </div>
 
         <div class="personal-tree-wrap">
-          <div>
-            <div class="personal-tree" id="personalTree">
-              <!-- filled by JS -->
+          <div class="merged-top">
+            <div class="personal-chip" id="personalGreeting">🎁 Start with <strong>Your Name</strong> so we can grow your own tree.</div>
+            <div class="personal-note">Privacy: we display short names here; full names stay in the sheet.</div>
+            <div class="tagline" id="activeInviterTag"></div>
+
+            <label for="inviterInput">Your Name (Column K “Entered By”)</label>
+            <div class="row" style="align-items:center;gap:8px;">
+              <div class="col-half">
+                <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
+              </div>
+              <div class="col-half" style="display:flex;gap:8px;justify-content:flex-end;">
+                <button type="button" class="ghost" id="confirmInviterBtn" onclick="confirmInviter()">🎉 That's me</button>
+              </div>
             </div>
-          </div>
-          <div class="personal-actions">
-            <button type="button" id="addGuestBtn" onclick="prepGuestAdd()" disabled>➕ Save your name to add guests</button>
-            <div class="inviter-group" id="myInviteSummary">
-              <div class="inviter-header">🎁 Who you've invited so far</div>
-              <div id="myInviteList" class="questions"></div>
+
+            <label for="fullNameInput">Who is attending?</label>
+            <div class="row">
+              <div class="col-half">
+                <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
+              </div>
+              <div class="col-half" style="display:flex;align-items:center;gap:8px;">
+                <span id="shortNamePreview" class="pill" style="display:none;"></span>
+              </div>
             </div>
+
+            <div class="form-grid">
+              <div>
+                <label for="ageSelect">Age group</label>
+                <select id="ageSelect">
+                  <option value="">Select an age group</option>
+                  <option value="11+">11 or older</option>
+                  <option value="10-">10 or younger 🎁</option>
+                </select>
+              </div>
+              <div>
+                <label for="foodSelect">Food signup (from the menu)</label>
+                <select id="foodSelect">
+                  <option value="">-- I’m not bringing food yet --</option>
+                </select>
+                <div id="foodNote"></div>
+              </div>
+            </div>
+
+            <div class="votes" role="group" aria-label="Vote for one option">
+              <label>
+                <input type="radio" name="voteChoice" id="voteGame" value="game">
+                White Elephant game 🎁 (pick this OR cash)
+              </label>
+              <label>
+                <input type="radio" name="voteChoice" id="voteCash" value="cash">
+                $5–$10 cash donation for prizes 💵 (pick this OR White Elephant)
+              </label>
+              <label>
+                <input type="radio" name="voteChoice" id="voteNone" value="none" checked>
+                No vote yet
+              </label>
+            </div>
+
+            <div class="row" style="justify-content:flex-start;gap:10px;align-items:center;flex-wrap:wrap;">
+              <button type="button" id="saveBtn" onclick="handleSave()">🎄 Save to my tree</button>
+              <button type="button" class="ghost" id="addGuestBtn" onclick="prepGuestAdd()" disabled>➕ Add a guest under me</button>
+            </div>
+
+            <div id="status"></div>
+          </div>
+
+          <div class="personal-tree" id="personalTree">
+            <!-- filled by JS -->
           </div>
         </div>
-      </div>
-
-      <!-- RSVP / sign up card -->
-      <div class="card">
-        <h2>📝 RSVP & Food Signup 🎅</h2>
-        <div class="subtitle">
-          Step 1) Enter <strong>Your Name</strong> above. Step 2) Tell us <strong>Who is attending?</strong> (full name for the sheet).
-          Step 3) pick age, food, and one vote. Only first name + last initial will show on the page. ✨
-        </div>
-
-        <label for="fullNameInput">Who is attending?</label>
-        <div class="row">
-          <div class="col-half">
-            <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
-          </div>
-          <div class="col-half" style="display:flex;align-items:center;gap:8px;">
-            <span id="shortNamePreview" class="pill" style="display:none;"></span>
-          </div>
-        </div>
-        <div class="questions">Only first name + last initial will show on the page. Full names stay in the sheet for hosts.</div>
-
-        <label for="ageSelect">Age group</label>
-        <select id="ageSelect">
-          <option value="">Select an age group</option>
-          <option value="11+">11 or older</option>
-          <option value="10-">10 or younger 🎁</option>
-        </select>
-
-        <label for="ageSelect">Age group</label>
-        <select id="ageSelect">
-          <option value="">Select an age group</option>
-          <option value="11+">11 or older</option>
-          <option value="10-">10 or younger 🎁</option>
-        </select>
-
-        <label for="foodSelect">Food signup (from the menu)</label>
-        <select id="foodSelect">
-          <option value="">-- I’m not bringing food yet --</option>
-        </select>
-        <div id="foodNote"></div>
-
-        <div class="votes" role="group" aria-label="Vote for one option">
-          <label>
-            <input type="radio" name="voteChoice" id="voteGame" value="game">
-            White Elephant game 🎁 (pick this OR cash)
-          </label>
-          <label>
-            <input type="radio" name="voteChoice" id="voteCash" value="cash">
-            $5–$10 cash donation for prizes 💵 (pick this OR White Elephant)
-          </label>
-          <label>
-            <input type="radio" name="voteChoice" id="voteNone" value="none" checked>
-            No vote yet
-          </label>
-        </div>
-
-        <button type="button" id="saveBtn" onclick="handleSave()">🎄 Save my spot</button>
-        <div id="status"></div>
       </div>
 
       <!-- Invite tree -->
@@ -665,7 +638,7 @@
         renderFoodList();
         refreshFoodSelect();
         updateGuestButton();
-        renderMyInvites();
+        updateInviterTag();
         renderPersonalTree();
 
         showStatus('Loaded.', false);
@@ -728,6 +701,32 @@
         if (ageGroup === '10-') return '10 or younger';
         if (ageGroup === '11+') return '11 or older';
         return 'Unknown age';
+      }
+
+      function ageShort(ageGroup) {
+        if (ageGroup === '10-') return '10-';
+        if (ageGroup === '11+') return '11+';
+        return '';
+      }
+
+      function findAttendeeByName(fullName) {
+        if (!fullName) return null;
+        const lookup = fullName.toLowerCase();
+        return (state.attendees || []).find(function(a) {
+          return (a.fullName || '').toLowerCase() === lookup;
+        }) || null;
+      }
+
+      function uniqueByRow(list) {
+        const seen = new Set();
+        const result = [];
+        (list || []).forEach(function(item) {
+          const key = item && item.row != null ? String(item.row) : item ? item.fullName || '' : '';
+          if (seen.has(key)) return;
+          seen.add(key);
+          result.push(item);
+        });
+        return result;
       }
 
       function enrichAttendees(list) {
@@ -807,6 +806,7 @@
 
       function setAgeGroup(value) {
         $('ageSelect').value = value || '';
+        updateShortNamePreview();
       }
 
       function updateShortNamePreview() {
@@ -818,7 +818,8 @@
           return;
         }
         const shortName = toShortName(fullName);
-        preview.textContent = shortName;
+        const ageText = ageShort(getSelectedAgeGroup());
+        preview.textContent = ageText ? shortName + ' • ' + ageText : shortName;
         preview.style.display = 'inline-flex';
 
         // Auto-load existing selections if this name already exists
@@ -830,10 +831,14 @@
         state.currentRow = null; // typing a new name resets current row
       });
 
+      $('ageSelect').addEventListener('change', function() {
+        updateShortNamePreview();
+      });
+
       $('inviterInput').addEventListener('input', function() {
         lastSavedInviter = '';
         updateGuestButton();
-        renderMyInvites();
+        updateInviterTag();
         renderInviteTree();
       });
 
@@ -847,9 +852,11 @@
         $('inviterInput').value = name;
         lastSavedInviter = name;
         updateGuestButton();
-        renderMyInvites();
+        updateInviterTag();
         renderPersonalTree();
         renderInviteTree();
+
+        hydrateExistingSignup(name);
 
         if (!$('fullNameInput').value.trim()) {
           $('fullNameInput').value = name;
@@ -869,6 +876,35 @@
           btn.disabled = true;
           btn.textContent = '➕ Save your name to add guests';
         }
+      }
+
+      function updateInviterTag() {
+        const tag = $('activeInviterTag');
+        if (!tag) return;
+
+        const inviter = currentInviterName();
+        tag.innerHTML = '';
+
+        if (!inviter) {
+          tag.textContent = 'Confirm Your Name so guests branch under you.';
+          return;
+        }
+
+        const chip = document.createElement('span');
+        chip.className = 'pill';
+
+        const inviterEntry = findAttendeeByName(inviter);
+        const ageText = inviterEntry ? ageShort(inviterEntry.ageGroup) : '';
+        chip.textContent = ageText
+          ? 'Inviting as ' + toShortName(inviter) + ' • ' + ageText
+          : 'Inviting as ' + toShortName(inviter);
+
+        const helper = document.createElement('span');
+        helper.className = 'questions';
+        helper.textContent = 'Everyone you add lands on this tree (Column K).';
+
+        tag.appendChild(chip);
+        tag.appendChild(helper);
       }
 
       function toShortName(fullName) {
@@ -917,7 +953,7 @@
         refreshFoodSelect(found.food || '');
         lastSavedInviter = $('inviterInput').value.trim() || fullName;
         updateGuestButton();
-        renderMyInvites();
+        updateInviterTag();
         renderPersonalTree();
 
         if (lastHydratedName !== lookup) {
@@ -933,6 +969,10 @@
 
         const inviterName = currentInviterName();
         const shortInviter = inviterName ? toShortName(inviterName) : '';
+        const inviterEntry = findAttendeeByName(inviterName);
+        const inviterAgeShort = inviterEntry ? ageShort(inviterEntry.ageGroup) : '';
+
+        updateInviterTag();
 
         greeting.innerHTML = inviterName
           ? '⭐ Welcome, <strong>' + shortInviter + '</strong>! Here’s your invite tree.'
@@ -945,17 +985,16 @@
           return;
         }
 
-        const matches = (state.attendees || []).filter(function(a) {
+        const matchesRaw = (state.attendees || []).filter(function(a) {
           return (a.enteredBy || '').toLowerCase() === inviterName.toLowerCase();
         });
 
-        const selfEntry = (state.attendees || []).find(function(a) {
-          return (a.fullName || '').toLowerCase() === inviterName.toLowerCase();
-        });
-
-        if (selfEntry && !matches.some(function(a) { return a.row === selfEntry.row; })) {
-          matches.unshift(selfEntry);
+        const selfEntry = findAttendeeByName(inviterName);
+        if (selfEntry) {
+          matchesRaw.push(selfEntry);
         }
+
+        const matches = uniqueByRow(matchesRaw);
 
         if (!matches.length) {
           treeEl.innerHTML = '<p class="questions">Save yourself first, then add guests beneath your star.</p>';
@@ -969,7 +1008,8 @@
 
         const owner = document.createElement('div');
         owner.className = 'tree-owner';
-        owner.textContent = shortInviter + ' • ' + matches.length + ' attending in your cluster';
+        const ageTail = inviterAgeShort ? ' • ' + inviterAgeShort : '';
+        owner.textContent = shortInviter + ageTail + ' • ' + matches.length + ' attending in your cluster';
         treeEl.appendChild(owner);
 
         const ul = document.createElement('ul');
@@ -980,7 +1020,19 @@
           .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
           .forEach(function(a) {
             const li = document.createElement('li');
-            li.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
+            const left = document.createElement('span');
+            left.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
+
+            const ageText = ageShort(a.ageGroup);
+            if (ageText) {
+              const badge = document.createElement('span');
+              badge.className = 'pill';
+              badge.textContent = ageText + ' ✔️';
+              li.appendChild(left);
+              li.appendChild(badge);
+            } else {
+              li.appendChild(left);
+            }
             li.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nFood: ' + a.food : '');
             li.addEventListener('click', function() {
               showStatus('Age for ' + displayName(a) + ': ' + ageLabel(a.ageGroup) + '. Edit above then save.', false);
@@ -992,57 +1044,15 @@
       }
 
       function scrollToPersonalOrClusters(inviterName) {
-        const personalCard = document.querySelector('.personal-card');
+        const personalArea = document.querySelector('.card');
         const treeCard = $('inviteTree');
-        if (inviterName && personalCard) {
-          personalCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (inviterName && personalArea) {
+          personalArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
           return;
         }
         if (treeCard) {
           treeCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
-      }
-
-      function renderMyInvites() {
-        const listEl = $('myInviteList');
-        if (!listEl) return;
-
-        const inviterName = currentInviterName();
-        if (!inviterName) {
-          listEl.textContent = 'Type your name to see who is linked to you (Column K: Entered By).';
-          renderPersonalTree();
-          return;
-        }
-
-        const matches = (state.attendees || []).filter(function(a) {
-          return (a.enteredBy || '').toLowerCase() === inviterName.toLowerCase();
-        });
-
-        if (!matches.length) {
-          listEl.textContent = 'No guests linked yet. Save yourself, then add guests beneath you.';
-          renderPersonalTree();
-          return;
-        }
-
-        listEl.innerHTML = '';
-        const ul = document.createElement('ul');
-
-        matches
-          .slice()
-          .sort(function(a, b) {
-            return displayName(a).localeCompare(displayName(b));
-          })
-          .forEach(function(a) {
-            const li = document.createElement('li');
-            li.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
-            li.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nBringing: ' + a.food : '') +
-              (a.gameVote ? '\nWhite Elephant: 👍' : a.cashVote ? '\nCash donation: 👍' : '') +
-              '\nEntered by: ' + toShortName(inviterName);
-            ul.appendChild(li);
-          });
-
-        listEl.appendChild(ul);
-        renderPersonalTree();
       }
 
       function prepGuestAdd() {
@@ -1056,7 +1066,7 @@
         setAgeGroup('');
         setVoteChoice('none');
         refreshFoodSelect('');
-        renderMyInvites();
+        updateInviterTag();
         showStatus('Adding a guest under ' + toShortName(lastSavedInviter) + '. Enter their full name and details.', false);
       }
 
@@ -1119,7 +1129,7 @@
 
             lastSavedInviter = inviter;
             updateGuestButton();
-            renderMyInvites();
+            updateInviterTag();
             renderPersonalTree();
             lastHydratedName = lookup;
 
@@ -1155,7 +1165,10 @@
         state.attendees.forEach(function(a) {
           const inviter = a.enteredBy || a.fullName || 'Host';
           if (!groups[inviter]) groups[inviter] = [];
-          groups[inviter].push(a);
+          const already = groups[inviter].some(function(entry) { return entry.row === a.row; });
+          if (!already) {
+            groups[inviter].push(a);
+          }
         });
 
         const personalInviter = currentInviterName().toLowerCase();
@@ -1197,7 +1210,8 @@
             .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
             .forEach(function(a) {
               const span = document.createElement('span');
-              span.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
+              const ageText = ageShort(a.ageGroup);
+              span.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a) + (ageText ? ' • ' + ageText : '');
               span.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nFood: ' + a.food : '');
               branches.appendChild(span);
             });
