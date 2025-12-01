@@ -5,64 +5,139 @@
     <meta charset="UTF-8">
     <title>Christmas 2025 Sign-Up</title>
     <style>
+      :root {
+        --candy-red: #e63946;
+        --evergreen: #0b8b62;
+        --frost: #eef6ff;
+        --gold: #f4a261;
+      }
+
       body {
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: radial-gradient(circle at top, #fffbf0 0, #f4f6ff 45%, #e4f7ff 100%);
+        background: radial-gradient(circle at 20% 10%, rgba(255, 246, 235, 0.9), rgba(255, 255, 255, 0.4)),
+          radial-gradient(circle at 80% 0%, rgba(228, 247, 255, 0.9), rgba(228, 247, 255, 0.2)),
+          linear-gradient(135deg, #fef6f0 0%, #e3f6ff 45%, #f8efff 100%);
         margin: 0;
         padding: 16px;
-        color: #222;
+        color: #1e2b2a;
+        font-size: clamp(18px, 1.25rem, 20px);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+          radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+        background-size: 18px 18px, 24px 24px;
+        background-position: 0 0, 12px 12px;
+        opacity: 0.55;
       }
 
       #app {
-        max-width: 960px;
+        max-width: 1040px;
         margin: 0 auto;
+        width: 100%;
+        position: relative;
       }
 
       .card {
-        background: rgba(255, 255, 255, 0.92);
-        border-radius: 16px;
-        padding: 16px 20px;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-        margin-bottom: 14px;
-        border: 1px solid rgba(200, 200, 255, 0.5);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 245, 0.96));
+        border-radius: 18px;
+        padding: 20px 22px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
+        margin-bottom: 16px;
+        border: 2px solid rgba(230, 57, 70, 0.18);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .personal-card {
+        border: 2px solid rgba(11, 139, 98, 0.2);
+        background: linear-gradient(180deg, rgba(248, 255, 250, 0.96), rgba(240, 252, 255, 0.96));
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 18px;
+        padding: 2px;
+        background: repeating-linear-gradient(45deg, rgba(230, 57, 70, 0.35) 0, rgba(230, 57, 70, 0.35) 10px, rgba(11, 139, 98, 0.2) 10px, rgba(11, 139, 98, 0.2) 20px);
+        -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+
+      .garland {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+        font-size: 1.1rem;
+      }
+
+      .garland span {
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
       }
 
       h1 {
-        margin: 0 0 8px;
-        font-size: 1.8rem;
+        margin: 0 0 10px;
+        font-size: 2.2rem;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
+        color: var(--evergreen);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
       }
 
       h2 {
-        margin: 0 0 8px;
-        font-size: 1.2rem;
+        margin: 0 0 10px;
+        font-size: 1.35rem;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
+        color: #b83227;
       }
 
       .subtitle {
-        font-size: 0.9rem;
-        color: #555;
-        margin-bottom: 8px;
+        font-size: 1rem;
+        color: #2f3a39;
+        margin-bottom: 10px;
+      }
+
+      .festive-banner {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(90deg, rgba(11, 139, 98, 0.08), rgba(244, 162, 97, 0.14));
+        padding: 10px 14px;
+        border-radius: 14px;
+        font-weight: 700;
+        color: #0b3a32;
+        margin-bottom: 12px;
+        border: 1px solid rgba(11, 139, 98, 0.2);
       }
 
       label {
         display: block;
-        font-size: 0.9rem;
-        margin: 6px 0 3px;
+        font-size: 1rem;
+        margin: 8px 0 4px;
+        color: #16302c;
       }
 
       input[type="text"],
       select {
         width: 100%;
         box-sizing: border-box;
-        padding: 8px 10px;
-        border-radius: 10px;
-        border: 1px solid #ccd;
-        font-size: 0.95rem;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 2px solid rgba(11, 139, 98, 0.2);
+        font-size: 1.05rem;
+        background: rgba(255, 255, 255, 0.92);
       }
 
       input[type="text"]:focus,
@@ -86,8 +161,8 @@
         display: flex;
         gap: 12px;
         align-items: center;
-        margin: 4px 0 6px;
-        font-size: 0.9rem;
+        margin: 6px 0 8px;
+        font-size: 1rem;
       }
 
       .age-group label {
@@ -101,28 +176,34 @@
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
-        margin-top: 6px;
-        font-size: 0.9rem;
+        margin-top: 8px;
+        font-size: 1rem;
       }
 
       .votes label {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
         margin: 0;
       }
 
       button {
         border-radius: 999px;
         border: none;
-        padding: 8px 18px;
-        font-size: 0.95rem;
-        font-weight: 600;
+        padding: 12px 20px;
+        font-size: 1.05rem;
+        font-weight: 700;
         cursor: pointer;
-        background: linear-gradient(90deg, #e63946, #f4a261);
+        background: linear-gradient(90deg, var(--candy-red), var(--gold));
         color: #fff;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-        margin-top: 10px;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+        margin-top: 12px;
+        transition: transform 120ms ease, box-shadow 120ms ease;
+      }
+
+      button:hover:not([disabled]) {
+        transform: translateY(-1px) scale(1.01);
+        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
       }
 
       button[disabled] {
@@ -132,8 +213,8 @@
       }
 
       #status {
-        margin-top: 6px;
-        font-size: 0.85rem;
+        margin-top: 8px;
+        font-size: 0.95rem;
       }
 
       #status.error {
@@ -147,48 +228,207 @@
       .pill {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 4px 8px;
+        gap: 6px;
+        padding: 6px 10px;
         border-radius: 999px;
-        font-size: 0.8rem;
-        background: #f1f5ff;
+        font-size: 0.95rem;
+        background: linear-gradient(135deg, #f1f5ff, #fff5f5);
         border: 1px solid #dde4ff;
+        color: #0f3c2f;
       }
 
       #inviteTree ul,
       #foodList ul {
         list-style: none;
-        padding-left: 12px;
-        margin: 4px 0 0;
+        padding-left: 16px;
+        margin: 6px 0 0;
       }
 
       #inviteTree li,
       #foodList li {
-        font-size: 0.9rem;
-        margin: 2px 0;
+        font-size: 1rem;
+        margin: 4px 0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
       .inviter-group {
-        margin-top: 6px;
-        padding: 8px 10px;
+        margin-top: 8px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: linear-gradient(90deg, rgba(231, 248, 255, 0.92), rgba(247, 241, 255, 0.92));
+        border: 1px dashed rgba(11, 139, 98, 0.25);
+      }
+
+      .personal-topline {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 6px;
+      }
+
+      .personal-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: linear-gradient(120deg, rgba(11, 139, 98, 0.16), rgba(244, 162, 97, 0.18));
+        color: #0c3f35;
+        font-weight: 800;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .personal-note {
+        font-size: 0.95rem;
+        color: #224139;
+      }
+
+      .personal-tree-wrap {
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) minmax(240px, 1fr);
+        gap: 14px;
+        margin-top: 10px;
+        align-items: start;
+      }
+
+      .personal-tree {
+        position: relative;
+        padding: 14px 14px 12px;
+        border-radius: 16px;
+        background: radial-gradient(circle at 40% 10%, rgba(255, 247, 210, 0.8), rgba(255, 255, 255, 0.9));
+        border: 2px solid rgba(244, 162, 97, 0.25);
+        box-shadow: inset 0 0 0 2px rgba(11, 139, 98, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
+      }
+
+      .tree-star {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ffd166, #f4a261);
+        display: grid;
+        place-items: center;
+        font-size: 1.5rem;
+        color: #7c3b00;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin: 0 auto 6px;
+      }
+
+      .tree-owner {
+        text-align: center;
+        font-weight: 800;
+        color: #0c4c39;
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+      }
+
+      .tree-branches {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 6px;
+      }
+
+      .tree-branches li {
+        background: rgba(11, 139, 98, 0.08);
+        border: 1px solid rgba(11, 139, 98, 0.2);
         border-radius: 12px;
-        background: linear-gradient(90deg, rgba(231, 248, 255, 0.9), rgba(247, 241, 255, 0.9));
+        padding: 8px 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: #0f372c;
+        cursor: default;
+      }
+
+      .tree-branches li:hover {
+        background: rgba(230, 57, 70, 0.08);
+        border-color: rgba(230, 57, 70, 0.2);
+      }
+
+      .personal-actions {
+        display: grid;
+        gap: 8px;
+      }
+
+      .cluster-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .tree-cluster {
+        position: relative;
+        padding: 12px 12px 10px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(236, 252, 249, 0.96));
+        border: 2px dashed rgba(11, 139, 98, 0.22);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+
+      .tree-count {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #e63946, #f4a261);
+        color: #fff;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      }
+
+      .cluster-star {
+        font-size: 1.25rem;
+      }
+
+      .cluster-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        color: #0c4c39;
+        margin-bottom: 6px;
+      }
+
+      .cluster-branches {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .cluster-branches span {
+        padding: 6px 10px;
+        border-radius: 10px;
+        background: rgba(11, 139, 98, 0.08);
+        border: 1px solid rgba(11, 139, 98, 0.18);
+        font-weight: 600;
+        color: #0f372c;
+        cursor: default;
       }
 
       .inviter-header {
-        font-weight: 600;
-        margin-bottom: 2px;
-        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        font-size: 1rem;
+        color: var(--evergreen);
       }
 
       .meta-line {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-        font-size: 0.9rem;
+        font-size: 1rem;
         align-items: center;
       }
 
@@ -198,16 +438,35 @@
         gap: 4px;
       }
 
+      #metaText {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(11, 139, 98, 0.25);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-weight: 700;
+        color: #0c3f35;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
       .questions {
-        font-size: 0.85rem;
-        color: #444;
-        margin-top: 4px;
+        font-size: 0.95rem;
+        color: #2d3a3a;
+        margin-top: 6px;
       }
 
       #foodNote {
-        font-size: 0.8rem;
-        color: #555;
-        margin-top: 2px;
+        font-size: 0.9rem;
+        color: #1f312e;
+        margin-top: 4px;
       }
 
       @media (max-width: 600px) {
@@ -217,6 +476,18 @@
         .card {
           padding: 14px;
         }
+        h1 {
+          font-size: 2rem;
+        }
+        h2 {
+          font-size: 1.25rem;
+        }
+        .row {
+          flex-direction: column;
+        }
+        .personal-tree-wrap {
+          grid-template-columns: 1fr;
+        }
       }
     </style>
   </head>
@@ -224,45 +495,71 @@
     <div id="app">
       <!-- Meta / header card -->
       <div class="card">
-        <h1>🎄 Christmas 2025</h1>
+        <div class="garland" aria-hidden="true">
+          <span>🧦</span><span>✨</span><span>🎄</span><span>🦌</span><span>🎁</span><span>☃️</span><span>🍪</span><span>✨</span><span>🧦</span>
+        </div>
+        <h1>🎄✨ Ho Ho Ho! Christmas 2025 ✨🎅</h1>
+        <div class="festive-banner">🎅 Santa's Nice List is open — add your name & your tastiest treat! 🍪</div>
         <div class="meta-line">
           <span id="metaText"></span>
         </div>
         <div class="questions" id="questionsText"></div>
         <div class="subtitle">
-          Add yourself, pick your age group, claim a food from the menu, and vote with festive thumbs-ups.
+          Add yourself, pick your age group, claim a food from the menu, and vote with festive thumbs-ups. The more names,
+          the merrier the tree! 🎁
+        </div>
+      </div>
+
+      <!-- Personalized owner card (Your Name first) -->
+      <div class="card personal-card">
+        <div class="personal-topline">
+          <div class="personal-chip" id="personalGreeting">🎁 Start with <strong>Your Name</strong> so we can grow your own tree.</div>
+          <div class="personal-note">We only show first name + last initial on this page.</div>
+        </div>
+
+        <label for="inviterInput">Your Name (Column K “Entered By”)</label>
+        <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
+
+        <div class="personal-tree-wrap">
+          <div>
+            <div class="personal-tree" id="personalTree">
+              <!-- filled by JS -->
+            </div>
+          </div>
+          <div class="personal-actions">
+            <button type="button" id="addGuestBtn" onclick="prepGuestAdd()" disabled>➕ Save your name to add guests</button>
+            <div class="inviter-group" id="myInviteSummary">
+              <div class="inviter-header">🎁 Who you've invited so far</div>
+              <div id="myInviteList" class="questions"></div>
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- RSVP / sign up card -->
       <div class="card">
-        <h2>📝 RSVP & Food Signup</h2>
+        <h2>📝 RSVP & Food Signup 🎅</h2>
         <div class="subtitle">
-          Type your full name. If you already signed up, click <strong>Find Me</strong> to load your info.
+          Step 1) Enter <strong>Your Name</strong> above. Step 2) Tell us <strong>Who is attending?</strong> (full name for the sheet).
+          Step 3) pick age, food, and one vote. Only first name + last initial will show on the page. ✨
         </div>
 
-        <label for="fullNameInput">Full name (First and Last)</label>
+        <label for="fullNameInput">Who is attending?</label>
         <div class="row">
           <div class="col-half">
             <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
           </div>
           <div class="col-half" style="display:flex;align-items:center;gap:8px;">
-            <button type="button" onclick="handleFindMe()">Find Me</button>
             <span id="shortNamePreview" class="pill" style="display:none;"></span>
           </div>
         </div>
 
-        <label>Age group</label>
-        <div class="age-group">
-          <label>
-            <input type="radio" name="ageGroup" value="11+">
-            11 or older
-          </label>
-          <label>
-            <input type="radio" name="ageGroup" value="10-">
-            10 or younger 🎁
-          </label>
-        </div>
+        <label for="ageSelect">Age group</label>
+        <select id="ageSelect">
+          <option value="">Select an age group</option>
+          <option value="11+">11 or older</option>
+          <option value="10-">10 or younger 🎁</option>
+        </select>
 
         <label for="foodSelect">Food signup (from the menu)</label>
         <select id="foodSelect">
@@ -270,18 +567,22 @@
         </select>
         <div id="foodNote"></div>
 
-        <div class="votes">
+        <div class="votes" role="group" aria-label="Vote for one option">
           <label>
-            <input type="checkbox" id="gameVote">
-            White Elephant game? 🎁 (vote 👍)
+            <input type="radio" name="voteChoice" id="voteGame" value="game">
+            White Elephant game 🎁 (pick this OR cash)
           </label>
           <label>
-            <input type="checkbox" id="cashVote">
-            $5–$10 cash donation for game prizes? 💵 (vote 👍)
+            <input type="radio" name="voteChoice" id="voteCash" value="cash">
+            $5–$10 cash donation for prizes 💵 (pick this OR White Elephant)
+          </label>
+          <label>
+            <input type="radio" name="voteChoice" id="voteNone" value="none" checked>
+            No vote yet
           </label>
         </div>
 
-        <button type="button" id="saveBtn" onclick="handleSave()">Save my spot</button>
+        <button type="button" id="saveBtn" onclick="handleSave()">🎄 Save my spot</button>
         <div id="status"></div>
       </div>
 
@@ -309,6 +610,9 @@
         currentRow: null
       };
 
+      let lastSavedInviter = '';
+      let lastHydratedName = '';
+
       function init() {
         showStatus('Loading…');
         google.script.run
@@ -319,14 +623,18 @@
 
       function onDataLoaded(data) {
         state.meta = data.meta || {};
-        state.attendees = data.attendees || [];
+        state.attendees = enrichAttendees(data.attendees || []);
         state.menu = data.menu || [];
         state.currentRow = null;
+        lastSavedInviter = '';
 
         renderMeta();
         renderInviteTree();
         renderFoodList();
         refreshFoodSelect();
+        updateGuestButton();
+        renderMyInvites();
+        renderPersonalTree();
 
         showStatus('Loaded.', false);
       }
@@ -362,10 +670,17 @@
           metaLine.push('📍 ' + meta.address);
         }
 
-        $('metaText').textContent = metaLine.join('  ·  ');
+        const metaEl = $('metaText');
+        metaEl.innerHTML = '';
+        metaLine.forEach(function(text) {
+          const chip = document.createElement('span');
+          chip.className = 'meta-chip';
+          chip.textContent = text + ' ✨';
+          metaEl.appendChild(chip);
+        });
 
         if (meta.questions) {
-          $('questionsText').textContent = 'Questions: ' + meta.questions;
+          $('questionsText').textContent = '❓ Questions for Santa’s helpers: ' + meta.questions;
         } else {
           $('questionsText').textContent = '';
         }
@@ -375,6 +690,23 @@
         // Christmasy emoji for 10 or younger
         if (ageGroup === '10-') return '🧸';
         return '🎄';
+      }
+
+      function ageLabel(ageGroup) {
+        if (ageGroup === '10-') return '10 or younger';
+        if (ageGroup === '11+') return '11 or older';
+        return 'Unknown age';
+      }
+
+      function enrichAttendees(list) {
+        return (list || []).map(function(a) {
+          return Object.assign({}, a, { shortName: a.shortName || toShortName(a.fullName || '') });
+        });
+      }
+
+      function displayName(attendee) {
+        if (!attendee) return '';
+        return attendee.shortName || toShortName(attendee.fullName || '');
       }
 
       function refreshFoodSelect(selectedFood) {
@@ -392,7 +724,7 @@
         (state.attendees || []).forEach(function(a) {
           if (!a.food) return;
           if (!takenMap[a.food]) takenMap[a.food] = [];
-          takenMap[a.food].push(a.shortName || a.fullName);
+          takenMap[a.food].push(displayName(a));
         });
 
         (state.menu || []).forEach(function(item) {
@@ -423,18 +755,26 @@
       }
 
       function getSelectedAgeGroup() {
-        const radios = document.querySelectorAll('input[name="ageGroup"]');
+        return $('ageSelect').value;
+      }
+
+      function getVoteChoice() {
+        const radios = document.querySelectorAll('input[name="voteChoice"]');
         for (let i = 0; i < radios.length; i++) {
           if (radios[i].checked) return radios[i].value;
         }
-        return '';
+        return 'none';
+      }
+
+      function setVoteChoice(value) {
+        const radios = document.querySelectorAll('input[name="voteChoice"]');
+        radios.forEach(function(r) {
+          r.checked = (r.value === value);
+        });
       }
 
       function setAgeGroup(value) {
-        const radios = document.querySelectorAll('input[name="ageGroup"]');
-        for (let i = 0; i < radios.length; i++) {
-          radios[i].checked = (radios[i].value === value);
-        }
+        $('ageSelect').value = value || '';
       }
 
       function updateShortNamePreview() {
@@ -448,12 +788,34 @@
         const shortName = toShortName(fullName);
         preview.textContent = shortName;
         preview.style.display = 'inline-flex';
+
+        // Auto-load existing selections if this name already exists
+        hydrateExistingSignup(fullName);
       }
 
       $('fullNameInput').addEventListener('input', function() {
         updateShortNamePreview();
         state.currentRow = null; // typing a new name resets current row
       });
+
+      $('inviterInput').addEventListener('input', function() {
+        lastSavedInviter = '';
+        updateGuestButton();
+        renderMyInvites();
+        renderInviteTree();
+      });
+
+      function updateGuestButton() {
+        const btn = $('addGuestBtn');
+        if (!btn) return;
+        if (lastSavedInviter) {
+          btn.disabled = false;
+          btn.textContent = '🎁 Invite someone under ' + toShortName(lastSavedInviter);
+        } else {
+          btn.disabled = true;
+          btn.textContent = '➕ Save your name to add guests';
+        }
+      }
 
       function toShortName(fullName) {
         const parts = fullName.trim().split(/\s+/);
@@ -464,35 +826,172 @@
         return first + ' ' + (last.charAt(0).toUpperCase() || '') + '.';
       }
 
-      function handleFindMe() {
-        const name = $('fullNameInput').value.trim();
-        if (!name) {
-          showStatus('Type your full name first, then click "Find Me".', true);
+      function currentInviterName() {
+        return ($('inviterInput').value || lastSavedInviter || '').trim();
+      }
+
+      function hydrateExistingSignup(fullName) {
+        if (!fullName) {
+          lastHydratedName = '';
+          state.currentRow = null;
+          setAgeGroup('');
+          setVoteChoice('none');
+          refreshFoodSelect('');
           return;
         }
 
-        const lookup = name.toLowerCase();
+        const lookup = fullName.toLowerCase();
         const found = (state.attendees || []).find(function(a) {
           return (a.fullName || '').toLowerCase() === lookup;
         });
 
         if (!found) {
-          state.currentRow = null;
-          setAgeGroup('');
-          $('gameVote').checked = false;
-          $('cashVote').checked = false;
-          refreshFoodSelect('');
-          showStatus('No existing signup found. Fill the form and click "Save my spot" to add yourself.', false);
+          if (lastHydratedName) {
+            state.currentRow = null;
+            setAgeGroup('');
+            setVoteChoice('none');
+            refreshFoodSelect('');
+            lastHydratedName = '';
+          }
           return;
         }
 
         state.currentRow = found.row;
         setAgeGroup(found.ageGroup || '');
-        $('gameVote').checked = !!found.gameVote;
-        $('cashVote').checked = !!found.cashVote;
-        // Include their existing food selection in the dropdown, even if it's "taken"
+        setVoteChoice(found.gameVote ? 'game' : found.cashVote ? 'cash' : 'none');
+        $('inviterInput').value = found.enteredBy || found.fullName || '';
         refreshFoodSelect(found.food || '');
-        showStatus('Loaded your existing signup. Update and click "Save my spot".', false);
+        lastSavedInviter = $('inviterInput').value.trim() || fullName;
+        updateGuestButton();
+        renderMyInvites();
+        renderPersonalTree();
+
+        if (lastHydratedName !== lookup) {
+          showStatus('Loaded existing signup for ' + toShortName(fullName) + '. Update and save if needed.', false);
+          lastHydratedName = lookup;
+        }
+      }
+
+      function renderPersonalTree() {
+        const treeEl = $('personalTree');
+        const greeting = $('personalGreeting');
+        if (!treeEl || !greeting) return;
+
+        const inviterName = currentInviterName();
+        const shortInviter = inviterName ? toShortName(inviterName) : '';
+
+        greeting.innerHTML = inviterName
+          ? '⭐ Welcome, <strong>' + shortInviter + '</strong>! Here’s your invite tree.'
+          : '🎁 Start with <strong>Your Name</strong> so we can grow your own tree.';
+
+        treeEl.innerHTML = '';
+
+        if (!inviterName) {
+          treeEl.innerHTML = '<p class="questions">Type your name above to preview your star + branches.</p>';
+          return;
+        }
+
+        const matches = (state.attendees || []).filter(function(a) {
+          return (a.enteredBy || '').toLowerCase() === inviterName.toLowerCase();
+        });
+
+        const selfEntry = (state.attendees || []).find(function(a) {
+          return (a.fullName || '').toLowerCase() === inviterName.toLowerCase();
+        });
+
+        if (selfEntry && !matches.some(function(a) { return a.row === selfEntry.row; })) {
+          matches.unshift(selfEntry);
+        }
+
+        if (!matches.length) {
+          treeEl.innerHTML = '<p class="questions">Save yourself first, then add guests beneath your star.</p>';
+          return;
+        }
+
+        const star = document.createElement('div');
+        star.className = 'tree-star';
+        star.textContent = '⭐';
+        treeEl.appendChild(star);
+
+        const owner = document.createElement('div');
+        owner.className = 'tree-owner';
+        owner.textContent = shortInviter + ' • ' + matches.length + ' attending in your cluster';
+        treeEl.appendChild(owner);
+
+        const ul = document.createElement('ul');
+        ul.className = 'tree-branches';
+
+        matches
+          .slice()
+          .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
+          .forEach(function(a) {
+            const li = document.createElement('li');
+            li.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
+            li.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nFood: ' + a.food : '');
+            li.addEventListener('click', function() {
+              showStatus('Age for ' + displayName(a) + ': ' + ageLabel(a.ageGroup) + '. Edit above then save.', false);
+            });
+            ul.appendChild(li);
+          });
+
+        treeEl.appendChild(ul);
+      }
+
+      function renderMyInvites() {
+        const listEl = $('myInviteList');
+        if (!listEl) return;
+
+        const inviterName = currentInviterName();
+        if (!inviterName) {
+          listEl.textContent = 'Type your name to see who is linked to you (Column K: Entered By).';
+          renderPersonalTree();
+          return;
+        }
+
+        const matches = (state.attendees || []).filter(function(a) {
+          return (a.enteredBy || '').toLowerCase() === inviterName.toLowerCase();
+        });
+
+        if (!matches.length) {
+          listEl.textContent = 'No guests linked yet. Save yourself, then add guests beneath you.';
+          renderPersonalTree();
+          return;
+        }
+
+        listEl.innerHTML = '';
+        const ul = document.createElement('ul');
+
+        matches
+          .slice()
+          .sort(function(a, b) {
+            return displayName(a).localeCompare(displayName(b));
+          })
+          .forEach(function(a) {
+            const li = document.createElement('li');
+            li.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
+            li.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nBringing: ' + a.food : '') +
+              (a.gameVote ? '\nWhite Elephant: 👍' : a.cashVote ? '\nCash donation: 👍' : '') +
+              '\nEntered by: ' + toShortName(inviterName);
+            ul.appendChild(li);
+          });
+
+        listEl.appendChild(ul);
+        renderPersonalTree();
+      }
+
+      function prepGuestAdd() {
+        if (!lastSavedInviter) {
+          showStatus('Save yourself first, then add guests beneath you.', true);
+          return;
+        }
+        $('fullNameInput').value = '';
+        updateShortNamePreview();
+        $('inviterInput').value = lastSavedInviter;
+        setAgeGroup('');
+        setVoteChoice('none');
+        refreshFoodSelect('');
+        renderMyInvites();
+        showStatus('Adding a guest under ' + toShortName(lastSavedInviter) + '. Enter their full name and details.', false);
       }
 
       function handleSave() {
@@ -509,15 +1008,25 @@
         }
 
         const food = $('foodSelect').value;
+        const inviter = $('inviterInput').value.trim() || name;
+        const voteChoice = getVoteChoice();
+
+        const lookup = name.toLowerCase();
+        const existing = (state.attendees || []).find(function(a) {
+          return (a.fullName || '').toLowerCase() === lookup;
+        });
+        if (existing) {
+          state.currentRow = existing.row;
+        }
 
         const payload = {
           row: state.currentRow,          // may be null/undefined if new
           fullName: name,
           ageGroup: ageGroup,
           food: food,
-          gameVote: $('gameVote').checked,
-          cashVote: $('cashVote').checked,
-          enteredBy: name                // first time this row is created, this is stored in column K
+          gameVote: voteChoice === 'game',
+          cashVote: voteChoice === 'cash',
+          enteredBy: inviter             // first time this row is created, this is stored in column K
         };
 
         $('saveBtn').disabled = true;
@@ -527,7 +1036,7 @@
           .withSuccessHandler(function(data) {
             // Refresh state & UI using latest snapshot
             state.meta = data.meta || {};
-            state.attendees = data.attendees || [];
+            state.attendees = enrichAttendees(data.attendees || []);
             state.menu = data.menu || [];
 
             // keep the same name in the box
@@ -542,8 +1051,14 @@
             renderFoodList();
             refreshFoodSelect(updated ? updated.food || '' : food || '');
 
+            lastSavedInviter = inviter;
+            updateGuestButton();
+            renderMyInvites();
+            renderPersonalTree();
+            lastHydratedName = lookup;
+
             $('saveBtn').disabled = false;
-            showStatus('Saved! 🎄', false);
+            showStatus('Saved! 🎄 Add another guest under ' + toShortName(inviter || name) + ' when you’re ready.', false);
           })
           .withFailureHandler(function(err) {
             $('saveBtn').disabled = false;
@@ -557,12 +1072,12 @@
         container.innerHTML = '';
 
         const title = document.createElement('h2');
-        title.innerHTML = '🌲 Invite Tree';
+        title.innerHTML = '🌲 Santa’s Nice List (Invite Tree)';
         container.appendChild(title);
 
         if (!state.attendees || !state.attendees.length) {
           const p = document.createElement('p');
-          p.textContent = 'No RSVPs yet – you can be the first to join!';
+          p.textContent = 'No RSVPs yet – be the first ornament on the tree! 🎀';
           container.appendChild(p);
           return;
         }
@@ -575,35 +1090,55 @@
           groups[inviter].push(a);
         });
 
-        Object.keys(groups).sort().forEach(function(inviter) {
-          const groupDiv = document.createElement('div');
-          groupDiv.className = 'inviter-group';
+        const personalInviter = currentInviterName().toLowerCase();
+        const clusterWrap = document.createElement('div');
+        clusterWrap.className = 'cluster-grid';
+
+        const remainingInviters = Object.keys(groups)
+          .sort()
+          .filter(function(inviter) {
+            return personalInviter ? inviter.toLowerCase() !== personalInviter : true;
+          });
+
+        if (!remainingInviters.length) {
+          const p = document.createElement('p');
+          p.textContent = 'Only your tree is showing above. As others join, their clusters will sprout here.';
+          container.appendChild(p);
+          return;
+        }
+
+        remainingInviters.forEach(function(inviter) {
+          const card = document.createElement('div');
+          card.className = 'tree-cluster';
+
+          const count = document.createElement('div');
+          count.className = 'tree-count';
+          count.textContent = groups[inviter].length;
+          card.appendChild(count);
 
           const header = document.createElement('div');
-          header.className = 'inviter-header';
-          header.textContent = '🎁 ' + inviter;
-          groupDiv.appendChild(header);
+          header.className = 'cluster-header';
+          header.innerHTML = '<span class="cluster-star">⭐</span> <span>' + toShortName(inviter || 'Host') + '</span>';
+          card.appendChild(header);
 
-          const list = document.createElement('ul');
-          const arr = groups[inviter].slice().sort(function(a, b) {
-            return (a.shortName || a.fullName || '').localeCompare(b.shortName || b.fullName || '');
-          });
+          const branches = document.createElement('div');
+          branches.className = 'cluster-branches';
 
-          arr.forEach(function(a) {
-            const li = document.createElement('li');
-            li.textContent = '↳ ' + ageEmoji(a.ageGroup) + ' ' + (a.shortName || a.fullName);
-            li.title =
-              'Full name: ' + (a.fullName || '') +
-              (a.food ? '\nBringing: ' + a.food : '') +
-              (a.gameVote ? '\nWhite Elephant: 👍' : '') +
-              (a.cashVote ? '\nCash donation: 👍' : '') +
-              (a.enteredBy ? '\nEntered by: ' + a.enteredBy : '');
-            list.appendChild(li);
-          });
+          groups[inviter]
+            .slice()
+            .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
+            .forEach(function(a) {
+              const span = document.createElement('span');
+              span.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
+              span.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nFood: ' + a.food : '');
+              branches.appendChild(span);
+            });
 
-          groupDiv.appendChild(list);
-          container.appendChild(groupDiv);
+          card.appendChild(branches);
+          clusterWrap.appendChild(card);
         });
+
+        container.appendChild(clusterWrap);
       }
 
       function renderFoodList() {
@@ -611,7 +1146,7 @@
         container.innerHTML = '';
 
         const title = document.createElement('h2');
-        title.innerHTML = '🍽️ Who is bringing what?';
+        title.innerHTML = '🍽️ Feast & Cookie Swap Lineup';
         container.appendChild(title);
 
         const attendees = (state.attendees || []).filter(function(a) {
@@ -620,7 +1155,7 @@
 
         if (!attendees.length) {
           const p = document.createElement('p');
-          p.textContent = 'No food signups yet. Once the menu (column J) is filled, you can claim a dish here.';
+          p.textContent = 'No food signups yet. Once the menu (column J) is filled, pick a dish to bring and make Santa proud! 🍰';
           container.appendChild(p);
           return;
         }
@@ -635,9 +1170,9 @@
             const li = document.createElement('li');
             li.innerHTML =
               ageEmoji(a.ageGroup) +
-              ' <strong>' + (a.shortName || a.fullName) + '</strong> → ' +
+              ' <strong>' + displayName(a) + '</strong> → ' +
               a.food;
-            li.title = 'Full name: ' + (a.fullName || '');
+            li.title = (a.enteredBy ? 'Invited by: ' + toShortName(a.enteredBy) : '');
             list.appendChild(li);
           });
 
