@@ -599,7 +599,7 @@
                       <option value="10-">10 or younger 🎁</option>
                     </select>
                   </div>
-                  <div>
+                  <div id="foodSignupBlock">
                     <label for="foodSelect">Food signup (from the menu)</label>
                     <select id="foodSelect">
                       <option value="">-- I’m not bringing food yet --</option>
@@ -627,7 +627,6 @@
 
             <div class="row" style="justify-content:flex-start;gap:10px;align-items:center;flex-wrap:wrap;">
               <button type="button" id="saveBtn" onclick="handleSave()">🎄 Save to my tree</button>
-              <button type="button" class="ghost" id="addGuestBtn" onclick="prepGuestAdd()" disabled>➕ Add a guest under me</button>
             </div>
 
             <div id="status"></div>
@@ -840,6 +839,24 @@
         } else {
           note.textContent = 'Items in gray (disabled) are already taken. Choose any available item.';
         }
+
+        updateFoodVisibility();
+      }
+
+      function updateFoodVisibility() {
+        const block = $('foodSignupBlock');
+        const select = $('foodSelect');
+        if (!block || !select) return;
+
+        const inviter = ($('inviterInput').value || '').trim().toLowerCase();
+        const attendee = ($('fullNameInput').value || '').trim().toLowerCase();
+        const allowFood = inviter && attendee && inviter === attendee;
+
+        block.style.display = allowFood ? '' : 'none';
+
+        if (!allowFood) {
+          select.value = '';
+        }
       }
 
       function getSelectedAgeGroup() {
@@ -872,6 +889,7 @@
         if (!fullName) {
           preview.style.display = 'none';
           preview.textContent = '';
+          updateFoodVisibility();
           return;
         }
         const shortName = toShortName(fullName);
@@ -881,6 +899,8 @@
 
         // Auto-load existing selections if this name already exists
         hydrateExistingSignup(fullName);
+
+        updateFoodVisibility();
       }
 
       $('fullNameInput').addEventListener('input', function() {
@@ -902,6 +922,7 @@
         updateInviterTag();
         renderPersonalTree();
         renderInviteTree();
+        updateFoodVisibility();
       });
 
       $('inviterInput').addEventListener('blur', function() {
@@ -923,6 +944,7 @@
         updateInviterTag();
         renderPersonalTree();
         renderInviteTree();
+        updateFoodVisibility();
 
         hydrateExistingSignup(name);
 
@@ -1017,6 +1039,7 @@
           if (manualAgeSelection) {
             setAgeGroup(manualAgeSelection);
           }
+          updateFoodVisibility();
           return;
         }
 
@@ -1035,6 +1058,8 @@
           showStatus('Loaded existing signup for ' + toShortName(fullName) + '. Update and save if needed.', false);
           lastHydratedName = lookup;
         }
+
+        updateFoodVisibility();
       }
 
       function renderPersonalTree() {
@@ -1149,6 +1174,16 @@
         showStatus('Adding a guest under ' + toShortName(lastSavedInviter) + '. Enter their full name and details.', false);
       }
 
+      function clearAttendeeFields() {
+        $('fullNameInput').value = '';
+        setAgeGroup('');
+        setVoteChoice('none');
+        manualAgeSelection = '';
+        state.currentRow = null;
+        updateShortNamePreview();
+        updateFoodVisibility();
+      }
+
       function handleSave() {
         const name = $('fullNameInput').value.trim();
         if (!name) {
@@ -1162,8 +1197,9 @@
           return;
         }
 
-        const food = $('foodSelect').value;
         const inviter = $('inviterInput').value.trim() || name;
+        const foodAllowed = inviter.toLowerCase() === name.toLowerCase();
+        const food = foodAllowed ? $('foodSelect').value : '';
         const voteChoice = getVoteChoice();
 
         const lookup = name.toLowerCase();
@@ -1213,6 +1249,8 @@
             lastHydratedName = lookup;
 
             scrollToPersonalOrClusters(inviter);
+
+            clearAttendeeFields();
 
             $('saveBtn').disabled = false;
             showStatus('Saved! 🎄 Add another guest under ' + toShortName(inviter || name) + ' when you’re ready.', false);
