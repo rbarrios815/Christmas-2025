@@ -671,6 +671,12 @@
         const ageSelects = document.querySelectorAll('#ageSelect');
         for (let i = 1; i < ageLabels.length; i++) ageLabels[i].remove();
         for (let i = 1; i < ageSelects.length; i++) ageSelects[i].remove();
+
+        const ageSelect = $('ageSelect');
+        if (ageSelect) {
+          ageSelect.disabled = false;
+          ageSelect.removeAttribute('aria-disabled');
+        }
       }
 
       function init() {
@@ -1075,7 +1081,7 @@
         updateInviterTag();
 
         greeting.innerHTML = inviterName
-          ? '⭐ Welcome, <strong>' + shortInviter + '</strong>! Here’s your invite tree.'
+          ? '⭐ Merry and bright, <strong>' + shortInviter + '</strong>—your invite tree is glowing.'
           : '🎁 Start with <strong>Your Name</strong> so we can grow your own tree.';
 
         treeEl.innerHTML = '';
@@ -1191,13 +1197,21 @@
           return;
         }
 
-        const ageGroup = getSelectedAgeGroup();
+        const inviter = $('inviterInput').value.trim() || name;
+
+        let ageGroup = getSelectedAgeGroup();
+        const isClusterHead = inviter && inviter.toLowerCase() === name.toLowerCase();
+        if (!ageGroup && isClusterHead) {
+          setAgeGroup('11+');
+          manualAgeSelection = '11+';
+          ageGroup = '11+';
+        }
+
         if (!ageGroup) {
           showStatus('Please select your age group (11+ or 10-).', true);
           return;
         }
 
-        const inviter = $('inviterInput').value.trim() || name;
         const foodAllowed = inviter.toLowerCase() === name.toLowerCase();
         const food = foodAllowed ? $('foodSelect').value : '';
         const voteChoice = getVoteChoice();
