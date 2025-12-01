@@ -516,15 +516,8 @@
             <div class="personal-note">Privacy: we display short names here; full names stay in the sheet.</div>
             <div class="tagline" id="activeInviterTag"></div>
 
-            <label for="inviterInput">Your Name (Column K “Entered By”)</label>
-            <div class="row" style="align-items:center;gap:8px;">
-              <div class="col-half">
-                <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
-              </div>
-              <div class="col-half" style="display:flex;gap:8px;justify-content:flex-end;">
-                <button type="button" class="ghost" id="confirmInviterBtn" onclick="confirmInviter()">🎉 That's me</button>
-              </div>
-            </div>
+            <label for="inviterInput">Your Name</label>
+            <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
 
             <label for="fullNameInput">Who is attending?</label>
             <div class="row">
@@ -839,13 +832,20 @@
         lastSavedInviter = '';
         updateGuestButton();
         updateInviterTag();
+        renderPersonalTree();
         renderInviteTree();
       });
 
-      function confirmInviter() {
+      $('inviterInput').addEventListener('blur', function() {
+        confirmInviter(true);
+      });
+
+      function confirmInviter(silent) {
         const name = $('inviterInput').value.trim();
         if (!name) {
-          showStatus('Please enter Your Name first so we can personalize your tree.', true);
+          if (!silent) {
+            showStatus('Please enter Your Name first so we can personalize your tree.', true);
+          }
           return;
         }
 
@@ -863,7 +863,9 @@
           updateShortNamePreview();
         }
 
-        showStatus('Locked in ' + toShortName(name) + '. Save to add yourself or guests under your star.', false);
+        if (!silent) {
+          showStatus('Locked in ' + toShortName(name) + '. Save to add yourself or guests under your star.', false);
+        }
       }
 
       function updateGuestButton() {
@@ -901,7 +903,7 @@
 
         const helper = document.createElement('span');
         helper.className = 'questions';
-        helper.textContent = 'Everyone you add lands on this tree (Column K).';
+        helper.textContent = 'Everyone you add lands on this tree.';
 
         tag.appendChild(chip);
         tag.appendChild(helper);
