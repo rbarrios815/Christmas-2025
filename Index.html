@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <title>Christmas 2025 Sign-Up</title>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top, #fffbf0 0, #f4f6ff 45%, #e4f7ff 100%);
+        margin: 0;
+        padding: 16px;
+        color: #222;
+      }
+
+      #app {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      .card {
+        background: rgba(255, 255, 255, 0.92);
+        border-radius: 16px;
+        padding: 16px 20px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        margin-bottom: 14px;
+        border: 1px solid rgba(200, 200, 255, 0.5);
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 1.8rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      h2 {
+        margin: 0 0 8px;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .subtitle {
+        font-size: 0.9rem;
+        color: #555;
+        margin-bottom: 8px;
+      }
+
+      label {
+        display: block;
+        font-size: 0.9rem;
+        margin: 6px 0 3px;
+      }
+
+      input[type="text"],
+      select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid #ccd;
+        font-size: 0.95rem;
+      }
+
+      input[type="text"]:focus,
+      select:focus {
+        outline: none;
+        border-color: #e63946;
+        box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.16);
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .col-half {
+        flex: 1 1 180px;
+      }
+
+      .age-group {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin: 4px 0 6px;
+        font-size: 0.9rem;
+      }
+
+      .age-group label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin: 0;
+      }
+
+      .votes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 6px;
+        font-size: 0.9rem;
+      }
+
+      .votes label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin: 0;
+      }
+
+      button {
+        border-radius: 999px;
+        border: none;
+        padding: 8px 18px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        background: linear-gradient(90deg, #e63946, #f4a261);
+        color: #fff;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+        margin-top: 10px;
+      }
+
+      button[disabled] {
+        opacity: 0.6;
+        cursor: default;
+        box-shadow: none;
+      }
+
+      #status {
+        margin-top: 6px;
+        font-size: 0.85rem;
+      }
+
+      #status.error {
+        color: #b00020;
+      }
+
+      #status.ok {
+        color: #006400;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        font-size: 0.8rem;
+        background: #f1f5ff;
+        border: 1px solid #dde4ff;
+      }
+
+      #inviteTree ul,
+      #foodList ul {
+        list-style: none;
+        padding-left: 12px;
+        margin: 4px 0 0;
+      }
+
+      #inviteTree li,
+      #foodList li {
+        font-size: 0.9rem;
+        margin: 2px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .inviter-group {
+        margin-top: 6px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: linear-gradient(90deg, rgba(231, 248, 255, 0.9), rgba(247, 241, 255, 0.9));
+      }
+
+      .inviter-header {
+        font-weight: 600;
+        margin-bottom: 2px;
+        font-size: 0.9rem;
+      }
+
+      .meta-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 0.9rem;
+        align-items: center;
+      }
+
+      .meta-line span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .questions {
+        font-size: 0.85rem;
+        color: #444;
+        margin-top: 4px;
+      }
+
+      #foodNote {
+        font-size: 0.8rem;
+        color: #555;
+        margin-top: 2px;
+      }
+
+      @media (max-width: 600px) {
+        body {
+          padding: 10px;
+        }
+        .card {
+          padding: 14px;
+        }
+      }
+    </style>
+  </head>
+  <body onload="init()">
+    <div id="app">
+      <!-- Meta / header card -->
+      <div class="card">
+        <h1>🎄 Christmas 2025</h1>
+        <div class="meta-line">
+          <span id="metaText"></span>
+        </div>
+        <div class="questions" id="questionsText"></div>
+        <div class="subtitle">
+          Add yourself, pick your age group, claim a food from the menu, and vote with festive thumbs-ups.
+        </div>
+      </div>
+
+      <!-- RSVP / sign up card -->
+      <div class="card">
+        <h2>📝 RSVP & Food Signup</h2>
+        <div class="subtitle">
+          Type your full name. If you already signed up, click <strong>Find Me</strong> to load your info.
+        </div>
+
+        <label for="fullNameInput">Full name (First and Last)</label>
+        <div class="row">
+          <div class="col-half">
+            <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
+          </div>
+          <div class="col-half" style="display:flex;align-items:center;gap:8px;">
+            <button type="button" onclick="handleFindMe()">Find Me</button>
+            <span id="shortNamePreview" class="pill" style="display:none;"></span>
+          </div>
+        </div>
+
+        <label>Age group</label>
+        <div class="age-group">
+          <label>
+            <input type="radio" name="ageGroup" value="11+">
+            11 or older
+          </label>
+          <label>
+            <input type="radio" name="ageGroup" value="10-">
+            10 or younger 🎁
+          </label>
+        </div>
+
+        <label for="foodSelect">Food signup (from the menu)</label>
+        <select id="foodSelect">
+          <option value="">-- I’m not bringing food yet --</option>
+        </select>
+        <div id="foodNote"></div>
+
+        <div class="votes">
+          <label>
+            <input type="checkbox" id="gameVote">
+            White Elephant game? 🎁 (vote 👍)
+          </label>
+          <label>
+            <input type="checkbox" id="cashVote">
+            $5–$10 cash donation for game prizes? 💵 (vote 👍)
+          </label>
+        </div>
+
+        <button type="button" id="saveBtn" onclick="handleSave()">Save my spot</button>
+        <div id="status"></div>
+      </div>
+
+      <!-- Invite tree -->
+      <div class="card" id="inviteTree">
+        <!-- Filled by JS -->
+      </div>
+
+      <!-- Food list -->
+      <div class="card" id="foodList">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+
+    <script>
+      // Simple helper
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      let state = {
+        meta: {},
+        attendees: [],
+        menu: [],
+        currentRow: null
+      };
+
+      function init() {
+        showStatus('Loading…');
+        google.script.run
+          .withSuccessHandler(onDataLoaded)
+          .withFailureHandler(onError)
+          .getChristmasData();
+      }
+
+      function onDataLoaded(data) {
+        state.meta = data.meta || {};
+        state.attendees = data.attendees || [];
+        state.menu = data.menu || [];
+        state.currentRow = null;
+
+        renderMeta();
+        renderInviteTree();
+        renderFoodList();
+        refreshFoodSelect();
+
+        showStatus('Loaded.', false);
+      }
+
+      function onError(err) {
+        const msg = (err && err.message) ? err.message : String(err || 'Unknown error');
+        showStatus(msg, true);
+      }
+
+      function showStatus(msg, isError) {
+        const el = $('status');
+        el.textContent = msg || '';
+        el.className = '';
+        if (!msg) return;
+        el.classList.add(isError ? 'error' : 'ok');
+      }
+
+      function renderMeta() {
+        const meta = state.meta || {};
+        const metaLine = [];
+
+        if (meta.date) {
+          metaLine.push('📅 ' + meta.date);
+        } else {
+          metaLine.push('📅 12/24');
+        }
+
+        if (meta.time) {
+          metaLine.push('⏰ ' + meta.time);
+        }
+
+        if (meta.address) {
+          metaLine.push('📍 ' + meta.address);
+        }
+
+        $('metaText').textContent = metaLine.join('  ·  ');
+
+        if (meta.questions) {
+          $('questionsText').textContent = 'Questions: ' + meta.questions;
+        } else {
+          $('questionsText').textContent = '';
+        }
+      }
+
+      function ageEmoji(ageGroup) {
+        // Christmasy emoji for 10 or younger
+        if (ageGroup === '10-') return '🧸';
+        return '🎄';
+      }
+
+      function refreshFoodSelect(selectedFood) {
+        const select = $('foodSelect');
+        select.innerHTML = '';
+
+        // First option: none
+        const noneOpt = document.createElement('option');
+        noneOpt.value = '';
+        noneOpt.textContent = "-- I’m not bringing food yet --";
+        select.appendChild(noneOpt);
+
+        // Build map: which menu item is taken and by whom
+        const takenMap = {};
+        (state.attendees || []).forEach(function(a) {
+          if (!a.food) return;
+          if (!takenMap[a.food]) takenMap[a.food] = [];
+          takenMap[a.food].push(a.shortName || a.fullName);
+        });
+
+        (state.menu || []).forEach(function(item) {
+          if (!item) return;
+          const opt = document.createElement('option');
+          opt.value = item;
+
+          const takenBy = takenMap[item] || [];
+          if (takenBy.length && item !== selectedFood) {
+            opt.disabled = true;
+            opt.textContent = item + ' – taken by ' + takenBy.join(', ');
+          } else {
+            opt.textContent = item;
+            if (selectedFood && item === selectedFood) {
+              opt.selected = true;
+            }
+          }
+
+          select.appendChild(opt);
+        });
+
+        const note = $('foodNote');
+        if (!state.menu || !state.menu.length) {
+          note.textContent = 'Menu will go in column J (starting J2). Once items are listed, you can claim one here.';
+        } else {
+          note.textContent = 'Items in gray (disabled) are already taken. Choose any available item.';
+        }
+      }
+
+      function getSelectedAgeGroup() {
+        const radios = document.querySelectorAll('input[name="ageGroup"]');
+        for (let i = 0; i < radios.length; i++) {
+          if (radios[i].checked) return radios[i].value;
+        }
+        return '';
+      }
+
+      function setAgeGroup(value) {
+        const radios = document.querySelectorAll('input[name="ageGroup"]');
+        for (let i = 0; i < radios.length; i++) {
+          radios[i].checked = (radios[i].value === value);
+        }
+      }
+
+      function updateShortNamePreview() {
+        const fullName = $('fullNameInput').value.trim();
+        const preview = $('shortNamePreview');
+        if (!fullName) {
+          preview.style.display = 'none';
+          preview.textContent = '';
+          return;
+        }
+        const shortName = toShortName(fullName);
+        preview.textContent = shortName;
+        preview.style.display = 'inline-flex';
+      }
+
+      $('fullNameInput').addEventListener('input', function() {
+        updateShortNamePreview();
+        state.currentRow = null; // typing a new name resets current row
+      });
+
+      function toShortName(fullName) {
+        const parts = fullName.trim().split(/\s+/);
+        if (!parts.length) return '';
+        if (parts.length === 1) return parts[0];
+        const first = parts[0];
+        const last = parts[parts.length - 1];
+        return first + ' ' + (last.charAt(0).toUpperCase() || '') + '.';
+      }
+
+      function handleFindMe() {
+        const name = $('fullNameInput').value.trim();
+        if (!name) {
+          showStatus('Type your full name first, then click "Find Me".', true);
+          return;
+        }
+
+        const lookup = name.toLowerCase();
+        const found = (state.attendees || []).find(function(a) {
+          return (a.fullName || '').toLowerCase() === lookup;
+        });
+
+        if (!found) {
+          state.currentRow = null;
+          setAgeGroup('');
+          $('gameVote').checked = false;
+          $('cashVote').checked = false;
+          refreshFoodSelect('');
+          showStatus('No existing signup found. Fill the form and click "Save my spot" to add yourself.', false);
+          return;
+        }
+
+        state.currentRow = found.row;
+        setAgeGroup(found.ageGroup || '');
+        $('gameVote').checked = !!found.gameVote;
+        $('cashVote').checked = !!found.cashVote;
+        // Include their existing food selection in the dropdown, even if it's "taken"
+        refreshFoodSelect(found.food || '');
+        showStatus('Loaded your existing signup. Update and click "Save my spot".', false);
+      }
+
+      function handleSave() {
+        const name = $('fullNameInput').value.trim();
+        if (!name) {
+          showStatus('Please enter your full name.', true);
+          return;
+        }
+
+        const ageGroup = getSelectedAgeGroup();
+        if (!ageGroup) {
+          showStatus('Please select your age group (11+ or 10-).', true);
+          return;
+        }
+
+        const food = $('foodSelect').value;
+
+        const payload = {
+          row: state.currentRow,          // may be null/undefined if new
+          fullName: name,
+          ageGroup: ageGroup,
+          food: food,
+          gameVote: $('gameVote').checked,
+          cashVote: $('cashVote').checked,
+          enteredBy: name                // first time this row is created, this is stored in column K
+        };
+
+        $('saveBtn').disabled = true;
+        showStatus('Saving…');
+
+        google.script.run
+          .withSuccessHandler(function(data) {
+            // Refresh state & UI using latest snapshot
+            state.meta = data.meta || {};
+            state.attendees = data.attendees || [];
+            state.menu = data.menu || [];
+
+            // keep the same name in the box
+            const lookup = name.toLowerCase();
+            const updated = state.attendees.find(function(a) {
+              return (a.fullName || '').toLowerCase() === lookup;
+            });
+            state.currentRow = updated ? updated.row : null;
+
+            renderMeta();
+            renderInviteTree();
+            renderFoodList();
+            refreshFoodSelect(updated ? updated.food || '' : food || '');
+
+            $('saveBtn').disabled = false;
+            showStatus('Saved! 🎄', false);
+          })
+          .withFailureHandler(function(err) {
+            $('saveBtn').disabled = false;
+            onError(err);
+          })
+          .saveAttendee(payload);
+      }
+
+      function renderInviteTree() {
+        const container = $('inviteTree');
+        container.innerHTML = '';
+
+        const title = document.createElement('h2');
+        title.innerHTML = '🌲 Invite Tree';
+        container.appendChild(title);
+
+        if (!state.attendees || !state.attendees.length) {
+          const p = document.createElement('p');
+          p.textContent = 'No RSVPs yet – you can be the first to join!';
+          container.appendChild(p);
+          return;
+        }
+
+        // Group by "Entered By" (column K)
+        const groups = {};
+        state.attendees.forEach(function(a) {
+          const inviter = a.enteredBy || a.fullName || 'Host';
+          if (!groups[inviter]) groups[inviter] = [];
+          groups[inviter].push(a);
+        });
+
+        Object.keys(groups).sort().forEach(function(inviter) {
+          const groupDiv = document.createElement('div');
+          groupDiv.className = 'inviter-group';
+
+          const header = document.createElement('div');
+          header.className = 'inviter-header';
+          header.textContent = '🎁 ' + inviter;
+          groupDiv.appendChild(header);
+
+          const list = document.createElement('ul');
+          const arr = groups[inviter].slice().sort(function(a, b) {
+            return (a.shortName || a.fullName || '').localeCompare(b.shortName || b.fullName || '');
+          });
+
+          arr.forEach(function(a) {
+            const li = document.createElement('li');
+            li.textContent = '↳ ' + ageEmoji(a.ageGroup) + ' ' + (a.shortName || a.fullName);
+            li.title =
+              'Full name: ' + (a.fullName || '') +
+              (a.food ? '\nBringing: ' + a.food : '') +
+              (a.gameVote ? '\nWhite Elephant: 👍' : '') +
+              (a.cashVote ? '\nCash donation: 👍' : '') +
+              (a.enteredBy ? '\nEntered by: ' + a.enteredBy : '');
+            list.appendChild(li);
+          });
+
+          groupDiv.appendChild(list);
+          container.appendChild(groupDiv);
+        });
+      }
+
+      function renderFoodList() {
+        const container = $('foodList');
+        container.innerHTML = '';
+
+        const title = document.createElement('h2');
+        title.innerHTML = '🍽️ Who is bringing what?';
+        container.appendChild(title);
+
+        const attendees = (state.attendees || []).filter(function(a) {
+          return !!a.food;
+        });
+
+        if (!attendees.length) {
+          const p = document.createElement('p');
+          p.textContent = 'No food signups yet. Once the menu (column J) is filled, you can claim a dish here.';
+          container.appendChild(p);
+          return;
+        }
+
+        const list = document.createElement('ul');
+        attendees
+          .slice()
+          .sort(function(a, b) {
+            return (a.food || '').localeCompare(b.food || '');
+          })
+          .forEach(function(a) {
+            const li = document.createElement('li');
+            li.innerHTML =
+              ageEmoji(a.ageGroup) +
+              ' <strong>' + (a.shortName || a.fullName) + '</strong> → ' +
+              a.food;
+            li.title = 'Full name: ' + (a.fullName || '');
+            list.appendChild(li);
+          });
+
+        container.appendChild(list);
+      }
+    </script>
+  </body>
+</html>
