@@ -311,6 +311,26 @@
         color: #224139;
       }
 
+      .holly-note {
+        margin: 8px 0 4px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: linear-gradient(90deg, rgba(230, 57, 70, 0.12), rgba(11, 139, 98, 0.14));
+        border: 1px solid rgba(244, 162, 97, 0.3);
+        color: #0b3a32;
+        font-weight: 750;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .holly-note span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
       .personal-tree-wrap {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -323,9 +343,10 @@
         position: relative;
         padding: 14px 14px 12px;
         border-radius: 16px;
-        background: radial-gradient(circle at 40% 10%, rgba(255, 247, 210, 0.8), rgba(255, 255, 255, 0.9));
-        border: 2px solid rgba(244, 162, 97, 0.25);
-        box-shadow: inset 0 0 0 2px rgba(11, 139, 98, 0.12), 0 8px 16px rgba(0, 0, 0, 0.08);
+        background: radial-gradient(circle at 40% 10%, rgba(255, 247, 210, 0.9), rgba(255, 255, 255, 0.96)),
+          linear-gradient(135deg, rgba(230, 57, 70, 0.06), rgba(11, 139, 98, 0.08));
+        border: 2px solid rgba(244, 162, 97, 0.3);
+        box-shadow: inset 0 0 0 2px rgba(11, 139, 98, 0.14), 0 10px 20px rgba(0, 0, 0, 0.12);
       }
 
       .tree-star {
@@ -574,14 +595,20 @@
         </div>
         <div class="questions" id="questionsText"></div>
         <div class="subtitle">
-          Confirm <strong>Your Name</strong>, add who is attending, choose an age group + dish, and pick one vote. We only ever show
-          first name + last initial on the page.
+          Start with <strong>Your Name</strong>, confirm it, and watch your star + branches glow while you add guests, choose an age
+          group + dish, and cast one festive vote. We only ever show first name + last initial on the page.
         </div>
 
         <div class="personal-tree-wrap">
           <div class="merged-top">
-            <div class="personal-chip" id="personalGreeting">🎁 Start with <strong>Your Name</strong> so we can grow your own tree.</div>
+            <div class="personal-chip" id="personalGreeting">🎁 Plant <strong>Your Name</strong> to light up your star and preview your branches right away.</div>
             <div class="personal-note">Privacy: we display short names here; full names stay in the sheet.</div>
+            <div class="holly-note" id="hollyInstruction">
+              <span>🌟 Confirm "Your Name" below,</span>
+              <span>🎄 add who is attending with you,</span>
+              <span>🍰 pick ages + dishes,</span>
+              <span>🗳️ choose one vote.</span>
+            </div>
             <div class="tagline" id="activeInviterTag"></div>
 
             <label for="inviterInput">Your Name</label>
@@ -901,9 +928,11 @@
         updateShortNamePreview();
       }
 
-      function updateShortNamePreview() {
+      function updateShortNamePreview(options) {
         const fullName = $('fullNameInput').value.trim();
         const preview = $('shortNamePreview');
+        const skipHydrate = options && options.skipHydrate;
+
         if (!fullName) {
           preview.style.display = 'none';
           preview.textContent = '';
@@ -915,8 +944,13 @@
         preview.textContent = ageText ? shortName + ' • ' + ageText : shortName;
         preview.style.display = 'inline-flex';
 
-        // Auto-load existing selections if this name already exists
-        hydrateExistingSignup(fullName);
+        const lowerName = fullName.toLowerCase();
+        const hydratedMatch = manualAgeSelection && lastHydratedName === lowerName;
+
+        // Auto-load existing selections if this name already exists, unless the user is actively changing the age.
+        if (!skipHydrate && !hydratedMatch) {
+          hydrateExistingSignup(fullName);
+        }
 
         updateFoodVisibility();
       }
@@ -931,7 +965,7 @@
 
       $('ageSelect').addEventListener('change', function() {
         manualAgeSelection = this.value;
-        updateShortNamePreview();
+        updateShortNamePreview({ skipHydrate: true });
       });
 
       $('inviterInput').addEventListener('input', function() {
@@ -1002,7 +1036,7 @@
         tag.innerHTML = '';
 
         if (!inviter) {
-          tag.textContent = 'Confirm Your Name so guests branch under you.';
+          tag.innerHTML = '<span class="questions">🎅 Confirm "Your Name" right below so every guest you add sparkles under your star.</span>';
           return;
         }
 
@@ -1017,7 +1051,7 @@
 
         const helper = document.createElement('span');
         helper.className = 'questions';
-        helper.textContent = 'Everyone you add lands on this tree.';
+        helper.textContent = 'Everyone you add lands on this tree—cozy and bright!';
 
         tag.appendChild(chip);
         tag.appendChild(helper);
@@ -1126,12 +1160,12 @@
 
         greeting.innerHTML = inviterName
           ? '⭐ Merry and bright, <strong>' + shortInviter + '</strong>—your invite tree is glowing.'
-          : '🎁 Start with <strong>Your Name</strong> so we can grow your own tree.';
+          : '🎁 Start with <strong>Your Name</strong> to light your star and preview your branches instantly.';
 
         treeEl.innerHTML = '';
 
         if (!inviterName) {
-          treeEl.innerHTML = '<p class="questions">Type your name above to preview your star + branches.</p>';
+          treeEl.innerHTML = '<p class="questions">Confirm "Your Name" above to plant your star and let guests branch beneath it.</p>';
           return;
         }
 
