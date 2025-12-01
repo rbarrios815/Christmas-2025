@@ -167,6 +167,34 @@
         margin: 0;
       }
 
+      .field-branch {
+        position: relative;
+        margin-left: 12px;
+        padding-left: 14px;
+        border-left: 3px solid rgba(11, 139, 98, 0.25);
+      }
+
+      .field-branch::before {
+        content: "";
+        position: absolute;
+        left: -3px;
+        top: 8px;
+        width: 14px;
+        height: 14px;
+        border-left: 3px solid rgba(11, 139, 98, 0.32);
+        border-bottom: 3px solid rgba(11, 139, 98, 0.32);
+        border-radius: 0 0 0 10px;
+      }
+
+      .indented-label {
+        margin-top: 6px;
+        display: block;
+      }
+
+      .branch-grid {
+        margin-top: 6px;
+      }
+
       .votes {
         display: flex;
         flex-wrap: wrap;
@@ -324,14 +352,46 @@
         background: rgba(11, 139, 98, 0.08);
         border: 1px solid rgba(11, 139, 98, 0.2);
         border-radius: 12px;
-        padding: 8px 10px;
+        padding: 10px 10px;
         display: flex;
-        align-items: center;
-        gap: 8px;
-        font-weight: 600;
+        align-items: flex-start;
+        gap: 6px;
+        flex-direction: column;
+        font-weight: 700;
         color: #0f372c;
         cursor: default;
-        justify-content: space-between;
+      }
+
+      .branch-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .branch-details {
+        margin-left: 14px;
+        padding-left: 12px;
+        border-left: 2px dashed rgba(11, 139, 98, 0.4);
+        display: grid;
+        gap: 4px;
+        font-weight: 600;
+        color: #1f312e;
+      }
+
+      .branch-details span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+      }
+
+      .branch-wrapper {
+        background: rgba(11, 139, 98, 0.06);
+        border: 1px solid rgba(11, 139, 98, 0.18);
+        border-radius: 12px;
+        padding: 8px 10px;
+        display: grid;
+        gap: 6px;
       }
 
       .tagline {
@@ -410,9 +470,8 @@
       }
 
       .cluster-branches {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
+        display: grid;
+        gap: 8px;
       }
 
       .cluster-branches span {
@@ -517,33 +576,37 @@
             <div class="tagline" id="activeInviterTag"></div>
 
             <label for="inviterInput">Your Name</label>
-            <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
+            <div class="field-branch">
+              <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
 
-            <label for="fullNameInput">Who is attending?</label>
-            <div class="row">
-              <div class="col-half">
-                <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
+              <label for="fullNameInput" class="indented-label">Who is attending with you?</label>
+              <div class="row">
+                <div class="col-half">
+                  <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
+                </div>
+                <div class="col-half" style="display:flex;align-items:center;gap:8px;">
+                  <span id="shortNamePreview" class="pill" style="display:none;"></span>
+                </div>
               </div>
-              <div class="col-half" style="display:flex;align-items:center;gap:8px;">
-                <span id="shortNamePreview" class="pill" style="display:none;"></span>
-              </div>
-            </div>
 
-            <div class="form-grid">
-              <div>
-                <label for="ageSelect">Age group</label>
-                <select id="ageSelect">
-                  <option value="">Select an age group</option>
-                  <option value="11+">11 or older</option>
-                  <option value="10-">10 or younger 🎁</option>
-                </select>
-              </div>
-              <div>
-                <label for="foodSelect">Food signup (from the menu)</label>
-                <select id="foodSelect">
-                  <option value="">-- I’m not bringing food yet --</option>
-                </select>
-                <div id="foodNote"></div>
+              <div class="branch-grid">
+                <div class="form-grid">
+                  <div>
+                    <label for="ageSelect">Age group</label>
+                    <select id="ageSelect">
+                      <option value="">Select an age group</option>
+                      <option value="11+">11 or older</option>
+                      <option value="10-">10 or younger 🎁</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="foodSelect">Food signup (from the menu)</label>
+                    <select id="foodSelect">
+                      <option value="">-- I’m not bringing food yet --</option>
+                    </select>
+                    <div id="foodNote"></div>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -602,6 +665,7 @@
 
       let lastSavedInviter = '';
       let lastHydratedName = '';
+      let manualAgeSelection = '';
 
       function ensureSingleAgeField() {
         const ageLabels = document.querySelectorAll('label[for="ageSelect"]');
@@ -822,9 +886,13 @@
       $('fullNameInput').addEventListener('input', function() {
         updateShortNamePreview();
         state.currentRow = null; // typing a new name resets current row
+        if (!this.value.trim()) {
+          manualAgeSelection = '';
+        }
       });
 
       $('ageSelect').addEventListener('change', function() {
+        manualAgeSelection = this.value;
         updateShortNamePreview();
       });
 
@@ -929,6 +997,7 @@
           setAgeGroup('');
           setVoteChoice('none');
           refreshFoodSelect('');
+          manualAgeSelection = '';
           return;
         }
 
@@ -945,11 +1014,15 @@
             refreshFoodSelect('');
             lastHydratedName = '';
           }
+          if (manualAgeSelection) {
+            setAgeGroup(manualAgeSelection);
+          }
           return;
         }
 
         state.currentRow = found.row;
         setAgeGroup(found.ageGroup || '');
+        manualAgeSelection = found.ageGroup || '';
         setVoteChoice(found.gameVote ? 'game' : found.cashVote ? 'cash' : 'none');
         $('inviterInput').value = found.enteredBy || found.fullName || '';
         refreshFoodSelect(found.food || '');
@@ -1023,18 +1096,22 @@
           .forEach(function(a) {
             const li = document.createElement('li');
             const left = document.createElement('span');
+            left.className = 'branch-title';
             left.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
 
-            const ageText = ageShort(a.ageGroup);
-            if (ageText) {
-              const badge = document.createElement('span');
-              badge.className = 'pill';
-              badge.textContent = ageText + ' ✔️';
-              li.appendChild(left);
-              li.appendChild(badge);
-            } else {
-              li.appendChild(left);
-            }
+            const detail = document.createElement('div');
+            detail.className = 'branch-details';
+
+            const ageDetail = document.createElement('span');
+            ageDetail.innerHTML = 'Age Group: <strong>' + ageLabel(a.ageGroup) + '</strong>';
+            detail.appendChild(ageDetail);
+
+            const foodDetail = document.createElement('span');
+            foodDetail.textContent = 'Food signup: ' + (a.food || 'Not chosen yet');
+            detail.appendChild(foodDetail);
+
+            li.appendChild(left);
+            li.appendChild(detail);
             li.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nFood: ' + a.food : '');
             li.addEventListener('click', function() {
               showStatus('Age for ' + displayName(a) + ': ' + ageLabel(a.ageGroup) + '. Edit above then save.', false);
@@ -1211,11 +1288,26 @@
             .slice()
             .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
             .forEach(function(a) {
-              const span = document.createElement('span');
-              const ageText = ageShort(a.ageGroup);
-              span.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a) + (ageText ? ' • ' + ageText : '');
-              span.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nFood: ' + a.food : '');
-              branches.appendChild(span);
+              const person = document.createElement('div');
+              person.className = 'branch-wrapper';
+
+              const title = document.createElement('div');
+              title.className = 'branch-title';
+              title.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
+
+              const detail = document.createElement('div');
+              detail.className = 'branch-details';
+              const ageDetail = document.createElement('span');
+              ageDetail.innerHTML = 'Age Group: <strong>' + ageLabel(a.ageGroup) + '</strong>';
+              const foodDetail = document.createElement('span');
+              foodDetail.textContent = 'Food signup: ' + (a.food || 'Not chosen yet');
+              detail.appendChild(ageDetail);
+              detail.appendChild(foodDetail);
+
+              person.appendChild(title);
+              person.appendChild(detail);
+              person.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nFood: ' + a.food : '');
+              branches.appendChild(person);
             });
 
           card.appendChild(branches);
