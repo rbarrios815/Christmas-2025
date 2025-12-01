@@ -363,6 +363,18 @@
             <span id="shortNamePreview" class="pill" style="display:none;"></span>
           </div>
         </div>
+        <div class="questions">Only first name + last initial will show on the page. Full names stay in the sheet for hosts.</div>
+
+        <label for="inviterInput">Who is inviting them?</label>
+        <div class="row" style="align-items:center;gap:8px;">
+          <div class="col-half">
+            <input type="text" id="inviterInput" placeholder="Type your own name or another inviter">
+          </div>
+          <div class="col-half" style="display:flex;flex-wrap:wrap;gap:8px;">
+            <button type="button" onclick="copySelfAsInviter()">🙋‍♂️ I'm inviting myself</button>
+            <button type="button" id="addGuestBtn" onclick="prepGuestAdd()" disabled>➕ Add a guest under me</button>
+          </div>
+        </div>
 
         <label for="inviterInput">Your Name (who is entering this RSVP)</label>
         <div class="row" style="align-items:center;gap:8px;">
@@ -574,6 +586,21 @@
 
       function getSelectedAgeGroup() {
         return $('ageSelect').value;
+      }
+
+      function getVoteChoice() {
+        const radios = document.querySelectorAll('input[name="voteChoice"]');
+        for (let i = 0; i < radios.length; i++) {
+          if (radios[i].checked) return radios[i].value;
+        }
+        return 'none';
+      }
+
+      function setVoteChoice(value) {
+        const radios = document.querySelectorAll('input[name="voteChoice"]');
+        radios.forEach(function(r) {
+          r.checked = (r.value === value);
+        });
       }
 
       function getVoteChoice() {
