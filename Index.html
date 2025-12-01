@@ -350,17 +350,16 @@
       <div class="card">
         <h2>📝 RSVP & Food Signup 🎅</h2>
         <div class="subtitle">
-          Step 1) Type who you are adding (full name for the sheet). Step 2) Tell us who is inviting them. Step 3) pick
-          age, food, and one vote. Already on the list? Tap <strong>Load my signup</strong> to pull your info. ✨
+          Step 1) Tell us who is attending. Step 2) Add <strong>Your Name</strong> (Column K “Entered By”) so guests nest
+          under you. Step 3) pick age, food, and one vote. Only first name + last initial will show on the page. ✨
         </div>
 
-        <label for="fullNameInput">Who are you adding? (full name for the sheet)</label>
+        <label for="fullNameInput">Who is attending?</label>
         <div class="row">
           <div class="col-half">
             <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
           </div>
           <div class="col-half" style="display:flex;align-items:center;gap:8px;">
-            <button type="button" onclick="handleFindMe()">🔍 Load my signup</button>
             <span id="shortNamePreview" class="pill" style="display:none;"></span>
           </div>
         </div>
@@ -377,17 +376,27 @@
           </div>
         </div>
 
-        <label>Age group</label>
-        <div class="age-group">
-          <label>
-            <input type="radio" name="ageGroup" value="11+">
-            11 or older
-          </label>
-          <label>
-            <input type="radio" name="ageGroup" value="10-">
-            10 or younger 🎁
-          </label>
+        <label for="inviterInput">Your Name (who is entering this RSVP)</label>
+        <div class="row" style="align-items:center;gap:8px;">
+          <div class="col-half">
+            <input type="text" id="inviterInput" placeholder="Type your name for Column K (Entered By)">
+          </div>
+          <div class="col-half" style="display:flex;flex-wrap:wrap;gap:8px;">
+            <button type="button" id="addGuestBtn" onclick="prepGuestAdd()" disabled>➕ Add another guest I invited</button>
+          </div>
         </div>
+
+        <div class="inviter-group" id="myInviteSummary">
+          <div class="inviter-header">🎁 Who you've invited so far</div>
+          <div id="myInviteList" class="questions"></div>
+        </div>
+
+        <label for="ageSelect">Age group</label>
+        <select id="ageSelect">
+          <option value="">Select an age group</option>
+          <option value="11+">11 or older</option>
+          <option value="10-">10 or younger 🎁</option>
+        </select>
 
         <label for="foodSelect">Food signup (from the menu)</label>
         <select id="foodSelect">
@@ -439,6 +448,7 @@
       };
 
       let lastSavedInviter = '';
+      let lastHydratedName = '';
 
       function init() {
         showStatus('Loading…');
@@ -460,6 +470,7 @@
         renderFoodList();
         refreshFoodSelect();
         updateGuestButton();
+        renderMyInvites();
 
         showStatus('Loaded.', false);
       }
@@ -574,11 +585,22 @@
       }
 
       function getSelectedAgeGroup() {
-        const radios = document.querySelectorAll('input[name="ageGroup"]');
+        return $('ageSelect').value;
+      }
+
+      function getVoteChoice() {
+        const radios = document.querySelectorAll('input[name="voteChoice"]');
         for (let i = 0; i < radios.length; i++) {
           if (radios[i].checked) return radios[i].value;
         }
-        return '';
+        return 'none';
+      }
+
+      function setVoteChoice(value) {
+        const radios = document.querySelectorAll('input[name="voteChoice"]');
+        radios.forEach(function(r) {
+          r.checked = (r.value === value);
+        });
       }
 
       function getVoteChoice() {
@@ -597,10 +619,7 @@
       }
 
       function setAgeGroup(value) {
-        const radios = document.querySelectorAll('input[name="ageGroup"]');
-        for (let i = 0; i < radios.length; i++) {
-          radios[i].checked = (radios[i].value === value);
-        }
+        $('ageSelect').value = value || '';
       }
 
       function updateShortNamePreview() {
@@ -614,6 +633,9 @@
         const shortName = toShortName(fullName);
         preview.textContent = shortName;
         preview.style.display = 'inline-flex';
+
+        // Auto-load existing selections if this name already exists
+        hydrateExistingSignup(fullName);
       }
 
       $('fullNameInput').addEventListener('input', function() {
@@ -621,15 +643,19 @@
         state.currentRow = null; // typing a new name resets current row
       });
 
+      $('inviterInput').addEventListener('input', function() {
+        renderMyInvites();
+      });
+
       function updateGuestButton() {
         const btn = $('addGuestBtn');
         if (!btn) return;
         if (lastSavedInviter) {
           btn.disabled = false;
-          btn.textContent = '➕ Add a guest under ' + toShortName(lastSavedInviter);
+          btn.textContent = '➕ Add another guest invited by ' + toShortName(lastSavedInviter);
         } else {
           btn.disabled = true;
-          btn.textContent = '➕ Add a guest under me';
+          btn.textContent = '➕ Save your name to add guests';
         }
       }
 
@@ -642,14 +668,84 @@
         return first + ' ' + (last.charAt(0).toUpperCase() || '') + '.';
       }
 
-      function copySelfAsInviter() {
-        const name = $('fullNameInput').value.trim();
-        if (!name) {
-          showStatus('Type the person you are adding first, then set yourself as inviter.', true);
+      function hydrateExistingSignup(fullName) {
+        if (!fullName) {
+          lastHydratedName = '';
+          state.currentRow = null;
+          setAgeGroup('');
+          setVoteChoice('none');
+          refreshFoodSelect('');
           return;
         }
-        $('inviterInput').value = name;
-        showStatus('Marked as inviting yourself. Save to appear on the tree.', false);
+
+        const lookup = fullName.toLowerCase();
+        const found = (state.attendees || []).find(function(a) {
+          return (a.fullName || '').toLowerCase() === lookup;
+        });
+
+        if (!found) {
+          if (lastHydratedName) {
+            state.currentRow = null;
+            setAgeGroup('');
+            setVoteChoice('none');
+            refreshFoodSelect('');
+            lastHydratedName = '';
+          }
+          return;
+        }
+
+        state.currentRow = found.row;
+        setAgeGroup(found.ageGroup || '');
+        setVoteChoice(found.gameVote ? 'game' : found.cashVote ? 'cash' : 'none');
+        $('inviterInput').value = found.enteredBy || found.fullName || '';
+        refreshFoodSelect(found.food || '');
+        lastSavedInviter = $('inviterInput').value.trim() || fullName;
+        updateGuestButton();
+        renderMyInvites();
+
+        if (lastHydratedName !== lookup) {
+          showStatus('Loaded existing signup for ' + toShortName(fullName) + '. Update and save if needed.', false);
+          lastHydratedName = lookup;
+        }
+      }
+
+      function renderMyInvites() {
+        const listEl = $('myInviteList');
+        if (!listEl) return;
+
+        const inviterName = ($('inviterInput').value || lastSavedInviter || '').trim();
+        if (!inviterName) {
+          listEl.textContent = 'Type your name to see who is linked to you (Column K: Entered By).';
+          return;
+        }
+
+        const matches = (state.attendees || []).filter(function(a) {
+          return (a.enteredBy || '').toLowerCase() === inviterName.toLowerCase();
+        });
+
+        if (!matches.length) {
+          listEl.textContent = 'No guests linked yet. Save yourself, then add guests beneath you.';
+          return;
+        }
+
+        listEl.innerHTML = '';
+        const ul = document.createElement('ul');
+
+        matches
+          .slice()
+          .sort(function(a, b) {
+            return displayName(a).localeCompare(displayName(b));
+          })
+          .forEach(function(a) {
+            const li = document.createElement('li');
+            li.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
+            li.title = (a.food ? 'Bringing: ' + a.food + '\n' : '') +
+              (a.gameVote ? 'White Elephant: 👍\n' : a.cashVote ? 'Cash donation: 👍\n' : '') +
+              'Entered by: ' + toShortName(inviterName);
+            ul.appendChild(li);
+          });
+
+        listEl.appendChild(ul);
       }
 
       function prepGuestAdd() {
@@ -663,42 +759,8 @@
         setAgeGroup('');
         setVoteChoice('none');
         refreshFoodSelect('');
+        renderMyInvites();
         showStatus('Adding a guest under ' + toShortName(lastSavedInviter) + '. Enter their full name and details.', false);
-      }
-
-      function handleFindMe() {
-        const name = $('fullNameInput').value.trim();
-        if (!name) {
-          showStatus('Type your full name first, then click "Load my signup".', true);
-          return;
-        }
-
-        const lookup = name.toLowerCase();
-        const found = (state.attendees || []).find(function(a) {
-          return (a.fullName || '').toLowerCase() === lookup;
-        });
-
-        if (!found) {
-          state.currentRow = null;
-          setAgeGroup('');
-          setVoteChoice('none');
-          $('inviterInput').value = '';
-          refreshFoodSelect('');
-          lastSavedInviter = '';
-          updateGuestButton();
-          showStatus('No existing signup found. Add yourself to Santa’s Nice List with "Save my spot". 🎄', false);
-          return;
-        }
-
-        state.currentRow = found.row;
-        setAgeGroup(found.ageGroup || '');
-        setVoteChoice(found.gameVote ? 'game' : found.cashVote ? 'cash' : 'none');
-        $('inviterInput').value = found.enteredBy || found.fullName || '';
-        // Include their existing food selection in the dropdown, even if it's "taken"
-        refreshFoodSelect(found.food || '');
-        lastSavedInviter = $('inviterInput').value.trim();
-        updateGuestButton();
-        showStatus('Loaded your existing signup. Refresh anything you like and click "Save my spot". 🎅', false);
       }
 
       function handleSave() {
@@ -717,6 +779,14 @@
         const food = $('foodSelect').value;
         const inviter = $('inviterInput').value.trim() || name;
         const voteChoice = getVoteChoice();
+
+        const lookup = name.toLowerCase();
+        const existing = (state.attendees || []).find(function(a) {
+          return (a.fullName || '').toLowerCase() === lookup;
+        });
+        if (existing) {
+          state.currentRow = existing.row;
+        }
 
         const payload = {
           row: state.currentRow,          // may be null/undefined if new
@@ -752,9 +822,11 @@
 
             lastSavedInviter = inviter;
             updateGuestButton();
+            renderMyInvites();
+            lastHydratedName = lookup;
 
             $('saveBtn').disabled = false;
-            showStatus('Saved! 🎄 Use "Add a guest under ' + toShortName(inviter || name) + '" to attach more people.', false);
+            showStatus('Saved! 🎄 Add another guest under ' + toShortName(inviter || name) + ' when you’re ready.', false);
           })
           .withFailureHandler(function(err) {
             $('saveBtn').disabled = false;
