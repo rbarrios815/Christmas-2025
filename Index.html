@@ -201,6 +201,15 @@
         transition: transform 120ms ease, box-shadow 120ms ease;
       }
 
+      button.ghost {
+        background: rgba(11, 139, 98, 0.12);
+        border: 2px dashed rgba(11, 139, 98, 0.28);
+        color: #0b3a32;
+        box-shadow: none;
+        padding: 10px 14px;
+        margin-top: 0;
+      }
+
       button:hover:not([disabled]) {
         transform: translateY(-1px) scale(1.01);
         box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
@@ -518,7 +527,14 @@
         </div>
 
         <label for="inviterInput">Your Name (Column K “Entered By”)</label>
-        <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
+        <div class="row" style="align-items:center;gap:8px;">
+          <div class="col-half">
+            <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
+          </div>
+          <div class="col-half" style="display:flex;gap:8px;justify-content:flex-end;">
+            <button type="button" class="ghost" id="confirmInviterBtn" onclick="confirmInviter()">🎉 That's me</button>
+          </div>
+        </div>
 
         <div class="personal-tree-wrap">
           <div>
@@ -561,11 +577,6 @@
           <option value="11+">11 or older</option>
           <option value="10-">10 or younger 🎁</option>
         </select>
-
-        <div class="inviter-group" id="myInviteSummary">
-          <div class="inviter-header">🎁 Who you've invited so far</div>
-          <div id="myInviteList" class="questions"></div>
-        </div>
 
         <label for="ageSelect">Age group</label>
         <select id="ageSelect">
@@ -626,7 +637,15 @@
       let lastSavedInviter = '';
       let lastHydratedName = '';
 
+      function ensureSingleAgeField() {
+        const ageLabels = document.querySelectorAll('label[for="ageSelect"]');
+        const ageSelects = document.querySelectorAll('#ageSelect');
+        for (let i = 1; i < ageLabels.length; i++) ageLabels[i].remove();
+        for (let i = 1; i < ageSelects.length; i++) ageSelects[i].remove();
+      }
+
       function init() {
+        ensureSingleAgeField();
         showStatus('Loading…');
         google.script.run
           .withSuccessHandler(onDataLoaded)
@@ -818,6 +837,28 @@
         renderInviteTree();
       });
 
+      function confirmInviter() {
+        const name = $('inviterInput').value.trim();
+        if (!name) {
+          showStatus('Please enter Your Name first so we can personalize your tree.', true);
+          return;
+        }
+
+        $('inviterInput').value = name;
+        lastSavedInviter = name;
+        updateGuestButton();
+        renderMyInvites();
+        renderPersonalTree();
+        renderInviteTree();
+
+        if (!$('fullNameInput').value.trim()) {
+          $('fullNameInput').value = name;
+          updateShortNamePreview();
+        }
+
+        showStatus('Locked in ' + toShortName(name) + '. Save to add yourself or guests under your star.', false);
+      }
+
       function updateGuestButton() {
         const btn = $('addGuestBtn');
         if (!btn) return;
@@ -950,6 +991,18 @@
         treeEl.appendChild(ul);
       }
 
+      function scrollToPersonalOrClusters(inviterName) {
+        const personalCard = document.querySelector('.personal-card');
+        const treeCard = $('inviteTree');
+        if (inviterName && personalCard) {
+          personalCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return;
+        }
+        if (treeCard) {
+          treeCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+
       function renderMyInvites() {
         const listEl = $('myInviteList');
         if (!listEl) return;
@@ -1069,6 +1122,8 @@
             renderMyInvites();
             renderPersonalTree();
             lastHydratedName = lookup;
+
+            scrollToPersonalOrClusters(inviter);
 
             $('saveBtn').disabled = false;
             showStatus('Saved! 🎄 Add another guest under ' + toShortName(inviter || name) + ' when you’re ready.', false);
