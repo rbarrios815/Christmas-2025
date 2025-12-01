@@ -178,7 +178,7 @@
       .votes label {
         display: flex;
         align-items: center;
-        gap: 4px;
+        gap: 6px;
         margin: 0;
       }
 
@@ -350,18 +350,30 @@
       <div class="card">
         <h2>📝 RSVP & Food Signup 🎅</h2>
         <div class="subtitle">
-          Type your full name. If you already signed up, click <strong>Find Me</strong> to load your info — the elves will
-          pull your row from the sheet. ✨
+          Step 1) Type who you are adding (full name for the sheet). Step 2) Tell us who is inviting them. Step 3) pick
+          age, food, and one vote. Already on the list? Tap <strong>Load my signup</strong> to pull your info. ✨
         </div>
 
-        <label for="fullNameInput">Full name (First and Last)</label>
+        <label for="fullNameInput">Who are you adding? (full name for the sheet)</label>
         <div class="row">
           <div class="col-half">
             <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
           </div>
           <div class="col-half" style="display:flex;align-items:center;gap:8px;">
-            <button type="button" onclick="handleFindMe()">🔍 Find Me</button>
+            <button type="button" onclick="handleFindMe()">🔍 Load my signup</button>
             <span id="shortNamePreview" class="pill" style="display:none;"></span>
+          </div>
+        </div>
+        <div class="questions">Only first name + last initial will show on the page. Full names stay in the sheet for hosts.</div>
+
+        <label for="inviterInput">Who is inviting them?</label>
+        <div class="row" style="align-items:center;gap:8px;">
+          <div class="col-half">
+            <input type="text" id="inviterInput" placeholder="Type your own name or another inviter">
+          </div>
+          <div class="col-half" style="display:flex;flex-wrap:wrap;gap:8px;">
+            <button type="button" onclick="copySelfAsInviter()">🙋‍♂️ I'm inviting myself</button>
+            <button type="button" id="addGuestBtn" onclick="prepGuestAdd()" disabled>➕ Add a guest under me</button>
           </div>
         </div>
 
@@ -383,14 +395,18 @@
         </select>
         <div id="foodNote"></div>
 
-        <div class="votes">
+        <div class="votes" role="group" aria-label="Vote for one option">
           <label>
-            <input type="checkbox" id="gameVote">
-            White Elephant game? 🎁 (vote 👍)
+            <input type="radio" name="voteChoice" id="voteGame" value="game">
+            White Elephant game 🎁 (pick this OR cash)
           </label>
           <label>
-            <input type="checkbox" id="cashVote">
-            $5–$10 cash donation for game prizes? 💵 (vote 👍)
+            <input type="radio" name="voteChoice" id="voteCash" value="cash">
+            $5–$10 cash donation for prizes 💵 (pick this OR White Elephant)
+          </label>
+          <label>
+            <input type="radio" name="voteChoice" id="voteNone" value="none" checked>
+            No vote yet
           </label>
         </div>
 
@@ -422,6 +438,8 @@
         currentRow: null
       };
 
+      let lastSavedInviter = '';
+
       function init() {
         showStatus('Loading…');
         google.script.run
@@ -432,14 +450,16 @@
 
       function onDataLoaded(data) {
         state.meta = data.meta || {};
-        state.attendees = data.attendees || [];
+        state.attendees = enrichAttendees(data.attendees || []);
         state.menu = data.menu || [];
         state.currentRow = null;
+        lastSavedInviter = '';
 
         renderMeta();
         renderInviteTree();
         renderFoodList();
         refreshFoodSelect();
+        updateGuestButton();
 
         showStatus('Loaded.', false);
       }
@@ -497,6 +517,17 @@
         return '🎄';
       }
 
+      function enrichAttendees(list) {
+        return (list || []).map(function(a) {
+          return Object.assign({}, a, { shortName: a.shortName || toShortName(a.fullName || '') });
+        });
+      }
+
+      function displayName(attendee) {
+        if (!attendee) return '';
+        return attendee.shortName || toShortName(attendee.fullName || '');
+      }
+
       function refreshFoodSelect(selectedFood) {
         const select = $('foodSelect');
         select.innerHTML = '';
@@ -512,7 +543,7 @@
         (state.attendees || []).forEach(function(a) {
           if (!a.food) return;
           if (!takenMap[a.food]) takenMap[a.food] = [];
-          takenMap[a.food].push(a.shortName || a.fullName);
+          takenMap[a.food].push(displayName(a));
         });
 
         (state.menu || []).forEach(function(item) {
@@ -550,6 +581,21 @@
         return '';
       }
 
+      function getVoteChoice() {
+        const radios = document.querySelectorAll('input[name="voteChoice"]');
+        for (let i = 0; i < radios.length; i++) {
+          if (radios[i].checked) return radios[i].value;
+        }
+        return 'none';
+      }
+
+      function setVoteChoice(value) {
+        const radios = document.querySelectorAll('input[name="voteChoice"]');
+        radios.forEach(function(r) {
+          r.checked = (r.value === value);
+        });
+      }
+
       function setAgeGroup(value) {
         const radios = document.querySelectorAll('input[name="ageGroup"]');
         for (let i = 0; i < radios.length; i++) {
@@ -575,6 +621,18 @@
         state.currentRow = null; // typing a new name resets current row
       });
 
+      function updateGuestButton() {
+        const btn = $('addGuestBtn');
+        if (!btn) return;
+        if (lastSavedInviter) {
+          btn.disabled = false;
+          btn.textContent = '➕ Add a guest under ' + toShortName(lastSavedInviter);
+        } else {
+          btn.disabled = true;
+          btn.textContent = '➕ Add a guest under me';
+        }
+      }
+
       function toShortName(fullName) {
         const parts = fullName.trim().split(/\s+/);
         if (!parts.length) return '';
@@ -584,10 +642,34 @@
         return first + ' ' + (last.charAt(0).toUpperCase() || '') + '.';
       }
 
+      function copySelfAsInviter() {
+        const name = $('fullNameInput').value.trim();
+        if (!name) {
+          showStatus('Type the person you are adding first, then set yourself as inviter.', true);
+          return;
+        }
+        $('inviterInput').value = name;
+        showStatus('Marked as inviting yourself. Save to appear on the tree.', false);
+      }
+
+      function prepGuestAdd() {
+        if (!lastSavedInviter) {
+          showStatus('Save yourself first, then add guests beneath you.', true);
+          return;
+        }
+        $('fullNameInput').value = '';
+        updateShortNamePreview();
+        $('inviterInput').value = lastSavedInviter;
+        setAgeGroup('');
+        setVoteChoice('none');
+        refreshFoodSelect('');
+        showStatus('Adding a guest under ' + toShortName(lastSavedInviter) + '. Enter their full name and details.', false);
+      }
+
       function handleFindMe() {
         const name = $('fullNameInput').value.trim();
         if (!name) {
-          showStatus('Type your full name first, then click "Find Me".', true);
+          showStatus('Type your full name first, then click "Load my signup".', true);
           return;
         }
 
@@ -599,19 +681,23 @@
         if (!found) {
           state.currentRow = null;
           setAgeGroup('');
-          $('gameVote').checked = false;
-          $('cashVote').checked = false;
+          setVoteChoice('none');
+          $('inviterInput').value = '';
           refreshFoodSelect('');
+          lastSavedInviter = '';
+          updateGuestButton();
           showStatus('No existing signup found. Add yourself to Santa’s Nice List with "Save my spot". 🎄', false);
           return;
         }
 
         state.currentRow = found.row;
         setAgeGroup(found.ageGroup || '');
-        $('gameVote').checked = !!found.gameVote;
-        $('cashVote').checked = !!found.cashVote;
+        setVoteChoice(found.gameVote ? 'game' : found.cashVote ? 'cash' : 'none');
+        $('inviterInput').value = found.enteredBy || found.fullName || '';
         // Include their existing food selection in the dropdown, even if it's "taken"
         refreshFoodSelect(found.food || '');
+        lastSavedInviter = $('inviterInput').value.trim();
+        updateGuestButton();
         showStatus('Loaded your existing signup. Refresh anything you like and click "Save my spot". 🎅', false);
       }
 
@@ -629,15 +715,17 @@
         }
 
         const food = $('foodSelect').value;
+        const inviter = $('inviterInput').value.trim() || name;
+        const voteChoice = getVoteChoice();
 
         const payload = {
           row: state.currentRow,          // may be null/undefined if new
           fullName: name,
           ageGroup: ageGroup,
           food: food,
-          gameVote: $('gameVote').checked,
-          cashVote: $('cashVote').checked,
-          enteredBy: name                // first time this row is created, this is stored in column K
+          gameVote: voteChoice === 'game',
+          cashVote: voteChoice === 'cash',
+          enteredBy: inviter             // first time this row is created, this is stored in column K
         };
 
         $('saveBtn').disabled = true;
@@ -647,7 +735,7 @@
           .withSuccessHandler(function(data) {
             // Refresh state & UI using latest snapshot
             state.meta = data.meta || {};
-            state.attendees = data.attendees || [];
+            state.attendees = enrichAttendees(data.attendees || []);
             state.menu = data.menu || [];
 
             // keep the same name in the box
@@ -662,8 +750,11 @@
             renderFoodList();
             refreshFoodSelect(updated ? updated.food || '' : food || '');
 
+            lastSavedInviter = inviter;
+            updateGuestButton();
+
             $('saveBtn').disabled = false;
-            showStatus('Saved! 🎄', false);
+            showStatus('Saved! 🎄 Use "Add a guest under ' + toShortName(inviter || name) + '" to attach more people.', false);
           })
           .withFailureHandler(function(err) {
             $('saveBtn').disabled = false;
@@ -701,23 +792,23 @@
 
           const header = document.createElement('div');
           header.className = 'inviter-header';
-          header.textContent = '🎁 ' + inviter;
+          header.textContent = '🎁 Invited by ' + toShortName(inviter || 'Host');
           groupDiv.appendChild(header);
 
           const list = document.createElement('ul');
-          const arr = groups[inviter].slice().sort(function(a, b) {
-            return (a.shortName || a.fullName || '').localeCompare(b.shortName || b.fullName || '');
-          });
+          const arr = groups[inviter]
+            .slice()
+            .sort(function(a, b) {
+              return displayName(a).localeCompare(displayName(b));
+            });
 
           arr.forEach(function(a) {
             const li = document.createElement('li');
-            li.textContent = '↳ ' + ageEmoji(a.ageGroup) + ' ' + (a.shortName || a.fullName);
+            li.textContent = '↳ ' + ageEmoji(a.ageGroup) + ' ' + displayName(a);
             li.title =
-              'Full name: ' + (a.fullName || '') +
-              (a.food ? '\nBringing: ' + a.food : '') +
-              (a.gameVote ? '\nWhite Elephant: 👍' : '') +
-              (a.cashVote ? '\nCash donation: 👍' : '') +
-              (a.enteredBy ? '\nEntered by: ' + a.enteredBy : '');
+              (a.food ? 'Bringing: ' + a.food + '\n' : '') +
+              (a.gameVote ? 'White Elephant: 👍\n' : a.cashVote ? 'Cash donation: 👍\n' : '') +
+              (a.enteredBy ? 'Invited by: ' + toShortName(a.enteredBy) : '');
             list.appendChild(li);
           });
 
@@ -755,9 +846,9 @@
             const li = document.createElement('li');
             li.innerHTML =
               ageEmoji(a.ageGroup) +
-              ' <strong>' + (a.shortName || a.fullName) + '</strong> → ' +
+              ' <strong>' + displayName(a) + '</strong> → ' +
               a.food;
-            li.title = 'Full name: ' + (a.fullName || '');
+            li.title = (a.enteredBy ? 'Invited by: ' + toShortName(a.enteredBy) : '');
             list.appendChild(li);
           });
 
