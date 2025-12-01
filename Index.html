@@ -5,64 +5,134 @@
     <meta charset="UTF-8">
     <title>Christmas 2025 Sign-Up</title>
     <style>
+      :root {
+        --candy-red: #e63946;
+        --evergreen: #0b8b62;
+        --frost: #eef6ff;
+        --gold: #f4a261;
+      }
+
       body {
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: radial-gradient(circle at top, #fffbf0 0, #f4f6ff 45%, #e4f7ff 100%);
+        background: radial-gradient(circle at 20% 10%, rgba(255, 246, 235, 0.9), rgba(255, 255, 255, 0.4)),
+          radial-gradient(circle at 80% 0%, rgba(228, 247, 255, 0.9), rgba(228, 247, 255, 0.2)),
+          linear-gradient(135deg, #fef6f0 0%, #e3f6ff 45%, #f8efff 100%);
         margin: 0;
         padding: 16px;
-        color: #222;
+        color: #1e2b2a;
+        font-size: clamp(18px, 1.25rem, 20px);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+          radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+        background-size: 18px 18px, 24px 24px;
+        background-position: 0 0, 12px 12px;
+        opacity: 0.55;
       }
 
       #app {
-        max-width: 960px;
+        max-width: 1040px;
         margin: 0 auto;
+        width: 100%;
+        position: relative;
       }
 
       .card {
-        background: rgba(255, 255, 255, 0.92);
-        border-radius: 16px;
-        padding: 16px 20px;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
-        margin-bottom: 14px;
-        border: 1px solid rgba(200, 200, 255, 0.5);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 245, 0.96));
+        border-radius: 18px;
+        padding: 20px 22px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
+        margin-bottom: 16px;
+        border: 2px solid rgba(230, 57, 70, 0.18);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 18px;
+        padding: 2px;
+        background: repeating-linear-gradient(45deg, rgba(230, 57, 70, 0.35) 0, rgba(230, 57, 70, 0.35) 10px, rgba(11, 139, 98, 0.2) 10px, rgba(11, 139, 98, 0.2) 20px);
+        -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+
+      .garland {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        margin-bottom: 8px;
+        font-size: 1.1rem;
+      }
+
+      .garland span {
+        filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
       }
 
       h1 {
-        margin: 0 0 8px;
-        font-size: 1.8rem;
+        margin: 0 0 10px;
+        font-size: 2.2rem;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
+        color: var(--evergreen);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
       }
 
       h2 {
-        margin: 0 0 8px;
-        font-size: 1.2rem;
+        margin: 0 0 10px;
+        font-size: 1.35rem;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
+        color: #b83227;
       }
 
       .subtitle {
-        font-size: 0.9rem;
-        color: #555;
-        margin-bottom: 8px;
+        font-size: 1rem;
+        color: #2f3a39;
+        margin-bottom: 10px;
+      }
+
+      .festive-banner {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(90deg, rgba(11, 139, 98, 0.08), rgba(244, 162, 97, 0.14));
+        padding: 10px 14px;
+        border-radius: 14px;
+        font-weight: 700;
+        color: #0b3a32;
+        margin-bottom: 12px;
+        border: 1px solid rgba(11, 139, 98, 0.2);
       }
 
       label {
         display: block;
-        font-size: 0.9rem;
-        margin: 6px 0 3px;
+        font-size: 1rem;
+        margin: 8px 0 4px;
+        color: #16302c;
       }
 
       input[type="text"],
       select {
         width: 100%;
         box-sizing: border-box;
-        padding: 8px 10px;
-        border-radius: 10px;
-        border: 1px solid #ccd;
-        font-size: 0.95rem;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 2px solid rgba(11, 139, 98, 0.2);
+        font-size: 1.05rem;
+        background: rgba(255, 255, 255, 0.92);
       }
 
       input[type="text"]:focus,
@@ -86,8 +156,8 @@
         display: flex;
         gap: 12px;
         align-items: center;
-        margin: 4px 0 6px;
-        font-size: 0.9rem;
+        margin: 6px 0 8px;
+        font-size: 1rem;
       }
 
       .age-group label {
@@ -101,8 +171,8 @@
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
-        margin-top: 6px;
-        font-size: 0.9rem;
+        margin-top: 8px;
+        font-size: 1rem;
       }
 
       .votes label {
@@ -115,14 +185,20 @@
       button {
         border-radius: 999px;
         border: none;
-        padding: 8px 18px;
-        font-size: 0.95rem;
-        font-weight: 600;
+        padding: 12px 20px;
+        font-size: 1.05rem;
+        font-weight: 700;
         cursor: pointer;
-        background: linear-gradient(90deg, #e63946, #f4a261);
+        background: linear-gradient(90deg, var(--candy-red), var(--gold));
         color: #fff;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-        margin-top: 10px;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+        margin-top: 12px;
+        transition: transform 120ms ease, box-shadow 120ms ease;
+      }
+
+      button:hover:not([disabled]) {
+        transform: translateY(-1px) scale(1.01);
+        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
       }
 
       button[disabled] {
@@ -132,8 +208,8 @@
       }
 
       #status {
-        margin-top: 6px;
-        font-size: 0.85rem;
+        margin-top: 8px;
+        font-size: 0.95rem;
       }
 
       #status.error {
@@ -147,48 +223,51 @@
       .pill {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
-        padding: 4px 8px;
+        gap: 6px;
+        padding: 6px 10px;
         border-radius: 999px;
-        font-size: 0.8rem;
-        background: #f1f5ff;
+        font-size: 0.95rem;
+        background: linear-gradient(135deg, #f1f5ff, #fff5f5);
         border: 1px solid #dde4ff;
+        color: #0f3c2f;
       }
 
       #inviteTree ul,
       #foodList ul {
         list-style: none;
-        padding-left: 12px;
-        margin: 4px 0 0;
+        padding-left: 16px;
+        margin: 6px 0 0;
       }
 
       #inviteTree li,
       #foodList li {
-        font-size: 0.9rem;
-        margin: 2px 0;
+        font-size: 1rem;
+        margin: 4px 0;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
 
       .inviter-group {
-        margin-top: 6px;
-        padding: 8px 10px;
-        border-radius: 12px;
-        background: linear-gradient(90deg, rgba(231, 248, 255, 0.9), rgba(247, 241, 255, 0.9));
+        margin-top: 8px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: linear-gradient(90deg, rgba(231, 248, 255, 0.92), rgba(247, 241, 255, 0.92));
+        border: 1px dashed rgba(11, 139, 98, 0.25);
       }
 
       .inviter-header {
-        font-weight: 600;
-        margin-bottom: 2px;
-        font-size: 0.9rem;
+        font-weight: 700;
+        margin-bottom: 4px;
+        font-size: 1rem;
+        color: var(--evergreen);
       }
 
       .meta-line {
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-        font-size: 0.9rem;
+        font-size: 1rem;
         align-items: center;
       }
 
@@ -198,16 +277,35 @@
         gap: 4px;
       }
 
+      #metaText {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(11, 139, 98, 0.25);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-weight: 700;
+        color: #0c3f35;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
       .questions {
-        font-size: 0.85rem;
-        color: #444;
-        margin-top: 4px;
+        font-size: 0.95rem;
+        color: #2d3a3a;
+        margin-top: 6px;
       }
 
       #foodNote {
-        font-size: 0.8rem;
-        color: #555;
-        margin-top: 2px;
+        font-size: 0.9rem;
+        color: #1f312e;
+        margin-top: 4px;
       }
 
       @media (max-width: 600px) {
@@ -217,6 +315,15 @@
         .card {
           padding: 14px;
         }
+        h1 {
+          font-size: 2rem;
+        }
+        h2 {
+          font-size: 1.25rem;
+        }
+        .row {
+          flex-direction: column;
+        }
       }
     </style>
   </head>
@@ -224,21 +331,27 @@
     <div id="app">
       <!-- Meta / header card -->
       <div class="card">
-        <h1>🎄 Christmas 2025</h1>
+        <div class="garland" aria-hidden="true">
+          <span>🧦</span><span>✨</span><span>🎄</span><span>🦌</span><span>🎁</span><span>☃️</span><span>🍪</span><span>✨</span><span>🧦</span>
+        </div>
+        <h1>🎄✨ Ho Ho Ho! Christmas 2025 ✨🎅</h1>
+        <div class="festive-banner">🎅 Santa's Nice List is open — add your name & your tastiest treat! 🍪</div>
         <div class="meta-line">
           <span id="metaText"></span>
         </div>
         <div class="questions" id="questionsText"></div>
         <div class="subtitle">
-          Add yourself, pick your age group, claim a food from the menu, and vote with festive thumbs-ups.
+          Add yourself, pick your age group, claim a food from the menu, and vote with festive thumbs-ups. The more names,
+          the merrier the tree! 🎁
         </div>
       </div>
 
       <!-- RSVP / sign up card -->
       <div class="card">
-        <h2>📝 RSVP & Food Signup</h2>
+        <h2>📝 RSVP & Food Signup 🎅</h2>
         <div class="subtitle">
-          Type your full name. If you already signed up, click <strong>Find Me</strong> to load your info.
+          Type your full name. If you already signed up, click <strong>Find Me</strong> to load your info — the elves will
+          pull your row from the sheet. ✨
         </div>
 
         <label for="fullNameInput">Full name (First and Last)</label>
@@ -247,7 +360,7 @@
             <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
           </div>
           <div class="col-half" style="display:flex;align-items:center;gap:8px;">
-            <button type="button" onclick="handleFindMe()">Find Me</button>
+            <button type="button" onclick="handleFindMe()">🔍 Find Me</button>
             <span id="shortNamePreview" class="pill" style="display:none;"></span>
           </div>
         </div>
@@ -281,7 +394,7 @@
           </label>
         </div>
 
-        <button type="button" id="saveBtn" onclick="handleSave()">Save my spot</button>
+        <button type="button" id="saveBtn" onclick="handleSave()">🎄 Save my spot</button>
         <div id="status"></div>
       </div>
 
@@ -362,10 +475,17 @@
           metaLine.push('📍 ' + meta.address);
         }
 
-        $('metaText').textContent = metaLine.join('  ·  ');
+        const metaEl = $('metaText');
+        metaEl.innerHTML = '';
+        metaLine.forEach(function(text) {
+          const chip = document.createElement('span');
+          chip.className = 'meta-chip';
+          chip.textContent = text + ' ✨';
+          metaEl.appendChild(chip);
+        });
 
         if (meta.questions) {
-          $('questionsText').textContent = 'Questions: ' + meta.questions;
+          $('questionsText').textContent = '❓ Questions for Santa’s helpers: ' + meta.questions;
         } else {
           $('questionsText').textContent = '';
         }
@@ -482,7 +602,7 @@
           $('gameVote').checked = false;
           $('cashVote').checked = false;
           refreshFoodSelect('');
-          showStatus('No existing signup found. Fill the form and click "Save my spot" to add yourself.', false);
+          showStatus('No existing signup found. Add yourself to Santa’s Nice List with "Save my spot". 🎄', false);
           return;
         }
 
@@ -492,7 +612,7 @@
         $('cashVote').checked = !!found.cashVote;
         // Include their existing food selection in the dropdown, even if it's "taken"
         refreshFoodSelect(found.food || '');
-        showStatus('Loaded your existing signup. Update and click "Save my spot".', false);
+        showStatus('Loaded your existing signup. Refresh anything you like and click "Save my spot". 🎅', false);
       }
 
       function handleSave() {
@@ -557,12 +677,12 @@
         container.innerHTML = '';
 
         const title = document.createElement('h2');
-        title.innerHTML = '🌲 Invite Tree';
+        title.innerHTML = '🌲 Santa’s Nice List (Invite Tree)';
         container.appendChild(title);
 
         if (!state.attendees || !state.attendees.length) {
           const p = document.createElement('p');
-          p.textContent = 'No RSVPs yet – you can be the first to join!';
+          p.textContent = 'No RSVPs yet – be the first ornament on the tree! 🎀';
           container.appendChild(p);
           return;
         }
@@ -611,7 +731,7 @@
         container.innerHTML = '';
 
         const title = document.createElement('h2');
-        title.innerHTML = '🍽️ Who is bringing what?';
+        title.innerHTML = '🍽️ Feast & Cookie Swap Lineup';
         container.appendChild(title);
 
         const attendees = (state.attendees || []).filter(function(a) {
@@ -620,7 +740,7 @@
 
         if (!attendees.length) {
           const p = document.createElement('p');
-          p.textContent = 'No food signups yet. Once the menu (column J) is filled, you can claim a dish here.';
+          p.textContent = 'No food signups yet. Once the menu (column J) is filled, pick a dish to bring and make Santa proud! 🍰';
           container.appendChild(p);
           return;
         }
