@@ -195,6 +195,15 @@
         margin-top: 6px;
       }
 
+      .age-branch {
+        margin-top: 4px;
+        padding-left: 10px;
+      }
+
+      .age-branch::before {
+        top: 4px;
+      }
+
       .votes {
         display: flex;
         flex-wrap: wrap;
@@ -579,6 +588,8 @@
             <div class="field-branch">
               <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
 
+              <div id="inviterVotePreview" class="pill" style="display:none;">⏳ Vote pending</div>
+
               <label for="fullNameInput" class="indented-label">Who is attending with you?</label>
               <div class="row">
                 <div class="col-half">
@@ -591,8 +602,8 @@
 
               <div class="branch-grid">
                 <div class="form-grid">
-                  <div>
-                    <label for="ageSelect">Age group</label>
+                  <div class="field-branch age-branch">
+                    <label for="ageSelect" class="indented-label">Age group for this attendee</label>
                     <select id="ageSelect">
                       <option value="">Select an age group</option>
                       <option value="11+">11 or older</option>
@@ -701,6 +712,7 @@
         refreshFoodSelect();
         updateGuestButton();
         updateInviterTag();
+        updateInviterVotePreview();
         renderPersonalTree();
 
         showStatus('Loaded.', false);
@@ -926,6 +938,7 @@
         lastSavedInviter = '';
         updateGuestButton();
         updateInviterTag();
+        updateInviterVotePreview();
         renderPersonalTree();
         renderInviteTree();
         updateFoodVisibility();
@@ -937,6 +950,7 @@
 
       function confirmInviter(silent) {
         const name = $('inviterInput').value.trim();
+        const attendee = $('fullNameInput').value.trim();
         if (!name) {
           if (!silent) {
             showStatus('Please enter Your Name first so we can personalize your tree.', true);
@@ -948,11 +962,15 @@
         lastSavedInviter = name;
         updateGuestButton();
         updateInviterTag();
+        updateInviterVotePreview();
         renderPersonalTree();
         renderInviteTree();
         updateFoodVisibility();
 
-        hydrateExistingSignup(name);
+        const sameAsAttendee = !attendee || attendee.toLowerCase() === name.toLowerCase();
+        if (sameAsAttendee) {
+          hydrateExistingSignup(name);
+        }
 
         if (!$('fullNameInput').value.trim()) {
           $('fullNameInput').value = name;
@@ -1003,6 +1021,31 @@
 
         tag.appendChild(chip);
         tag.appendChild(helper);
+      }
+
+      function updateInviterVotePreview() {
+        const preview = $('inviterVotePreview');
+        if (!preview) return;
+
+        const inviter = currentInviterName();
+        if (!inviter) {
+          preview.style.display = 'none';
+          preview.textContent = '';
+          return;
+        }
+
+        const inviterEntry = findAttendeeByName(inviter);
+        let text = '⏳ Vote pending';
+        if (inviterEntry) {
+          if (inviterEntry.gameVote) {
+            text = '🎁 Voted: White Elephant game';
+          } else if (inviterEntry.cashVote) {
+            text = '💵 Voted: Cash donation';
+          }
+        }
+
+        preview.textContent = text;
+        preview.style.display = 'inline-flex';
       }
 
       function toShortName(fullName) {
@@ -1058,6 +1101,7 @@
         lastSavedInviter = $('inviterInput').value.trim() || fullName;
         updateGuestButton();
         updateInviterTag();
+        updateInviterVotePreview();
         renderPersonalTree();
 
         if (lastHydratedName !== lookup) {
@@ -1259,6 +1303,7 @@
             lastSavedInviter = inviter;
             updateGuestButton();
             updateInviterTag();
+            updateInviterVotePreview();
             renderPersonalTree();
             lastHydratedName = lookup;
 
