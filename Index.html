@@ -120,6 +120,19 @@
         color: #16302c;
       }
 
+      .label-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 800;
+      }
+
+      .food-label-name {
+        margin-left: 6px;
+        color: #0c3f35;
+        font-weight: 600;
+      }
+
       input[type="text"],
       select {
         width: 100%;
@@ -300,6 +313,15 @@
         flex-direction: column;
         align-items: flex-start;
         gap: 6px;
+      }
+
+      .vote-header {
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+        color: #b83227;
       }
 
       .cluster-preview {
@@ -655,7 +677,7 @@
         <div class="subtitle">Add yourself with a dish + vote, then list any guests and ages.</div>
 
         <div class="merged-top">
-          <div class="tagline" id="activeInviterTag"></div>
+          <div class="tagline" id="activeInviterTag" style="display:none;"></div>
 
           <label for="inviterInput">Your Name</label>
           <div class="personal-note" id="nameHelper"></div>
@@ -675,7 +697,9 @@
             <div class="branch-grid">
               <div class="form-grid">
                 <div id="foodSignupBlock">
-                  <label for="foodSelect" id="foodLabel">Food signup</label>
+                  <label for="foodSelect" id="foodLabel">
+                    <span class="label-title">🍽️ <strong>Food signup</strong></span>
+                  </label>
                   <select id="foodSelect" size="6" multiple aria-label="Food signup options">
                     <option value="">-- I’m not bringing food yet --</option>
                   </select>
@@ -685,6 +709,7 @@
                   </div>
                 </div>
                 <div>
+                  <div class="vote-header">🗳️ <strong>Vote</strong></div>
                   <div class="votes" id="voteBlock" role="group" aria-label="Vote for one option">
                     <label>
                       <input type="radio" name="voteChoice" id="voteGame" value="game">
@@ -1041,7 +1066,7 @@
         if (!state.menu || !state.menu.length) {
           note.textContent = 'Menu will go in column J (starting J2). Once items are listed, pick one dish and save it to your star.';
         } else {
-          note.textContent = 'Choose dishes and use “Add dishes” to keep stacking them under your name.';
+          note.textContent = 'Use “Add dishes” to keep stacking them.';
         }
 
         updateFoodVisibility();
@@ -1223,9 +1248,27 @@
         if (!label) return;
 
         const inviterName = currentInviterName();
-        label.textContent = inviterName
-          ? 'Food signup for ' + inviterName
-          : 'Food signup';
+        label.innerHTML = '';
+
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'label-title';
+
+        const emoji = document.createElement('span');
+        emoji.textContent = '🍽️';
+        titleSpan.appendChild(emoji);
+
+        const bold = document.createElement('strong');
+        bold.textContent = 'Food signup';
+        titleSpan.appendChild(bold);
+
+        label.appendChild(titleSpan);
+
+        if (inviterName) {
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'food-label-name';
+          nameSpan.textContent = 'for ' + inviterName;
+          label.appendChild(nameSpan);
+        }
       }
 
       function setSaveButtonsDisabled(disabled) {
@@ -1262,15 +1305,13 @@
 
         const inviter = currentInviterName();
         tag.innerHTML = '';
+        tag.style.display = 'none';
 
         if (!inviter) {
           return;
         }
 
-        const chip = document.createElement('span');
-        chip.className = 'pill';
-        chip.textContent = 'Inviting as ' + toShortName(inviter);
-        tag.appendChild(chip);
+        tag.style.display = 'none';
       }
 
       function updateInviterVotePreview() {
