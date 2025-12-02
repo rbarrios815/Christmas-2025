@@ -662,18 +662,28 @@
             <label for="inviterInput">Your Name</label>
             <div class="personal-note" id="nameHelper"></div>
             <div class="field-branch">
-              <input type="text" id="inviterInput" placeholder="Type your name to light your star above">
+              <div class="row" style="align-items:center; gap:10px;">
+                <div style="flex:1 1 auto;">
+                  <input type="text" id="inviterInput" placeholder="Type your name to light your star above">
+                </div>
+                <div>
+                  <button type="button" id="attendBtn" onclick="handleSave()">⭐ I'm Attending</button>
+                </div>
+              </div>
 
               <div id="inviterVotePreview" class="pill vote-preview" style="display:none;">🎯 Pick game or cash to save your star</div>
 
               <div class="branch-grid">
                 <div class="form-grid">
                   <div id="foodSignupBlock">
-                    <label for="foodSelect">Food signup for <strong>Your Name</strong> (pick one or more)</label>
-                    <select id="foodSelect" multiple size="6" aria-label="Food signup options">
+                    <label for="foodSelect">Food signup for <strong>Your Name</strong> (pick one)</label>
+                    <select id="foodSelect" size="6" aria-label="Food signup options">
                       <option value="">-- I’m not bringing food yet --</option>
                     </select>
                     <div id="foodNote"></div>
+                    <div class="row" style="justify-content:flex-start;gap:10px;align-items:center;flex-wrap:wrap;">
+                      <button type="button" class="ghost" id="dishBtn" style="display:none;" onclick="startDishAdd()">🍽️ Add dishes to my star</button>
+                    </div>
                   </div>
                   <div>
                     <div class="votes" id="voteBlock" role="group" aria-label="Vote for one option">
@@ -688,11 +698,6 @@
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div class="row" style="justify-content:flex-start;gap:10px;align-items:center;flex-wrap:wrap;">
-                <button type="button" id="saveBtn" onclick="handleSave()">⭐ I'm Attending</button>
-                <button type="button" class="ghost" id="dishBtn" style="display:none;" onclick="startDishAdd()">🍽️ Add dishes to my star</button>
               </div>
 
               <div id="guestFields" style="display:none;">
@@ -711,6 +716,9 @@
                 </div>
                 <div class="row" style="gap:8px;align-items:center;">
                   <span id="shortNamePreview" class="pill" style="display:none;"></span>
+                </div>
+                <div class="row" style="justify-content:flex-start;gap:10px;align-items:center;flex-wrap:wrap;">
+                  <button type="button" id="guestSaveBtn" onclick="handleSave()" style="display:none;">🎄 Save to my tree</button>
                 </div>
               </div>
             </div>
@@ -772,7 +780,7 @@
         const guestFields = $('guestFields');
         if (!guestFields) return;
         guestFields.style.display = guestFieldsUnlocked ? '' : 'none';
-        updateSaveButtonLabel();
+        updateSaveButtons();
       }
 
       function isClusterOwner(att) {
@@ -809,7 +817,7 @@
         updateInviterTag();
         updateInviterVotePreview();
         renderPersonalTree();
-        updateSaveButtonLabel();
+        updateSaveButtons();
 
         showStatus('Loaded.', false);
       }
@@ -851,7 +859,7 @@
         metaLine.forEach(function(text) {
           const chip = document.createElement('span');
           chip.className = 'meta-chip';
-          chip.textContent = text + ' ✨';
+          chip.textContent = text;
           metaEl.appendChild(chip);
         });
 
@@ -1031,9 +1039,9 @@
 
         const note = $('foodNote');
         if (!state.menu || !state.menu.length) {
-          note.textContent = 'Menu will go in column J (starting J2). Once items are listed, you can claim one or more for yourself.';
+          note.textContent = 'Menu will go in column J (starting J2). Once items are listed, pick one dish and save it to your star.';
         } else {
-          note.textContent = 'Claim every dish you’re bringing—each menu item can only be claimed once. Use “Add dishes to my star” later if you add more.';
+          note.textContent = 'Choose one dish at a time, then use “Add dishes to my star” to keep adding items under your name.';
         }
 
         updateFoodVisibility();
@@ -1092,7 +1100,7 @@
           preview.style.display = 'none';
           preview.textContent = '';
           updateFoodVisibility();
-          updateSaveButtonLabel();
+          updateSaveButtons();
           return;
         }
         const shortName = toShortName(fullName);
@@ -1109,7 +1117,7 @@
         }
 
         updateFoodVisibility();
-        updateSaveButtonLabel();
+        updateSaveButtons();
       }
 
       $('fullNameInput').addEventListener('input', function() {
@@ -1118,13 +1126,13 @@
         if (!this.value.trim()) {
           manualAgeSelection = '';
         }
-        updateSaveButtonLabel();
+        updateSaveButtons();
       });
 
       $('ageSelect').addEventListener('change', function() {
         manualAgeSelection = this.value;
         updateShortNamePreview({ skipHydrate: true });
-        updateSaveButtonLabel();
+        updateSaveButtons();
       });
 
       $('inviterInput').addEventListener('input', function() {
@@ -1140,7 +1148,7 @@
         }
         updateGuestFieldsVisibility();
         updateFoodVisibility();
-        updateSaveButtonLabel();
+        updateSaveButtons();
       });
 
       $('inviterInput').addEventListener('blur', function() {
@@ -1165,7 +1173,7 @@
         renderPersonalTree();
         renderInviteTree();
         updateFoodVisibility();
-        updateSaveButtonLabel();
+        updateSaveButtons();
 
         const sameAsAttendee = !attendee || attendee.toLowerCase() === name.toLowerCase();
         if (sameAsAttendee) {
@@ -1203,16 +1211,29 @@
         }
       }
 
-      function updateSaveButtonLabel() {
-        const btn = $('saveBtn');
-        if (!btn) return;
+      function setSaveButtonsDisabled(disabled) {
+        ['attendBtn', 'guestSaveBtn'].forEach(function(id) {
+          const el = $(id);
+          if (el) el.disabled = disabled;
+        });
+      }
+
+      function updateSaveButtons() {
+        const attendBtn = $('attendBtn');
+        const guestSaveBtn = $('guestSaveBtn');
 
         const inviter = $('inviterInput').value.trim();
         const attendee = $('fullNameInput').value.trim();
         const savingInviter = !attendee || inviter.toLowerCase() === attendee.toLowerCase();
         const guestMode = guestFieldsUnlocked && !savingInviter;
 
-        btn.textContent = guestMode ? '🎄 Save to my tree' : '⭐ I\'m Attending';
+        if (attendBtn) {
+          attendBtn.style.display = guestMode ? 'none' : '';
+        }
+
+        if (guestSaveBtn) {
+          guestSaveBtn.style.display = guestMode ? '' : 'none';
+        }
       }
 
       function updateInviterTag() {
@@ -1394,7 +1415,7 @@
 
         const owner = document.createElement('div');
         owner.className = 'tree-owner';
-        owner.textContent = shortInviter + ' ' + matches.length + ' attending in your cluster';
+        owner.textContent = shortInviter + "'s Nice List";
         treeEl.appendChild(owner);
 
         const ul = document.createElement('ul');
@@ -1471,7 +1492,7 @@
           select.focus({ preventScroll: true });
         }
 
-        showStatus('Add or update dishes for ' + toShortName(name) + '. Pick every dish you plan to bring.', false);
+        showStatus('Add or update dishes for ' + toShortName(name) + '. Choose one dish, then click Add dishes to save it.', false);
       }
 
       function clearAttendeeFields() {
@@ -1551,7 +1572,7 @@
           enteredBy: inviter             // first time this row is created, this is stored in column K
         };
 
-        $('saveBtn').disabled = true;
+        setSaveButtonsDisabled(true);
         showStatus('Saving…');
 
         google.script.run
@@ -1581,13 +1602,13 @@
             updateDishButton();
             updateInviterTag();
             updateInviterVotePreview();
-            updateSaveButtonLabel();
+            updateSaveButtons();
             renderPersonalTree();
             lastHydratedName = lookup;
 
             clearAttendeeFields();
 
-            $('saveBtn').disabled = false;
+            setSaveButtonsDisabled(false);
             const unlockedText = guestFieldsUnlocked
               ? ' 🎄 Guests + ages are unlocked—add another under ' + toShortName(inviter || name) + ' when you’re ready.'
               : ' Add a food choice and vote to unlock guests beneath your star.';
@@ -1598,7 +1619,7 @@
             }
           })
           .withFailureHandler(function(err) {
-            $('saveBtn').disabled = false;
+            setSaveButtonsDisabled(false);
             onError(err);
           })
           .saveAttendee(payload);
