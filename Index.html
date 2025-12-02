@@ -162,6 +162,10 @@
         gap: 10px;
       }
 
+      .guest-line {
+        align-items: center;
+      }
+
       .col-half {
         flex: 1 1 180px;
       }
@@ -290,6 +294,33 @@
         background: linear-gradient(135deg, #f1f5ff, #fff5f5);
         border: 1px solid #dde4ff;
         color: #0f3c2f;
+      }
+
+      .vote-preview {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .cluster-preview {
+        display: grid;
+        gap: 4px;
+        text-align: left;
+        align-items: start;
+        width: 100%;
+      }
+
+      .cluster-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 800;
+        color: #0f372c;
+      }
+
+      .cluster-food {
+        font-weight: 650;
+        color: #1f312e;
       }
 
       #inviteTree ul,
@@ -633,32 +664,7 @@
             <div class="field-branch">
               <input type="text" id="inviterInput" placeholder="Type your name to light your star above">
 
-                <div id="inviterVotePreview" class="pill" style="display:none;">🎯 Pick game or cash to save your star</div>
-
-              <div id="guestFields" style="display:none;">
-                <label for="fullNameInput" class="indented-label">Guest name + age (unlocked after you save Your Name with food + vote)</label>
-                <div class="row">
-                  <div class="col-half">
-                    <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
-                  </div>
-                  <div class="col-half" style="display:flex;align-items:center;gap:8px;">
-                    <span id="shortNamePreview" class="pill" style="display:none;"></span>
-                  </div>
-                </div>
-
-                <div class="branch-grid">
-                  <div class="form-grid">
-                    <div class="field-branch age-branch">
-                      <label for="ageSelect" class="indented-label">Age group for this guest</label>
-                      <select id="ageSelect">
-                        <option value="">Select an age group</option>
-                        <option value="11+">11+</option>
-                        <option value="10-">10- 🎁</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <div id="inviterVotePreview" class="pill vote-preview" style="display:none;">🎯 Pick game or cash to save your star</div>
 
               <div class="branch-grid">
                 <div class="form-grid">
@@ -669,24 +675,44 @@
                     </select>
                     <div id="foodNote"></div>
                   </div>
+                  <div>
+                    <div class="votes" id="voteBlock" role="group" aria-label="Vote for one option">
+                      <label>
+                        <input type="radio" name="voteChoice" id="voteGame" value="game">
+                        White Elephant game 🎁 (pick this OR cash)
+                      </label>
+                      <label>
+                        <input type="radio" name="voteChoice" id="voteCash" value="cash">
+                        $5–$10 cash donation for prizes 💵 (pick this OR White Elephant)
+                      </label>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="votes" id="voteBlock" role="group" aria-label="Vote for one option">
-              <label>
-                <input type="radio" name="voteChoice" id="voteGame" value="game">
-                White Elephant game 🎁 (pick this OR cash)
-              </label>
-              <label>
-                <input type="radio" name="voteChoice" id="voteCash" value="cash">
-                $5–$10 cash donation for prizes 💵 (pick this OR White Elephant)
-              </label>
-            </div>
+              <div class="row" style="justify-content:flex-start;gap:10px;align-items:center;flex-wrap:wrap;">
+                <button type="button" id="saveBtn" onclick="handleSave()">⭐ I'm Attending</button>
+                <button type="button" class="ghost" id="dishBtn" style="display:none;" onclick="startDishAdd()">🍽️ Add dishes to my star</button>
+              </div>
 
-            <div class="row" style="justify-content:flex-start;gap:10px;align-items:center;flex-wrap:wrap;">
-              <button type="button" id="saveBtn" onclick="handleSave()">⭐ I'm Attending</button>
-              <button type="button" class="ghost" id="dishBtn" style="display:none;" onclick="startDishAdd()">🍽️ Add dishes to my star</button>
+              <div id="guestFields" style="display:none;">
+                <label for="fullNameInput" class="indented-label">Guest name + age (unlocked after you save Your Name with food + vote)</label>
+                <div class="row guest-line">
+                  <div class="col-half">
+                    <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
+                  </div>
+                  <div class="col-half">
+                    <select id="ageSelect">
+                      <option value="">Select an age group</option>
+                      <option value="11+">11+</option>
+                      <option value="10-">10- 🎁</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="row" style="gap:8px;align-items:center;">
+                  <span id="shortNamePreview" class="pill" style="display:none;"></span>
+                </div>
+              </div>
             </div>
 
             <div id="status"></div>
@@ -882,6 +908,21 @@
           result.push(item);
         });
         return result;
+      }
+
+      function getClusterEntries(inviterName) {
+        if (!inviterName) return [];
+
+        const matchesRaw = (state.attendees || []).filter(function(a) {
+          return (a.enteredBy || '').toLowerCase() === inviterName.toLowerCase();
+        });
+
+        const selfEntry = findAttendeeByName(inviterName);
+        if (selfEntry) {
+          matchesRaw.push(selfEntry);
+        }
+
+        return uniqueByRow(matchesRaw);
       }
 
       function enrichAttendees(list) {
@@ -1192,12 +1233,7 @@
 
         const chip = document.createElement('span');
         chip.className = 'pill';
-
-        const inviterEntry = findAttendeeByName(inviter);
-        const ageText = inviterEntry ? ageShort(inviterEntry.ageGroup) : '';
-        chip.textContent = ageText
-          ? 'Inviting as ' + toShortName(inviter) + ' • ' + ageText
-          : 'Inviting as ' + toShortName(inviter);
+        chip.textContent = 'Inviting as ' + toShortName(inviter);
         tag.appendChild(chip);
       }
 
@@ -1222,7 +1258,36 @@
           }
         }
 
-        preview.textContent = text;
+        preview.innerHTML = '';
+        const voteLine = document.createElement('div');
+        voteLine.textContent = text;
+        preview.appendChild(voteLine);
+
+        const clusterEntries = getClusterEntries(inviter);
+        if (clusterEntries.length) {
+          const clusterWrap = document.createElement('div');
+          clusterWrap.className = 'cluster-preview';
+
+          clusterEntries
+            .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
+            .forEach(function(entry) {
+              const item = document.createElement('div');
+              item.className = 'cluster-item';
+              const food = entry.food ? entry.food : 'No dish yet';
+              const icon = isClusterOwner(entry) ? '⭐' : '🎄';
+              item.textContent = icon + ' ' + displayName(entry);
+
+              const foodTag = document.createElement('span');
+              foodTag.className = 'cluster-food';
+              foodTag.textContent = '— ' + food;
+
+              item.appendChild(foodTag);
+              clusterWrap.appendChild(item);
+            });
+
+          preview.appendChild(clusterWrap);
+        }
+
         preview.style.display = 'inline-flex';
       }
 
@@ -1322,16 +1387,7 @@
           return;
         }
 
-        const matchesRaw = (state.attendees || []).filter(function(a) {
-          return (a.enteredBy || '').toLowerCase() === inviterName.toLowerCase();
-        });
-
-        const selfEntry = findAttendeeByName(inviterName);
-        if (selfEntry) {
-          matchesRaw.push(selfEntry);
-        }
-
-        const matches = uniqueByRow(matchesRaw);
+        const matches = getClusterEntries(inviterName);
 
         if (!matches.length) {
           treeEl.innerHTML = '<p class="questions">Save yourself first, then add guests beneath your star.</p>';
