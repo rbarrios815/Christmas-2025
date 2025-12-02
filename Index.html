@@ -263,6 +263,14 @@
         margin: 0;
       }
 
+      #foodLabel {
+        color: #b83227;
+      }
+
+      #foodLabel strong {
+        color: #b83227;
+      }
+
       button {
         border-radius: 999px;
         border: none;
@@ -718,7 +726,7 @@
                   <div id="foodNote"></div>
                 </div>
                 <div>
-                  <div class="vote-header">🗳️ <strong>Vote</strong></div>
+                  <div class="vote-header" id="voteHeader">🗳️ <strong>Vote</strong></div>
                   <div class="votes" id="voteBlock" role="group" aria-label="Vote for one option">
                     <label>
                       <input type="radio" name="voteChoice" id="voteGame" value="game">
@@ -736,6 +744,7 @@
             <div class="action-row">
               <button type="button" id="attendBtn" onclick="handleSave()">⭐ I'm Attending</button>
               <button type="button" class="ghost" id="dishBtn" style="display:none;" onclick="handleAddDishes()">🍽️ Add dishes for your name</button>
+              <button type="button" class="ghost" id="voteChangeBtn" style="display:none;" onclick="handleChangeVote()">🔄 Update vote</button>
             </div>
 
             <div id="guestFields" style="display:none;">
@@ -852,6 +861,7 @@
         renderVoteTotals();
         refreshFoodSelect();
         updateDishButton();
+        updateVoteButton();
         updateFoodLabel();
         updateInviterTag();
         updateInviterVotePreview();
@@ -996,10 +1006,7 @@
       }
 
       function isInviterComplete(att) {
-        if (!att || !isClusterOwner(att)) return false;
-        const hasVote = !!(att.gameVote || att.cashVote);
-        const hasFood = parseFoods(att.food).length > 0;
-        return hasVote && hasFood;
+        return !!att && isClusterOwner(att);
       }
 
       function getSelectedFoods() {
@@ -1080,7 +1087,7 @@
         if (!state.menu || !state.menu.length) {
           note.textContent = 'Menu will go in column J (starting J2). Once items are listed, pick one dish and save it to your star.';
         } else {
-          note.textContent = 'Use “Add dishes” to keep stacking them.';
+          note.textContent = '';
         }
 
         updateFoodVisibility();
@@ -1090,6 +1097,7 @@
         const block = $('foodSignupBlock');
         const select = $('foodSelect');
         const voteBlock = $('voteBlock');
+        const voteHeader = $('voteHeader');
         if (!block || !select || !voteBlock) return;
 
         const inviterRaw = ($('inviterInput').value || '').trim().toLowerCase();
@@ -1099,6 +1107,9 @@
 
         block.style.display = editingInviter ? '' : 'none';
         voteBlock.style.display = editingInviter ? '' : 'none';
+        if (voteHeader) {
+          voteHeader.style.display = editingInviter ? '' : 'none';
+        }
 
         if (!editingInviter) {
           clearFoodSelections();
@@ -1181,6 +1192,7 @@
         updateInviterTag();
         updateInviterVotePreview();
         renderInviteTree();
+        updateVoteButton();
         updateAttendButton();
         if (!this.value.trim()) {
           guestFieldsUnlocked = false;
@@ -1241,14 +1253,39 @@
         }
       }
 
+      function updateVoteButton() {
+        const btn = $('voteChangeBtn');
+        if (!btn) return;
+
+        const typedInviter = ($('inviterInput').value || '').trim();
+        const inviterName = currentInviterName() || lastSavedInviter;
+        const ownerEntry = findAttendeeByName(inviterName);
+        const showButton = !!typedInviter && isClusterOwner(ownerEntry);
+
+        btn.style.display = showButton ? '' : 'none';
+
+        if (showButton) {
+          btn.textContent = '🔄 Update vote for ' + toShortName(inviterName);
+        }
+      }
+
       function updateAttendButton() {
         const attendBtn = $('attendBtn');
         const badge = $('attendComplete');
         if (!attendBtn || !badge) return;
 
+        const typedInviter = ($('inviterInput').value || '').trim();
         const inviterName = currentInviterName();
         const inviterEntry = findAttendeeByName(inviterName);
         const accepted = !!inviterEntry;
+
+        if (!typedInviter) {
+          badge.style.display = 'none';
+          attendBtn.style.display = 'none';
+          updateDishButton();
+          updateVoteButton();
+          return;
+        }
 
         badge.style.display = accepted ? '' : 'none';
         attendBtn.style.display = accepted ? 'none' : '';
@@ -1258,6 +1295,7 @@
         }
 
         updateDishButton();
+        updateVoteButton();
       }
 
       function updateFoodLabel() {
@@ -1289,7 +1327,7 @@
       }
 
       function setSaveButtonsDisabled(disabled) {
-        ['attendBtn', 'guestSaveBtn', 'dishBtn'].forEach(function(id) {
+        ['attendBtn', 'guestSaveBtn', 'dishBtn', 'voteChangeBtn'].forEach(function(id) {
           const el = $(id);
           if (el) el.disabled = disabled;
         });
@@ -1455,6 +1493,7 @@
         updateInviterTag();
         updateInviterVotePreview();
         updateAttendButton();
+        updateVoteButton();
 
         if (lastHydratedName !== lookup) {
           showStatus('Loaded existing signup for ' + toShortName(fullName) + '. Update and save if needed.', false);
@@ -1543,10 +1582,81 @@
             updateInviterTag();
             updateInviterVotePreview();
             updateAttendButton();
+            updateVoteButton();
             updateSaveButtons();
 
             setSaveButtonsDisabled(false);
             showStatus('Dishes saved to column C for ' + toShortName(name) + '.', false);
+          })
+          .withFailureHandler(function(err) {
+            setSaveButtonsDisabled(false);
+            onError(err);
+          })
+          .saveAttendee(payload);
+      }
+
+      function handleChangeVote() {
+        const typedInviter = $('inviterInput').value.trim();
+        const name = typedInviter || lastSavedInviter || '';
+        if (!name) {
+          showStatus('Type your name first to update your vote.', true);
+          return;
+        }
+
+        const inviterEntry = findAttendeeByName(name);
+        if (!inviterEntry || !isClusterOwner(inviterEntry)) {
+          showStatus('Save your RSVP first so we know whose vote to update.', true);
+          return;
+        }
+
+        const voteChoice = getVoteChoice();
+        if (!voteChoice) {
+          showStatus('Pick game or cash to update your vote.', true);
+          return;
+        }
+
+        const payload = {
+          row: inviterEntry.row,
+          fullName: inviterEntry.fullName,
+          ageGroup: inviterEntry.ageGroup || '11+',
+          food: parseFoods(inviterEntry.food),
+          gameVote: voteChoice === 'game',
+          cashVote: voteChoice === 'cash',
+          enteredBy: inviterEntry.enteredBy || inviterEntry.fullName
+        };
+
+        setSaveButtonsDisabled(true);
+        showStatus('Updating vote for ' + toShortName(name) + '…');
+
+        google.script.run
+          .withSuccessHandler(function(data) {
+            state.meta = data.meta || {};
+            state.attendees = enrichAttendees(data.attendees || []);
+            state.menu = data.menu || [];
+
+            renderMeta();
+            renderInviteTree();
+            renderFoodList();
+            renderVoteTotals();
+
+            const updatedEntry = findAttendeeByName(name);
+            const foods = parseFoods(updatedEntry ? updatedEntry.food : inviterEntry.food);
+            refreshFoodSelect(foods);
+            setVoteChoice(updatedEntry && updatedEntry.gameVote ? 'game' : updatedEntry && updatedEntry.cashVote ? 'cash' : voteChoice);
+
+            lastSavedInviter = name;
+            guestFieldsUnlocked = isInviterComplete(updatedEntry || inviterEntry);
+            updateGuestFieldsVisibility();
+            updateDishButton();
+            updateFoodLabel();
+            updateInviterTag();
+            updateInviterVotePreview();
+            updateAttendButton();
+            updateVoteButton();
+            updateSaveButtons();
+
+            setSaveButtonsDisabled(false);
+            showStatus('Vote updated for ' + toShortName(name) + '.', false);
           })
           .withFailureHandler(function(err) {
             setSaveButtonsDisabled(false);
@@ -1665,6 +1775,7 @@
             updateInviterVotePreview();
             updateSaveButtons();
             updateAttendButton();
+            updateVoteButton();
             lastHydratedName = lookup;
 
             clearAttendeeFields();
