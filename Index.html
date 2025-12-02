@@ -498,16 +498,15 @@
       }
 
       .tree-count {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 46px;
-        height: 46px;
-        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 46px;
+        height: 36px;
+        padding: 0 10px;
+        border-radius: 999px;
         background: linear-gradient(135deg, #e63946, #f4a261);
         color: #fff;
-        display: grid;
-        place-items: center;
         font-weight: 800;
         font-size: 1rem;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
@@ -547,6 +546,7 @@
         gap: 8px;
         font-size: 1rem;
         align-items: center;
+        margin-bottom: 12px;
       }
 
       .guest-count {
@@ -616,11 +616,11 @@
     <div id="app">
       <!-- Unified welcome + RSVP card -->
       <div class="card">
-        <div class="hero-line">🧦✨🎄🦌🎁☃️🍪✨🧦 Ho Ho Ho! Christmas 2025 — Santa's Nice List is open — add your name & your tastiest treat! 🍪</div>
         <div class="meta-line">
           <span id="metaText"></span>
           <span id="guestCount" class="meta-chip guest-count" aria-live="polite"></span>
         </div>
+        <div class="hero-line">🧦✨🎄🦌🎁☃️🍪✨🧦 Ho Ho Ho! Christmas 2025 — Santa's Nice List is open — add your name & your tastiest treat! 🍪</div>
         <div class="subtitle">1) Type <strong>Your Name, Food Item & Vote</strong> and click <strong>I'm Attending</strong>; 2) Type <strong>your guests' names and ages</strong> and click 🎄 <strong>Save to my tree</strong>.</div>
 
         <div class="personal-tree-wrap">
@@ -629,6 +629,7 @@
             <div class="tagline" id="activeInviterTag"></div>
 
             <label for="inviterInput">Your Name</label>
+            <div class="personal-note" id="nameHelper">Add your name to light your star above.</div>
             <div class="field-branch">
               <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
 
@@ -1286,7 +1287,14 @@
 
         greeting.innerHTML = inviterName
           ? '⭐ <strong>' + shortInviter + '</strong> is on the Nice List—add guests below.'
-          : '⭐ Welcome! Add <strong>Your Name</strong> to light your star.';
+          : '⭐ Welcome!';
+
+        const helper = $('nameHelper');
+        if (helper) {
+          helper.textContent = inviterName
+            ? 'Great! Add guests below and keep your cluster glowing.'
+            : 'Add your name to light your star above.';
+        }
 
         treeEl.innerHTML = '';
 
@@ -1324,35 +1332,31 @@
         const ul = document.createElement('ul');
         ul.className = 'tree-branches';
 
-              matches
-                .slice()
-                .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
-                .forEach(function(a) {
-                  const li = document.createElement('li');
-                  const left = document.createElement('span');
-                  left.className = 'branch-title';
-                  const isOwner = isClusterOwner(a);
-                  const icon = isOwner ? '⭐' : ageEmoji(a.ageGroup);
-                  left.textContent = icon + ' ' + displayName(a);
+        matches
+          .slice()
+          .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
+          .forEach(function(a) {
+            const li = document.createElement('li');
+            const left = document.createElement('span');
+            left.className = 'branch-title';
+            const isOwner = isClusterOwner(a);
+            const icon = isOwner ? '⭐' : ageEmoji(a.ageGroup);
+            let nameText = icon + ' ' + displayName(a);
+            if (!isOwner) {
+              const ageLabelText = ageShort(a.ageGroup);
+              if (ageLabelText) {
+                nameText += ' (' + ageLabelText + ')';
+              }
+            } else {
+              const foodText = a.food || 'Not chosen yet';
+              if (foodText) {
+                nameText += ' (Bringing: ' + foodText + ')';
+              }
+            }
 
-                  const detail = document.createElement('div');
-                  detail.className = 'branch-details';
-
-                  if (!isOwner) {
-                    const ageDetail = document.createElement('span');
-                    ageDetail.innerHTML = '<strong>' + ageLabel(a.ageGroup) + '</strong>';
-                    detail.appendChild(ageDetail);
-                  }
-
-                  const foodText = isOwner ? (a.food || 'Not chosen yet') : a.food;
-                  if (foodText) {
-                    const foodDetail = document.createElement('span');
-                    foodDetail.textContent = 'Bringing: ' + foodText;
-                    detail.appendChild(foodDetail);
-                  }
+            left.textContent = nameText;
 
             li.appendChild(left);
-            li.appendChild(detail);
             li.title = (isOwner ? '' : 'Age: ' + ageLabel(a.ageGroup)) + (a.food ? '\nFood: ' + a.food : '');
             li.addEventListener('click', function() {
               if (!isOwner) {
@@ -1558,14 +1562,19 @@
           const card = document.createElement('div');
           card.className = 'tree-cluster';
 
-          const count = document.createElement('div');
-          count.className = 'tree-count';
-          count.textContent = groups[inviter].length;
-          card.appendChild(count);
-
           const header = document.createElement('div');
           header.className = 'cluster-header';
-          header.innerHTML = '<span class="cluster-star">⭐</span> <span>' + toShortName(inviter || 'Host') + '</span>';
+          const star = document.createElement('span');
+          star.className = 'cluster-star';
+          star.textContent = '⭐';
+          const headName = document.createElement('span');
+          headName.textContent = toShortName(inviter || 'Host');
+          const count = document.createElement('span');
+          count.className = 'tree-count';
+          count.textContent = groups[inviter].length;
+          header.appendChild(star);
+          header.appendChild(headName);
+          header.appendChild(count);
           card.appendChild(header);
 
           const branches = document.createElement('div');
@@ -1583,31 +1592,21 @@
               const isOwner = isClusterOwner(a);
               const icon = isOwner ? '⭐' : ageEmoji(a.ageGroup);
               const nameSpan = document.createElement('span');
-              nameSpan.textContent = icon + ' ' + displayName(a);
+              let nameText = icon + ' ' + displayName(a);
+              if (!isOwner) {
+                const ageBadge = ageShort(a.ageGroup);
+                if (ageBadge) {
+                  nameText += ' (' + ageBadge + ')';
+                }
+              } else {
+                const foodText = a.food || 'Not chosen yet';
+                if (foodText) {
+                  nameText += ' (Bringing: ' + foodText + ')';
+                }
+              }
+              nameSpan.textContent = nameText;
               title.appendChild(nameSpan);
-
-              const ageShortLabel = isOwner ? '' : ageShort(a.ageGroup);
-              if (ageShortLabel) {
-                const ageBadge = document.createElement('span');
-                ageBadge.className = 'age-chip';
-                ageBadge.textContent = ageShortLabel;
-                title.appendChild(ageBadge);
-              }
-
-              const detail = document.createElement('div');
-              detail.className = 'branch-details';
-
-              const foodText = isOwner ? (a.food || 'Not chosen yet') : a.food;
-              if (foodText) {
-                const foodDetail = document.createElement('span');
-                foodDetail.textContent = 'Bringing: ' + foodText;
-                detail.appendChild(foodDetail);
-              }
-
               person.appendChild(title);
-              if (detail.children.length) {
-                person.appendChild(detail);
-              }
               person.title = (isOwner ? '' : 'Age: ' + ageLabel(a.ageGroup)) + (a.food ? '\nFood: ' + a.food : '');
               branches.appendChild(person);
             });
