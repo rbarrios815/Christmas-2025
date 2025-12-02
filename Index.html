@@ -696,7 +696,7 @@
               </div>
 
               <div id="guestFields" style="display:none;">
-                <label for="fullNameInput" class="indented-label">Guest name + age (unlocked after you save Your Name with food + vote)</label>
+                <label for="fullNameInput" class="indented-label">Guest name + age</label>
                 <div class="row guest-line">
                   <div class="col-half">
                     <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
@@ -939,7 +939,7 @@
       function parseFoods(value) {
         if (!value) return [];
         return value
-          .split(';')
+          .split(/[;\n,]/)
           .map(function(v) { return v.trim(); })
           .filter(function(v) { return !!v; });
       }
@@ -1172,11 +1172,6 @@
           hydrateExistingSignup(name);
         }
 
-        if (!$('fullNameInput').value.trim()) {
-          $('fullNameInput').value = name;
-          updateShortNamePreview();
-        }
-
         if (!silent) {
           showStatus('Locked in ' + toShortName(name) + '. Save to add yourself or guests under your star.', false);
         }
@@ -1371,14 +1366,12 @@
         const shouldShowGreeting = !!rawInviterInput;
         greeting.style.display = shouldShowGreeting ? '' : 'none';
         greeting.innerHTML = inviterName
-          ? '⭐ <strong>' + shortInviter + '</strong> is on the Nice List—add guests below.'
+          ? '⭐ <strong>' + shortInviter + '</strong> is on the Nice List—add guests below with Inviting as Name and Your Name.'
           : '⭐ Welcome!';
 
         const helper = $('nameHelper');
         if (helper) {
-          helper.textContent = inviterName
-            ? 'Great! Add guests below and keep your cluster glowing.'
-            : '';
+          helper.textContent = '';
         }
 
         treeEl.innerHTML = '';
@@ -1469,7 +1462,6 @@
         }
 
         $('inviterInput').value = name;
-        $('fullNameInput').value = name;
         hydrateExistingSignup(name);
         updateDishButton();
         updateFoodVisibility();
