@@ -333,7 +333,7 @@
 
       .personal-tree-wrap {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        grid-template-columns: 1fr;
         gap: 16px;
         margin-top: 10px;
         align-items: start;
@@ -522,6 +522,10 @@
         align-items: center;
       }
 
+      .guest-count {
+        background: linear-gradient(135deg, rgba(11, 139, 98, 0.18), rgba(244, 162, 97, 0.2));
+      }
+
       .meta-line span {
         display: inline-flex;
         align-items: center;
@@ -592,6 +596,7 @@
         <div class="festive-banner">🎅 Santa's Nice List is open — add your name & your tastiest treat! 🍪</div>
         <div class="meta-line">
           <span id="metaText"></span>
+          <span id="guestCount" class="meta-chip guest-count" aria-live="polite"></span>
         </div>
         <div class="questions" id="questionsText"></div>
         <div class="subtitle">
@@ -604,10 +609,8 @@
             <div class="personal-chip" id="personalGreeting">🎁 Plant <strong>Your Name</strong> to light up your star and preview your branches right away.</div>
             <div class="personal-note">Privacy: we display short names here; full names stay in the sheet.</div>
             <div class="holly-note" id="hollyInstruction">
-              <span>🌟 Confirm "Your Name" below,</span>
-              <span>🎄 add who is attending with you,</span>
-              <span>🍰 pick ages + dishes,</span>
-              <span>🗳️ choose one vote.</span>
+              <span>🌟 Thanks for pitching in! Add everyone attending with you below.</span>
+              <span>👥 Guests signed up: <strong id="guestTotal">0</strong></span>
             </div>
             <div class="tagline" id="activeInviterTag"></div>
 
@@ -761,6 +764,7 @@
       function renderMeta() {
         const meta = state.meta || {};
         const metaLine = [];
+        const guestCount = (state.attendees || []).length;
 
         if (meta.date) {
           metaLine.push('📅 ' + meta.date);
@@ -784,6 +788,16 @@
           chip.textContent = text + ' ✨';
           metaEl.appendChild(chip);
         });
+
+        const guestChip = $('guestCount');
+        if (guestChip) {
+          guestChip.textContent = '👥 Guests: ' + guestCount;
+        }
+
+        const guestTotal = $('guestTotal');
+        if (guestTotal) {
+          guestTotal.textContent = guestCount;
+        }
 
         if (meta.questions) {
           $('questionsText').textContent = '❓ Questions for Santa’s helpers: ' + meta.questions;
