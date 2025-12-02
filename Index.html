@@ -625,13 +625,13 @@
 
         <div class="personal-tree-wrap">
           <div class="merged-top">
-            <div class="personal-chip" id="personalGreeting">⭐ Welcome!</div>
+            <div class="personal-chip" id="personalGreeting" style="display:none;">⭐ Welcome!</div>
             <div class="tagline" id="activeInviterTag"></div>
 
             <label for="inviterInput">Your Name</label>
-            <div class="personal-note" id="nameHelper">Add your name to light your star above.</div>
+            <div class="personal-note" id="nameHelper"></div>
             <div class="field-branch">
-              <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
+              <input type="text" id="inviterInput" placeholder="Type your name to light your star above">
 
                 <div id="inviterVotePreview" class="pill" style="display:none;">🎯 Pick game or cash to save your star</div>
 
@@ -1005,7 +1005,7 @@
         const inviterRaw = ($('inviterInput').value || '').trim().toLowerCase();
         const attendeeRaw = ($('fullNameInput').value || '').trim().toLowerCase();
         const isClusterHead = inviterRaw && attendeeRaw && inviterRaw === attendeeRaw;
-        const editingInviter = inviterRaw && (!guestFieldsUnlocked || isClusterHead);
+        const editingInviter = inviterRaw && (!attendeeRaw || isClusterHead);
 
         block.style.display = editingInviter ? '' : 'none';
         voteBlock.style.display = editingInviter ? '' : 'none';
@@ -1170,7 +1170,6 @@
         tag.innerHTML = '';
 
         if (!inviter) {
-          tag.innerHTML = '<span class="questions">🎅 Confirm "Your Name" right below so every guest you add sparkles under your star.</span>';
           return;
         }
 
@@ -1281,10 +1280,13 @@
         const greeting = $('personalGreeting');
         if (!treeEl || !greeting) return;
 
+        const rawInviterInput = ($('inviterInput').value || '').trim();
         const inviterName = currentInviterName();
         const shortInviter = inviterName ? toShortName(inviterName) : '';
         updateInviterTag();
 
+        const shouldShowGreeting = !!rawInviterInput;
+        greeting.style.display = shouldShowGreeting ? '' : 'none';
         greeting.innerHTML = inviterName
           ? '⭐ <strong>' + shortInviter + '</strong> is on the Nice List—add guests below.'
           : '⭐ Welcome!';
@@ -1293,13 +1295,12 @@
         if (helper) {
           helper.textContent = inviterName
             ? 'Great! Add guests below and keep your cluster glowing.'
-            : 'Add your name to light your star above.';
+            : '';
         }
 
         treeEl.innerHTML = '';
 
         if (!inviterName) {
-          treeEl.innerHTML = '<p class="questions">Confirm "Your Name" above to plant your star and let guests branch beneath it.</p>';
           return;
         }
 
@@ -1326,7 +1327,7 @@
 
         const owner = document.createElement('div');
         owner.className = 'tree-owner';
-        owner.textContent = shortInviter + ' • ' + matches.length + ' attending in your cluster';
+        owner.textContent = shortInviter + ' ' + matches.length + ' attending in your cluster';
         treeEl.appendChild(owner);
 
         const ul = document.createElement('ul');
@@ -1350,7 +1351,7 @@
             } else {
               const foodText = a.food || 'Not chosen yet';
               if (foodText) {
-                nameText += ' (Bringing: ' + foodText + ')';
+                nameText += ' (' + foodText + ')';
               }
             }
 
@@ -1564,17 +1565,9 @@
 
           const header = document.createElement('div');
           header.className = 'cluster-header';
-          const star = document.createElement('span');
-          star.className = 'cluster-star';
-          star.textContent = '⭐';
           const headName = document.createElement('span');
-          headName.textContent = toShortName(inviter || 'Host');
-          const count = document.createElement('span');
-          count.className = 'tree-count';
-          count.textContent = groups[inviter].length;
-          header.appendChild(star);
+          headName.textContent = toShortName(inviter || 'Host') + ' ' + groups[inviter].length;
           header.appendChild(headName);
-          header.appendChild(count);
           card.appendChild(header);
 
           const branches = document.createElement('div');
@@ -1601,7 +1594,7 @@
               } else {
                 const foodText = a.food || 'Not chosen yet';
                 if (foodText) {
-                  nameText += ' (Bringing: ' + foodText + ')';
+                  nameText += ' (' + foodText + ')';
                 }
               }
               nameSpan.textContent = nameText;
