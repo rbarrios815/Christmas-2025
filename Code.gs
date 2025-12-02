@@ -141,25 +141,6 @@ function saveAttendee(att) {
 
   var food = att.food || '';
 
-  // Enforce: a menu item in column C can only be chosen by one attendee
-  if (food) {
-    var menuLastRow = sheet.getLastRow();
-    if (menuLastRow >= FIRST_DATA_ROW) {
-      var foodRange = sheet.getRange(FIRST_DATA_ROW, 3, menuLastRow - FIRST_DATA_ROW + 1, 1);
-      var foodValues = foodRange.getValues();
-
-      for (var j = 0; j < foodValues.length; j++) {
-        var existingFood = foodValues[j][0];
-        var existingRow = FIRST_DATA_ROW + j;
-
-        if (existingRow === row) continue; // ignore same row on update
-        if (existingFood && existingFood === food) {
-          throw new Error('That menu item is already taken. Please choose another.');
-        }
-      }
-    }
-  }
-
   // Write main values
   sheet.getRange(row, 1).setValue(att.fullName);          // Col A: Name of Person Attending
   sheet.getRange(row, 2).setValue(att.ageGroup || '');    // Col B: 11+ / 10-
