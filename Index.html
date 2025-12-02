@@ -595,7 +595,7 @@
 
         <div class="personal-tree-wrap">
           <div class="merged-top">
-            <div class="personal-chip" id="personalGreeting">🎁 Plant <strong>Your Name</strong> to light up your star and preview your branches right away.</div>
+            <div class="personal-chip" id="personalGreeting">⭐ Welcome!</div>
             <div class="holly-note" id="hollyInstruction">
               <span>👥 Guests Signed Up: <strong id="guestTotal">0</strong></span>
             </div>
@@ -653,10 +653,6 @@
               <label>
                 <input type="radio" name="voteChoice" id="voteCash" value="cash">
                 $5–$10 cash donation for prizes 💵 (pick this OR White Elephant)
-              </label>
-              <label>
-                <input type="radio" name="voteChoice" id="voteNone" value="none" checked>
-                No vote yet
               </label>
             </div>
 
@@ -877,6 +873,10 @@
           .filter(function(v) { return !!v; });
       }
 
+      function normalizeFoodItem(item) {
+        return (item || '').trim().toLowerCase();
+      }
+
       function isInviterComplete(att) {
         if (!att || !isClusterOwner(att)) return false;
         const hasVote = !!(att.gameVote || att.cashVote);
@@ -909,14 +909,36 @@
         placeholder.selected = !(selectedFoodList && selectedFoodList.length);
         select.appendChild(placeholder);
 
-        const selectedLookup = new Set((selectedFoodList || []).map(function(v) { return v.toLowerCase(); }));
-        const menuItems = (state.menu || []).filter(function(item) { return !!item; });
+        const selectedSet = new Set((selectedFoodList || []).map(normalizeFoodItem));
+        const currentInviter = normalizeFoodItem(currentInviterName());
+
+        const claimedByOthers = new Set();
+        (state.attendees || []).forEach(function(att) {
+          if (!isClusterOwner(att)) return;
+          const owner = normalizeFoodItem(att.fullName);
+          parseFoods(att.food).forEach(function(food) {
+            const key = normalizeFoodItem(food);
+            if (key && owner && owner !== currentInviter) {
+              claimedByOthers.add(key);
+            }
+          });
+        });
+
+        const menuItems = (state.menu || [])
+          .filter(function(item) { return !!item; })
+          .filter(function(item) {
+            const key = normalizeFoodItem(item);
+            if (!key) return false;
+            if (selectedSet.has(key)) return true;
+            return !claimedByOthers.has(key);
+          })
+          .sort(function(a, b) { return a.toLowerCase().localeCompare(b.toLowerCase()); });
 
         menuItems.forEach(function(item) {
           const opt = document.createElement('option');
           opt.value = item;
           opt.textContent = item;
-          opt.selected = selectedLookup.has(item.toLowerCase());
+          opt.selected = selectedSet.has(normalizeFoodItem(item));
           select.appendChild(opt);
         });
 
@@ -936,7 +958,7 @@
         if (!state.menu || !state.menu.length) {
           note.textContent = 'Menu will go in column J (starting J2). Once items are listed, you can claim one or more for yourself.';
         } else {
-          note.textContent = 'Choose every dish you’re bringing. Selections save as a semicolon list under Your Name only.';
+          note.textContent = 'Claim every dish you’re bringing—each menu item can only be claimed once.';
         }
 
         updateFoodVisibility();
@@ -958,7 +980,7 @@
 
         if (!editingInviter) {
           clearFoodSelections();
-          setVoteChoice('none');
+          setVoteChoice('');
         }
       }
 
@@ -971,13 +993,13 @@
         for (let i = 0; i < radios.length; i++) {
           if (radios[i].checked) return radios[i].value;
         }
-        return 'none';
+        return '';
       }
 
       function setVoteChoice(value) {
         const radios = document.querySelectorAll('input[name="voteChoice"]');
         radios.forEach(function(r) {
-          r.checked = (r.value === value);
+          r.checked = value ? (r.value === value) : false;
         });
       }
 
@@ -1174,7 +1196,7 @@
           lastHydratedName = '';
           state.currentRow = null;
           setAgeGroup('');
-          setVoteChoice('none');
+          setVoteChoice('');
           refreshFoodSelect([]);
           manualAgeSelection = '';
           return;
@@ -1189,7 +1211,7 @@
           if (lastHydratedName) {
             state.currentRow = null;
             setAgeGroup('');
-            setVoteChoice('none');
+            setVoteChoice('');
             refreshFoodSelect([]);
             lastHydratedName = '';
           }
@@ -1205,7 +1227,7 @@
         updateGuestFieldsVisibility();
         setAgeGroup(found.ageGroup || '');
         manualAgeSelection = found.ageGroup || '';
-        setVoteChoice(found.gameVote ? 'game' : found.cashVote ? 'cash' : 'none');
+        setVoteChoice(found.gameVote ? 'game' : found.cashVote ? 'cash' : '');
         $('inviterInput').value = found.enteredBy || found.fullName || '';
         refreshFoodSelect(parseFoods(found.food));
         lastSavedInviter = $('inviterInput').value.trim() || fullName;
@@ -1232,8 +1254,8 @@
         updateInviterTag();
 
         greeting.innerHTML = inviterName
-          ? '⭐ Welcome, <strong>' + shortInviter + '</strong>—your invite tree is ready to grow guests.'
-          : '🎁 Start with <strong>Your Name</strong> to light your star and preview your branches instantly.';
+          ? '⭐ Welcome <strong>' + shortInviter + '</strong>!'
+          : '⭐ Welcome! Start with <strong>Your Name</strong> to light your star and preview your branches instantly.';
 
         treeEl.innerHTML = '';
 
@@ -1335,7 +1357,7 @@
         updateShortNamePreview();
         $('inviterInput').value = lastSavedInviter;
         setAgeGroup('');
-        setVoteChoice('none');
+        setVoteChoice('');
         refreshFoodSelect([]);
         updateInviterTag();
         showStatus('Adding a guest under ' + toShortName(lastSavedInviter) + '. Enter their full name and details.', false);
@@ -1344,7 +1366,7 @@
       function clearAttendeeFields() {
         $('fullNameInput').value = '';
         setAgeGroup('');
-        setVoteChoice('none');
+        setVoteChoice('');
         manualAgeSelection = '';
         state.currentRow = null;
         updateShortNamePreview();
@@ -1382,7 +1404,7 @@
         }
 
         let selectedFoods = [];
-        let voteChoice = 'none';
+        let voteChoice = '';
         if (isClusterHead) {
           selectedFoods = getSelectedFoods();
           voteChoice = getVoteChoice();
@@ -1392,7 +1414,7 @@
             return;
           }
 
-          if (voteChoice === 'none') {
+          if (!voteChoice) {
             showStatus('Cast a quick vote (game or cash) to finish saving Your Name.', true);
             return;
           }
