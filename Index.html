@@ -636,8 +636,8 @@
               <div class="branch-grid">
                 <div class="form-grid">
                   <div id="foodSignupBlock">
-                    <label for="foodSelect">Food signup (from the menu)</label>
-                    <select id="foodSelect">
+                    <label for="foodSelect">Food signup for <strong>Your Name</strong> (pick one or more)</label>
+                    <select id="foodSelect" multiple size="6" aria-label="Food signup options">
                       <option value="">-- I’m not bringing food yet --</option>
                     </select>
                     <div id="foodNote"></div>
@@ -646,7 +646,7 @@
               </div>
             </div>
 
-            <div class="votes" role="group" aria-label="Vote for one option">
+            <div class="votes" id="voteBlock" role="group" aria-label="Vote for one option">
               <label>
                 <input type="radio" name="voteChoice" id="voteGame" value="game">
                 White Elephant game 🎁 (pick this OR cash)
@@ -722,6 +722,13 @@
         const guestFields = $('guestFields');
         if (!guestFields) return;
         guestFields.style.display = guestFieldsUnlocked ? '' : 'none';
+      }
+
+      function isClusterOwner(att) {
+        if (!att) return false;
+        const full = (att.fullName || '').toLowerCase();
+        const entered = (att.enteredBy || att.fullName || '').toLowerCase();
+        return !!full && full === entered;
       }
 
       function init() {
@@ -861,48 +868,67 @@
         return attendee.shortName || toShortName(attendee.fullName || '');
       }
 
-      function refreshFoodSelect(selectedFood) {
+      function parseFoods(value) {
+        if (!value) return [];
+        return value
+          .split(';')
+          .map(function(v) { return v.trim(); })
+          .filter(function(v) { return !!v; });
+      }
+
+      function getSelectedFoods() {
+        const select = $('foodSelect');
+        if (!select) return [];
+        const values = Array.from(select.selectedOptions || [])
+          .map(function(opt) { return opt.value; })
+          .filter(function(v) { return !!v; });
+        return Array.from(new Set(values));
+      }
+
+      function clearFoodSelections() {
+        const select = $('foodSelect');
+        if (!select) return;
+        Array.from(select.options).forEach(function(opt) { opt.selected = false; });
+      }
+
+      function refreshFoodSelect(selectedFoodList) {
         const select = $('foodSelect');
         select.innerHTML = '';
 
-        // First option: none
-        const noneOpt = document.createElement('option');
-        noneOpt.value = '';
-        noneOpt.textContent = "-- I’m not bringing food yet --";
-        select.appendChild(noneOpt);
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = '-- I’m not bringing food yet --';
+        placeholder.selected = !(selectedFoodList && selectedFoodList.length);
+        select.appendChild(placeholder);
 
-        // Build map: which menu item is taken and by whom
-        const takenMap = {};
-        (state.attendees || []).forEach(function(a) {
-          if (!a.food) return;
-          if (!takenMap[a.food]) takenMap[a.food] = [];
-          takenMap[a.food].push(displayName(a));
-        });
+        const selectedLookup = new Set((selectedFoodList || []).map(function(v) { return v.toLowerCase(); }));
+        const menuItems = (state.menu || []).filter(function(item) { return !!item; });
 
-        (state.menu || []).forEach(function(item) {
-          if (!item) return;
+        menuItems.forEach(function(item) {
           const opt = document.createElement('option');
           opt.value = item;
-
-          const takenBy = takenMap[item] || [];
-          if (takenBy.length && item !== selectedFood) {
-            opt.disabled = true;
-            opt.textContent = item + ' – taken by ' + takenBy.join(', ');
-          } else {
-            opt.textContent = item;
-            if (selectedFood && item === selectedFood) {
-              opt.selected = true;
-            }
-          }
-
+          opt.textContent = item;
+          opt.selected = selectedLookup.has(item.toLowerCase());
           select.appendChild(opt);
         });
 
+        (selectedFoodList || [])
+          .filter(function(item) {
+            return !menuItems.some(function(menuItem) { return menuItem.toLowerCase() === item.toLowerCase(); });
+          })
+          .forEach(function(item) {
+            const opt = document.createElement('option');
+            opt.value = item;
+            opt.textContent = item + ' (custom)';
+            opt.selected = true;
+            select.appendChild(opt);
+          });
+
         const note = $('foodNote');
         if (!state.menu || !state.menu.length) {
-          note.textContent = 'Menu will go in column J (starting J2). Once items are listed, you can claim one here.';
+          note.textContent = 'Menu will go in column J (starting J2). Once items are listed, you can claim one or more for yourself.';
         } else {
-          note.textContent = 'Items in gray (disabled) are already taken. Choose any available item.';
+          note.textContent = 'Choose every dish you’re bringing. Selections save as a semicolon list under Your Name only.';
         }
 
         updateFoodVisibility();
@@ -911,17 +937,20 @@
       function updateFoodVisibility() {
         const block = $('foodSignupBlock');
         const select = $('foodSelect');
-        if (!block || !select) return;
+        const voteBlock = $('voteBlock');
+        if (!block || !select || !voteBlock) return;
 
         const inviterRaw = ($('inviterInput').value || '').trim().toLowerCase();
         const attendeeRaw = ($('fullNameInput').value || '').trim().toLowerCase();
-        const attendee = attendeeRaw || inviterRaw;
-        const allowFood = inviterRaw && attendee && inviterRaw === attendee;
+        const isClusterHead = inviterRaw && attendeeRaw && inviterRaw === attendeeRaw;
+        const editingInviter = inviterRaw && (!guestFieldsUnlocked || isClusterHead);
 
-        block.style.display = allowFood ? '' : 'none';
+        block.style.display = editingInviter ? '' : 'none';
+        voteBlock.style.display = editingInviter ? '' : 'none';
 
-        if (!allowFood) {
-          select.value = '';
+        if (!editingInviter) {
+          clearFoodSelections();
+          setVoteChoice('none');
         }
       }
 
@@ -961,11 +990,11 @@
           return;
         }
         const shortName = toShortName(fullName);
-        const ageText = ageShort(getSelectedAgeGroup());
+        const lowerName = fullName.toLowerCase();
+        const inviterName = currentInviterName().toLowerCase();
+        const ageText = inviterName && lowerName === inviterName ? '' : ageShort(getSelectedAgeGroup());
         preview.textContent = ageText ? shortName + ' • ' + ageText : shortName;
         preview.style.display = 'inline-flex';
-
-        const lowerName = fullName.toLowerCase();
         const hydratedMatch = manualAgeSelection && lastHydratedName === lowerName;
 
         // Auto-load existing selections if this name already exists, unless the user is actively changing the age.
@@ -1126,7 +1155,7 @@
           state.currentRow = null;
           setAgeGroup('');
           setVoteChoice('none');
-          refreshFoodSelect('');
+          refreshFoodSelect([]);
           manualAgeSelection = '';
           return;
         }
@@ -1141,7 +1170,7 @@
             state.currentRow = null;
             setAgeGroup('');
             setVoteChoice('none');
-            refreshFoodSelect('');
+            refreshFoodSelect([]);
             lastHydratedName = '';
           }
           if (manualAgeSelection) {
@@ -1158,7 +1187,7 @@
         manualAgeSelection = found.ageGroup || '';
         setVoteChoice(found.gameVote ? 'game' : found.cashVote ? 'cash' : 'none');
         $('inviterInput').value = found.enteredBy || found.fullName || '';
-        refreshFoodSelect(found.food || '');
+        refreshFoodSelect(parseFoods(found.food));
         lastSavedInviter = $('inviterInput').value.trim() || fullName;
         updateGuestButton();
         updateInviterTag();
@@ -1180,9 +1209,6 @@
 
         const inviterName = currentInviterName();
         const shortInviter = inviterName ? toShortName(inviterName) : '';
-        const inviterEntry = findAttendeeByName(inviterName);
-        const inviterAgeShort = inviterEntry ? ageShort(inviterEntry.ageGroup) : '';
-
         updateInviterTag();
 
         greeting.innerHTML = inviterName
@@ -1219,8 +1245,7 @@
 
         const owner = document.createElement('div');
         owner.className = 'tree-owner';
-        const ageTail = inviterAgeShort ? ' • ' + inviterAgeShort : '';
-        owner.textContent = shortInviter + ageTail + ' • ' + matches.length + ' attending in your cluster';
+        owner.textContent = shortInviter + ' • ' + matches.length + ' attending in your cluster';
         treeEl.appendChild(owner);
 
         const ul = document.createElement('ul');
@@ -1233,24 +1258,30 @@
             const li = document.createElement('li');
             const left = document.createElement('span');
             left.className = 'branch-title';
-            left.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
+            const isOwner = isClusterOwner(a);
+            const icon = isOwner ? '⭐' : ageEmoji(a.ageGroup);
+            left.textContent = icon + ' ' + displayName(a);
 
             const detail = document.createElement('div');
             detail.className = 'branch-details';
 
-            const ageDetail = document.createElement('span');
-            ageDetail.innerHTML = 'Age Group: <strong>' + ageLabel(a.ageGroup) + '</strong>';
-            detail.appendChild(ageDetail);
+            if (!isOwner) {
+              const ageDetail = document.createElement('span');
+              ageDetail.innerHTML = 'Age Group: <strong>' + ageLabel(a.ageGroup) + '</strong>';
+              detail.appendChild(ageDetail);
+            }
 
             const foodDetail = document.createElement('span');
-            foodDetail.textContent = 'Food signup: ' + (a.food || 'Not chosen yet');
+            foodDetail.textContent = 'Food signup: ' + (a.food || (isOwner ? 'Not chosen yet' : 'Guests don’t bring food'));
             detail.appendChild(foodDetail);
 
             li.appendChild(left);
             li.appendChild(detail);
-            li.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nFood: ' + a.food : '');
+            li.title = (isOwner ? '' : 'Age: ' + ageLabel(a.ageGroup)) + (a.food ? '\nFood: ' + a.food : '');
             li.addEventListener('click', function() {
-              showStatus('Age for ' + displayName(a) + ': ' + ageLabel(a.ageGroup) + '. Edit above then save.', false);
+              if (!isOwner) {
+                showStatus('Age for ' + displayName(a) + ': ' + ageLabel(a.ageGroup) + '. Edit above then save.', false);
+              }
             });
             ul.appendChild(li);
           });
@@ -1282,7 +1313,7 @@
         $('inviterInput').value = lastSavedInviter;
         setAgeGroup('');
         setVoteChoice('none');
-        refreshFoodSelect('');
+        refreshFoodSelect([]);
         updateInviterTag();
         showStatus('Adding a guest under ' + toShortName(lastSavedInviter) + '. Enter their full name and details.', false);
       }
@@ -1312,22 +1343,18 @@
           return;
         }
 
-        let ageGroup = getSelectedAgeGroup();
         const isClusterHead = inviter && inviter.toLowerCase() === name.toLowerCase();
-        if (!ageGroup && isClusterHead) {
-          setAgeGroup('11+');
-          manualAgeSelection = '11+';
-          ageGroup = '11+';
-        }
-
-        if (!ageGroup && !isClusterHead) {
+        let ageGroup = getSelectedAgeGroup();
+        if (isClusterHead) {
+          ageGroup = '11+'; // signer-upper is always treated as adult, no need to display
+        } else if (!ageGroup) {
           showStatus('Please select an age group for your guest (11+ or 10-).', true);
           return;
         }
 
-        const foodAllowed = inviter && name && inviter.toLowerCase() === name.toLowerCase();
-        const food = foodAllowed ? $('foodSelect').value : '';
-        const voteChoice = getVoteChoice();
+        const selectedFoods = isClusterHead ? getSelectedFoods() : [];
+        const food = isClusterHead ? selectedFoods.join('; ') : '';
+        const voteChoice = isClusterHead ? getVoteChoice() : 'none';
 
         const lookup = name.toLowerCase();
         const existing = (state.attendees || []).find(function(a) {
@@ -1342,8 +1369,8 @@
           fullName: name,
           ageGroup: ageGroup,
           food: food,
-          gameVote: voteChoice === 'game',
-          cashVote: voteChoice === 'cash',
+          gameVote: isClusterHead && voteChoice === 'game',
+          cashVote: isClusterHead && voteChoice === 'cash',
           enteredBy: inviter             // first time this row is created, this is stored in column K
         };
 
@@ -1367,7 +1394,7 @@
             renderMeta();
             renderInviteTree();
             renderFoodList();
-            refreshFoodSelect(updated ? updated.food || '' : food || '');
+            refreshFoodSelect(parseFoods(updated ? updated.food || '' : food || ''));
 
             lastSavedInviter = inviter;
             guestFieldsUnlocked = true;
@@ -1461,20 +1488,25 @@
 
               const title = document.createElement('div');
               title.className = 'branch-title';
-              title.textContent = ageEmoji(a.ageGroup) + ' ' + displayName(a);
+              const isOwner = isClusterOwner(a);
+              const icon = isOwner ? '⭐' : ageEmoji(a.ageGroup);
+              title.textContent = icon + ' ' + displayName(a);
 
               const detail = document.createElement('div');
               detail.className = 'branch-details';
-              const ageDetail = document.createElement('span');
-              ageDetail.innerHTML = 'Age Group: <strong>' + ageLabel(a.ageGroup) + '</strong>';
+              if (!isOwner) {
+                const ageDetail = document.createElement('span');
+                ageDetail.innerHTML = 'Age Group: <strong>' + ageLabel(a.ageGroup) + '</strong>';
+                detail.appendChild(ageDetail);
+              }
+
               const foodDetail = document.createElement('span');
-              foodDetail.textContent = 'Food signup: ' + (a.food || 'Not chosen yet');
-              detail.appendChild(ageDetail);
+              foodDetail.textContent = 'Food signup: ' + (a.food || (isOwner ? 'Not chosen yet' : 'Guests don’t bring food'));
               detail.appendChild(foodDetail);
 
               person.appendChild(title);
               person.appendChild(detail);
-              person.title = 'Age: ' + ageLabel(a.ageGroup) + (a.food ? '\nFood: ' + a.food : '');
+              person.title = (isOwner ? '' : 'Age: ' + ageLabel(a.ageGroup)) + (a.food ? '\nFood: ' + a.food : '');
               branches.appendChild(person);
             });
 
@@ -1494,7 +1526,7 @@
         container.appendChild(title);
 
         const attendees = (state.attendees || []).filter(function(a) {
-          return !!a.food;
+          return !!a.food && isClusterOwner(a);
         });
 
         if (!attendees.length) {
@@ -1513,8 +1545,7 @@
           .forEach(function(a) {
             const li = document.createElement('li');
             li.innerHTML =
-              ageEmoji(a.ageGroup) +
-              ' <strong>' + displayName(a) + '</strong> → ' +
+              '⭐ <strong>' + displayName(a) + '</strong> → ' +
               a.food;
             li.title = (a.enteredBy ? 'Invited by: ' + toShortName(a.enteredBy) : '');
             list.appendChild(li);
