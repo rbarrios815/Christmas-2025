@@ -686,6 +686,7 @@
 
             <div class="row" style="justify-content:flex-start;gap:10px;align-items:center;flex-wrap:wrap;">
               <button type="button" id="saveBtn" onclick="handleSave()">⭐ I'm Attending</button>
+              <button type="button" class="ghost" id="dishBtn" style="display:none;" onclick="startDishAdd()">🍽️ Add dishes to my star</button>
             </div>
 
             <div id="status"></div>
@@ -778,6 +779,7 @@
         renderFoodList();
         refreshFoodSelect();
         updateGuestButton();
+        updateDishButton();
         updateInviterTag();
         updateInviterVotePreview();
         renderPersonalTree();
@@ -990,7 +992,7 @@
         if (!state.menu || !state.menu.length) {
           note.textContent = 'Menu will go in column J (starting J2). Once items are listed, you can claim one or more for yourself.';
         } else {
-          note.textContent = 'Claim every dish you’re bringing—each menu item can only be claimed once.';
+          note.textContent = 'Claim every dish you’re bringing—each menu item can only be claimed once. Use “Add dishes to my star” later if you add more.';
         }
 
         updateFoodVisibility();
@@ -1087,6 +1089,7 @@
       $('inviterInput').addEventListener('input', function() {
         lastSavedInviter = '';
         updateGuestButton();
+        updateDishButton();
         updateInviterTag();
         updateInviterVotePreview();
         renderPersonalTree();
@@ -1147,6 +1150,20 @@
         } else {
           btn.disabled = true;
           btn.textContent = '➕ Save your name to add guests';
+        }
+      }
+
+      function updateDishButton() {
+        const btn = $('dishBtn');
+        if (!btn) return;
+
+        const inviterName = currentInviterName();
+        const ownerEntry = findAttendeeByName(inviterName || lastSavedInviter);
+        const canEditDishes = isClusterOwner(ownerEntry);
+
+        btn.style.display = canEditDishes ? '' : 'none';
+        if (canEditDishes) {
+          btn.textContent = '🍽️ Add dishes for ' + toShortName(inviterName || lastSavedInviter);
         }
       }
 
@@ -1263,6 +1280,7 @@
         refreshFoodSelect(parseFoods(found.food));
         lastSavedInviter = $('inviterInput').value.trim() || fullName;
         updateGuestButton();
+        updateDishButton();
         updateInviterTag();
         updateInviterVotePreview();
         renderPersonalTree();
@@ -1387,6 +1405,27 @@
         showStatus('Adding a guest under ' + toShortName(lastSavedInviter) + '. Enter their full name and details.', false);
       }
 
+      function startDishAdd() {
+        const name = lastSavedInviter || currentInviterName();
+        if (!name) {
+          showStatus('Save your name first to claim menu items.', true);
+          return;
+        }
+
+        $('inviterInput').value = name;
+        $('fullNameInput').value = name;
+        hydrateExistingSignup(name);
+        updateDishButton();
+        updateFoodVisibility();
+
+        const select = $('foodSelect');
+        if (select) {
+          select.focus({ preventScroll: true });
+        }
+
+        showStatus('Add or update dishes for ' + toShortName(name) + '. Pick every dish you plan to bring.', false);
+      }
+
       function clearAttendeeFields() {
         $('fullNameInput').value = '';
         setAgeGroup('');
@@ -1458,7 +1497,7 @@
           row: state.currentRow,          // may be null/undefined if new
           fullName: name,
           ageGroup: ageGroup,
-          food: food,
+          food: parseFoods(food),
           gameVote: isClusterHead && voteChoice === 'game',
           cashVote: isClusterHead && voteChoice === 'cash',
           enteredBy: inviter             // first time this row is created, this is stored in column K
@@ -1491,6 +1530,7 @@
             guestFieldsUnlocked = isInviterComplete(inviterEntry);
             updateGuestFieldsVisibility();
             updateGuestButton();
+            updateDishButton();
             updateInviterTag();
             updateInviterVotePreview();
             updateSaveButtonLabel();
@@ -1638,9 +1678,11 @@
           })
           .forEach(function(a) {
             const li = document.createElement('li');
+            const foods = parseFoods(a.food);
+            const foodText = foods.length ? foods.join(' • ') : (a.food || 'Not chosen yet');
             li.innerHTML =
               '⭐ <strong>' + displayName(a) + '</strong> → ' +
-              a.food;
+              foodText;
             li.title = (a.enteredBy ? 'Invited by: ' + toShortName(a.enteredBy) : '');
             list.appendChild(li);
           });
