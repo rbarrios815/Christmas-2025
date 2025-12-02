@@ -131,6 +131,24 @@
         background: rgba(255, 255, 255, 0.92);
       }
 
+      .flash-highlight {
+        animation: flashField 1.2s ease;
+        border-color: var(--gold) !important;
+        box-shadow: 0 0 0 2px rgba(244, 162, 97, 0.25), 0 0 0 6px rgba(230, 57, 70, 0.12);
+      }
+
+      @keyframes flashField {
+        0% {
+          background: rgba(244, 162, 97, 0.16);
+        }
+        60% {
+          background: rgba(244, 162, 97, 0.05);
+        }
+        100% {
+          background: transparent;
+        }
+      }
+
       input[type="text"]:focus,
       select:focus {
         outline: none;
@@ -591,21 +609,18 @@
           <span id="metaText"></span>
           <span id="guestCount" class="meta-chip guest-count" aria-live="polite"></span>
         </div>
-        <div class="subtitle">1) Type <strong>Your Name, Food Item & Vote</strong> and click <strong>I'm Attending</strong>; 2) Type your guests' names and ages and click 🎄 Save to my tree.</div>
+        <div class="subtitle">1) Type <strong>Your Name, Food Item & Vote</strong> and click <strong>I'm Attending</strong>; 2) Type <strong>your guests' names and ages</strong> and click 🎄 <strong>Save to my tree</strong>.</div>
 
         <div class="personal-tree-wrap">
           <div class="merged-top">
             <div class="personal-chip" id="personalGreeting">⭐ Welcome!</div>
-            <div class="holly-note" id="hollyInstruction">
-              <span>👥 Guests Signed Up: <strong id="guestTotal">0</strong></span>
-            </div>
             <div class="tagline" id="activeInviterTag"></div>
 
             <label for="inviterInput">Your Name</label>
             <div class="field-branch">
               <input type="text" id="inviterInput" placeholder="Type your name to personalize the tree">
 
-              <div id="inviterVotePreview" class="pill" style="display:none;">⏳ Vote pending</div>
+                <div id="inviterVotePreview" class="pill" style="display:none;">🎯 Pick game or cash to save your star</div>
 
               <div id="guestFields" style="display:none;">
                 <label for="fullNameInput" class="indented-label">Guest name + age (unlocked after you save Your Name with food + vote)</label>
@@ -899,6 +914,15 @@
         Array.from(select.options).forEach(function(opt) { opt.selected = false; });
       }
 
+      function flashGuestNameField() {
+        const input = $('fullNameInput');
+        if (!input) return;
+        input.classList.remove('flash-highlight');
+        void input.offsetWidth; // force reflow so animation can replay
+        input.classList.add('flash-highlight');
+        input.focus({ preventScroll: true });
+      }
+
       function refreshFoodSelect(selectedFoodList) {
         const select = $('foodSelect');
         select.innerHTML = '';
@@ -910,17 +934,12 @@
         select.appendChild(placeholder);
 
         const selectedSet = new Set((selectedFoodList || []).map(normalizeFoodItem));
-        const currentInviter = normalizeFoodItem(currentInviterName());
 
-        const claimedByOthers = new Set();
+        const claimedFoods = new Set();
         (state.attendees || []).forEach(function(att) {
-          if (!isClusterOwner(att)) return;
-          const owner = normalizeFoodItem(att.fullName);
           parseFoods(att.food).forEach(function(food) {
             const key = normalizeFoodItem(food);
-            if (key && owner && owner !== currentInviter) {
-              claimedByOthers.add(key);
-            }
+            if (key) claimedFoods.add(key);
           });
         });
 
@@ -930,7 +949,7 @@
             const key = normalizeFoodItem(item);
             if (!key) return false;
             if (selectedSet.has(key)) return true;
-            return !claimedByOthers.has(key);
+            return !claimedFoods.has(key);
           })
           .sort(function(a, b) { return a.toLowerCase().localeCompare(b.toLowerCase()); });
 
@@ -1165,7 +1184,7 @@
         }
 
         const inviterEntry = findAttendeeByName(inviter);
-        let text = '⏳ Vote pending';
+        let text = '🎯 Pick game or cash to save your star';
         if (inviterEntry) {
           if (inviterEntry.gameVote) {
             text = '🎁 Voted: White Elephant game';
@@ -1254,8 +1273,8 @@
         updateInviterTag();
 
         greeting.innerHTML = inviterName
-          ? '⭐ Welcome <strong>' + shortInviter + '</strong>!'
-          : '⭐ Welcome! Start with <strong>Your Name</strong> to light your star and preview your branches instantly.';
+          ? '⭐ <strong>' + shortInviter + '</strong> is on the Nice List—add guests below.'
+          : '⭐ Welcome! Add <strong>Your Name</strong> to light your star.';
 
         treeEl.innerHTML = '';
 
@@ -1293,32 +1312,32 @@
         const ul = document.createElement('ul');
         ul.className = 'tree-branches';
 
-        matches
-          .slice()
-          .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
-          .forEach(function(a) {
-            const li = document.createElement('li');
-            const left = document.createElement('span');
-            left.className = 'branch-title';
-            const isOwner = isClusterOwner(a);
-            const icon = isOwner ? '⭐' : ageEmoji(a.ageGroup);
-            left.textContent = icon + ' ' + displayName(a);
+              matches
+                .slice()
+                .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
+                .forEach(function(a) {
+                  const li = document.createElement('li');
+                  const left = document.createElement('span');
+                  left.className = 'branch-title';
+                  const isOwner = isClusterOwner(a);
+                  const icon = isOwner ? '⭐' : ageEmoji(a.ageGroup);
+                  left.textContent = icon + ' ' + displayName(a);
 
-            const detail = document.createElement('div');
-            detail.className = 'branch-details';
+                  const detail = document.createElement('div');
+                  detail.className = 'branch-details';
 
-            if (!isOwner) {
-              const ageDetail = document.createElement('span');
-              ageDetail.innerHTML = 'Age Group: <strong>' + ageLabel(a.ageGroup) + '</strong>';
-              detail.appendChild(ageDetail);
-            }
+                  if (!isOwner) {
+                    const ageDetail = document.createElement('span');
+                    ageDetail.innerHTML = '<strong>' + ageLabel(a.ageGroup) + '</strong>';
+                    detail.appendChild(ageDetail);
+                  }
 
-            const foodText = isOwner ? (a.food || 'Not chosen yet') : a.food;
-            if (foodText) {
-              const foodDetail = document.createElement('span');
-              foodDetail.textContent = 'Food signup: ' + foodText;
-              detail.appendChild(foodDetail);
-            }
+                  const foodText = isOwner ? (a.food || 'Not chosen yet') : a.food;
+                  if (foodText) {
+                    const foodDetail = document.createElement('span');
+                    foodDetail.textContent = 'Bringing: ' + foodText;
+                    detail.appendChild(foodDetail);
+                  }
 
             li.appendChild(left);
             li.appendChild(detail);
@@ -1332,18 +1351,6 @@
           });
 
         treeEl.appendChild(ul);
-      }
-
-      function scrollToPersonalOrClusters(inviterName) {
-        const personalArea = document.querySelector('.card');
-        const treeCard = $('inviteTree');
-        if (inviterName && personalArea) {
-          personalArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          return;
-        }
-        if (treeCard) {
-          treeCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
       }
 
       function prepGuestAdd() {
@@ -1473,8 +1480,6 @@
             renderPersonalTree();
             lastHydratedName = lookup;
 
-            scrollToPersonalOrClusters(inviter);
-
             clearAttendeeFields();
 
             $('saveBtn').disabled = false;
@@ -1482,6 +1487,10 @@
               ? ' 🎄 Guests + ages are unlocked—add another under ' + toShortName(inviter || name) + ' when you’re ready.'
               : ' Add a food choice and vote to unlock guests beneath your star.';
             showStatus('Saved!' + unlockedText, !guestFieldsUnlocked);
+
+            if (isClusterHead && guestFieldsUnlocked) {
+              flashGuestNameField();
+            }
           })
           .withFailureHandler(function(err) {
             $('saveBtn').disabled = false;
@@ -1495,7 +1504,7 @@
         container.innerHTML = '';
 
         const title = document.createElement('h2');
-        title.innerHTML = '🌲 Santa’s Nice List (Invite Tree)';
+        title.innerHTML = '🌲 Santa’s Nice List';
         container.appendChild(title);
 
         if (!state.attendees || !state.attendees.length) {
@@ -1567,14 +1576,14 @@
               detail.className = 'branch-details';
               if (!isOwner) {
                 const ageDetail = document.createElement('span');
-                ageDetail.innerHTML = 'Age Group: <strong>' + ageLabel(a.ageGroup) + '</strong>';
+                ageDetail.innerHTML = '<strong>' + ageLabel(a.ageGroup) + '</strong>';
                 detail.appendChild(ageDetail);
               }
 
               const foodText = isOwner ? (a.food || 'Not chosen yet') : a.food;
               if (foodText) {
                 const foodDetail = document.createElement('span');
-                foodDetail.textContent = 'Food signup: ' + foodText;
+                foodDetail.textContent = 'Bringing: ' + foodText;
                 detail.appendChild(foodDetail);
               }
 
