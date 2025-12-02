@@ -139,7 +139,7 @@ function saveAttendee(att) {
     row = lastRow + 1;
   }
 
-  var food = att.food || '';
+  var food = normalizeFoods_(att.food);
 
   // Write main values
   sheet.getRange(row, 1).setValue(att.fullName);          // Col A: Name of Person Attending
@@ -177,4 +177,27 @@ function safeGetDisplayValue_(sheet, a1) {
   } catch (e) {
     return '';
   }
+}
+
+function normalizeFoods_(foodInput) {
+  var items = [];
+
+  if (Array.isArray(foodInput)) {
+    items = foodInput;
+  } else if (foodInput === undefined || foodInput === null) {
+    items = [];
+  } else {
+    items = foodInput.toString().split(/;|\n|,/);
+  }
+
+  var cleaned = [];
+  items.forEach(function(item) {
+    var text = (item || '').toString().replace(/\s+/g, ' ').trim();
+    if (!text) return;
+    if (cleaned.indexOf(text) === -1) {
+      cleaned.push(text);
+    }
+  });
+
+  return cleaned.join('; ');
 }
