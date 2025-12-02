@@ -243,6 +243,19 @@
         font-size: 1rem;
       }
 
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 12px;
+      }
+
+      .action-row button {
+        margin-top: 0;
+      }
+
       .votes label {
         display: flex;
         align-items: center;
@@ -687,7 +700,6 @@
                 <input type="text" id="inviterInput" placeholder="Type your name to join Santa’s Nice List">
               </div>
               <div>
-                <button type="button" id="attendBtn" onclick="handleSave()">⭐ I'm Attending</button>
                 <span id="attendComplete" class="pill" style="display:none;">✅ You’re on the Nice List</span>
               </div>
             </div>
@@ -698,15 +710,12 @@
               <div class="form-grid">
                 <div id="foodSignupBlock">
                   <label for="foodSelect" id="foodLabel">
-                    <span class="label-title">🍽️ <strong>Food signup</strong></span>
+                    <span class="label-title">🍽️🍪🎄 <strong>Food signup</strong></span>
                   </label>
                   <select id="foodSelect" size="6" multiple aria-label="Food signup options">
                     <option value="">-- I’m not bringing food yet --</option>
                   </select>
                   <div id="foodNote"></div>
-                  <div class="row" style="justify-content:flex-start;gap:10px;align-items:center;flex-wrap:wrap;">
-                    <button type="button" class="ghost" id="dishBtn" style="display:none;" onclick="handleAddDishes()">🍽️ Add dishes for your name</button>
-                  </div>
                 </div>
                 <div>
                   <div class="vote-header">🗳️ <strong>Vote</strong></div>
@@ -722,6 +731,11 @@
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div class="action-row">
+              <button type="button" id="attendBtn" onclick="handleSave()">⭐ I'm Attending</button>
+              <button type="button" class="ghost" id="dishBtn" style="display:none;" onclick="handleAddDishes()">🍽️ Add dishes for your name</button>
             </div>
 
             <div id="guestFields" style="display:none;">
@@ -1214,13 +1228,14 @@
         const btn = $('dishBtn');
         if (!btn) return;
 
-        const inviterName = currentInviterName();
-        const ownerEntry = findAttendeeByName(inviterName || lastSavedInviter);
+        const inviterName = currentInviterName() || lastSavedInviter;
+        const ownerEntry = findAttendeeByName(inviterName);
         const canEditDishes = isClusterOwner(ownerEntry);
+        const accepted = !!ownerEntry;
 
-        btn.style.display = canEditDishes ? '' : 'none';
-        if (canEditDishes) {
-          const targetName = inviterName || lastSavedInviter;
+        btn.style.display = accepted && canEditDishes ? '' : 'none';
+        if (accepted && canEditDishes) {
+          const targetName = inviterName;
           btn.textContent = '🍽️ Add dishes for ' + toShortName(targetName);
           btn.dataset.targetName = targetName;
         }
@@ -1241,6 +1256,8 @@
         if (accepted) {
           badge.textContent = '✅ ' + toShortName(inviterName || inviterEntry.fullName) + ' is on Santa’s Nice List';
         }
+
+        updateDishButton();
       }
 
       function updateFoodLabel() {
@@ -1254,7 +1271,7 @@
         titleSpan.className = 'label-title';
 
         const emoji = document.createElement('span');
-        emoji.textContent = '🍽️';
+        emoji.textContent = '🍽️🍪🎄';
         titleSpan.appendChild(emoji);
 
         const bold = document.createElement('strong');
@@ -1346,7 +1363,14 @@
           clusterWrap.className = 'cluster-preview';
 
           clusterEntries
-            .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
+            .slice()
+            .sort(function(a, b) {
+              const ownerA = isClusterOwner(a);
+              const ownerB = isClusterOwner(b);
+              if (ownerA && !ownerB) return -1;
+              if (!ownerA && ownerB) return 1;
+              return displayName(a).localeCompare(displayName(b));
+            })
             .forEach(function(entry) {
               const item = document.createElement('div');
               item.className = 'cluster-item';
@@ -1750,7 +1774,7 @@
         container.innerHTML = '';
 
         const title = document.createElement('h2');
-        title.innerHTML = '🍽️ Feast & Cookie Swap Lineup';
+        title.innerHTML = '🍽️🍪🎄 Holiday Dish Lineup';
         container.appendChild(title);
 
         const attendees = (state.attendees || []).filter(function(a) {
@@ -1798,9 +1822,8 @@
 
         const totalGame = (state.attendees || []).filter(function(a) { return !!a.gameVote; }).length;
         const totalCash = (state.attendees || []).filter(function(a) { return !!a.cashVote; }).length;
-        const undecided = (state.attendees || []).filter(function(a) { return !a.gameVote && !a.cashVote && isClusterOwner(a); }).length;
-
-        banner.textContent = '🎁 Game votes: ' + totalGame + ' • 💵 Cash votes: ' + totalCash + ' • 🤔 Waiting: ' + undecided;
+        
+        banner.textContent = '🎁 Game votes: ' + totalGame + ' • 💵 Cash votes: ' + totalCash;
         container.appendChild(banner);
       }
     </script>
