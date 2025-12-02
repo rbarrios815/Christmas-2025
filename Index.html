@@ -412,6 +412,18 @@
         gap: 8px;
       }
 
+      .age-chip {
+        display: inline-flex;
+        align-items: center;
+        margin-left: 12px;
+        padding: 2px 12px;
+        border-radius: 999px;
+        background: rgba(230, 57, 70, 0.08);
+        color: #0f372c;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+      }
+
       .branch-details {
         margin-left: 14px;
         padding-left: 12px;
@@ -639,8 +651,8 @@
                       <label for="ageSelect" class="indented-label">Age group for this guest</label>
                       <select id="ageSelect">
                         <option value="">Select an age group</option>
-                        <option value="11+">11 or older</option>
-                        <option value="10-">10 or younger 🎁</option>
+                        <option value="11+">11+</option>
+                        <option value="10-">10- 🎁</option>
                       </select>
                     </div>
                   </div>
@@ -832,14 +844,14 @@
       }
 
       function ageEmoji(ageGroup) {
-        // Christmasy emoji for 10 or younger
+        // Christmasy emoji for 10-
         if (ageGroup === '10-') return '🧸';
         return '🎄';
       }
 
       function ageLabel(ageGroup) {
-        if (ageGroup === '10-') return '10 or younger';
-        if (ageGroup === '11+') return '11 or older';
+        if (ageGroup === '10-') return '10-';
+        if (ageGroup === '11+') return '11+';
         return 'Unknown age';
       }
 
@@ -1570,15 +1582,20 @@
               title.className = 'branch-title';
               const isOwner = isClusterOwner(a);
               const icon = isOwner ? '⭐' : ageEmoji(a.ageGroup);
-              title.textContent = icon + ' ' + displayName(a);
+              const nameSpan = document.createElement('span');
+              nameSpan.textContent = icon + ' ' + displayName(a);
+              title.appendChild(nameSpan);
+
+              const ageShortLabel = isOwner ? '' : ageShort(a.ageGroup);
+              if (ageShortLabel) {
+                const ageBadge = document.createElement('span');
+                ageBadge.className = 'age-chip';
+                ageBadge.textContent = ageShortLabel;
+                title.appendChild(ageBadge);
+              }
 
               const detail = document.createElement('div');
               detail.className = 'branch-details';
-              if (!isOwner) {
-                const ageDetail = document.createElement('span');
-                ageDetail.innerHTML = '<strong>' + ageLabel(a.ageGroup) + '</strong>';
-                detail.appendChild(ageDetail);
-              }
 
               const foodText = isOwner ? (a.food || 'Not chosen yet') : a.food;
               if (foodText) {
@@ -1588,7 +1605,9 @@
               }
 
               person.appendChild(title);
-              person.appendChild(detail);
+              if (detail.children.length) {
+                person.appendChild(detail);
+              }
               person.title = (isOwner ? '' : 'Age: ' + ageLabel(a.ageGroup)) + (a.food ? '\nFood: ' + a.food : '');
               branches.appendChild(person);
             });
