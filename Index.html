@@ -120,6 +120,16 @@
         color: #16302c;
       }
 
+      .name-label {
+        font-size: clamp(1.3rem, 3.5vw, 1.6rem);
+        font-weight: 900;
+        color: #b83227;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-shadow: 0 2px 8px rgba(230, 57, 70, 0.2);
+      }
+
       .label-title {
         display: inline-flex;
         align-items: center;
@@ -142,6 +152,28 @@
         border: 2px solid rgba(11, 139, 98, 0.2);
         font-size: 1.05rem;
         background: rgba(255, 255, 255, 0.92);
+      }
+
+      #inviterInput {
+        padding: 18px 18px;
+        font-size: clamp(1.15rem, 4vw, 1.55rem);
+        border-radius: 18px;
+        border: 3px solid rgba(230, 57, 70, 0.24);
+        background: linear-gradient(120deg, rgba(230, 57, 70, 0.12), rgba(11, 139, 98, 0.08), rgba(244, 162, 97, 0.12)),
+          rgba(255, 255, 255, 0.95);
+        box-shadow: 0 8px 18px rgba(11, 139, 98, 0.12), inset 0 0 0 3px rgba(255, 255, 255, 0.88);
+        transition: box-shadow 160ms ease, transform 160ms ease, border-color 160ms ease;
+      }
+
+      #inviterInput:focus {
+        border-color: #e63946;
+        box-shadow: 0 10px 24px rgba(230, 57, 70, 0.24), inset 0 0 0 3px rgba(255, 255, 255, 0.95);
+        transform: translateY(-1px);
+      }
+
+      #inviterInput::placeholder {
+        color: rgba(22, 48, 44, 0.68);
+        font-weight: 600;
       }
 
       .flash-highlight {
@@ -397,6 +429,36 @@
       .personal-note {
         font-size: 0.95rem;
         color: #224139;
+      }
+
+      .food-lineup {
+        list-style: none;
+        padding-left: 0;
+        margin: 10px 0 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .food-lineup li {
+        background: rgba(255, 255, 255, 0.86);
+        border: 1px solid rgba(11, 139, 98, 0.18);
+        border-radius: 14px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        font-size: 1rem;
+      }
+
+      .food-open {
+        color: #b83227;
+        font-weight: 800;
+      }
+
+      .food-claimer {
+        color: #0c3f35;
+        font-weight: 700;
       }
 
       .holly-note {
@@ -700,7 +762,7 @@
         <div class="merged-top">
           <div class="tagline" id="activeInviterTag" style="display:none;"></div>
 
-          <label for="inviterInput">Your Name</label>
+          <label for="inviterInput" class="name-label">Your Name</label>
           <div class="personal-note" id="nameHelper"></div>
           <div class="field-branch">
             <div class="row" style="align-items:center; gap:10px;">
@@ -1892,31 +1954,95 @@
           return !!a.food && isClusterOwner(a);
         });
 
-        if (!attendees.length) {
+        const menuItems = (state.menu || []).filter(function(item) { return !!item; });
+        const lineupByItem = new Map();
+
+        menuItems.forEach(function(item) {
+          const key = normalizeFoodItem(item);
+          if (!key) return;
+          lineupByItem.set(key, { label: item, claimants: [] });
+        });
+
+        const extras = [];
+        attendees.forEach(function(a) {
+          const foods = parseFoods(a.food);
+          foods.forEach(function(food) {
+            const key = normalizeFoodItem(food);
+            if (key && lineupByItem.has(key)) {
+              lineupByItem.get(key).claimants.push(displayName(a));
+            } else if (food) {
+              extras.push({ food: food, by: displayName(a), inviter: a.enteredBy });
+            }
+          });
+        });
+
+        if (!menuItems.length && !attendees.length) {
           const p = document.createElement('p');
           p.textContent = 'No food signups yet. Once the menu (column J) is filled, pick a dish to bring and make Santa proud! 🍰';
           container.appendChild(p);
           return;
         }
 
-        const list = document.createElement('ul');
-        attendees
-          .slice()
-          .sort(function(a, b) {
-            return (a.food || '').localeCompare(b.food || '');
-          })
-          .forEach(function(a) {
+        if (menuItems.length) {
+          const list = document.createElement('ul');
+          list.className = 'food-lineup';
+
+          menuItems
+            .slice()
+            .forEach(function(item) {
+              const key = normalizeFoodItem(item);
+              const entry = key ? lineupByItem.get(key) : null;
+              const li = document.createElement('li');
+
+              const name = document.createElement('strong');
+              name.textContent = item;
+              li.appendChild(document.createTextNode('🎄 '));
+              li.appendChild(name);
+              li.appendChild(document.createTextNode(' — '));
+
+              if (entry && entry.claimants.length) {
+                const claimer = document.createElement('span');
+                claimer.textContent = entry.claimants.join(', ');
+                claimer.className = 'food-claimer';
+                li.appendChild(claimer);
+              } else {
+                const open = document.createElement('span');
+                open.textContent = 'Open to claim';
+                open.className = 'food-open';
+                li.appendChild(open);
+              }
+
+              list.appendChild(li);
+            });
+
+          container.appendChild(list);
+        }
+
+        if (extras.length) {
+          const extrasTitle = document.createElement('div');
+          extrasTitle.className = 'subtitle';
+          extrasTitle.textContent = 'Bonus dishes already claimed:';
+          container.appendChild(extrasTitle);
+
+          const extraList = document.createElement('ul');
+          extraList.className = 'food-lineup';
+
+          extras.forEach(function(entry) {
             const li = document.createElement('li');
-            const foods = parseFoods(a.food);
-            const foodText = foods.length ? foods.join(' • ') : (a.food || 'Not chosen yet');
-            li.innerHTML =
-              '⭐ <strong>' + displayName(a) + '</strong> → ' +
-              foodText;
-            li.title = (a.enteredBy ? 'Invited by: ' + toShortName(a.enteredBy) : '');
-            list.appendChild(li);
+            const foodName = document.createElement('strong');
+            foodName.textContent = entry.food;
+
+            li.appendChild(document.createTextNode('⭐ '));
+            li.appendChild(foodName);
+            li.appendChild(document.createTextNode(' — ' + entry.by));
+            if (entry.inviter) {
+              li.title = 'Invited by: ' + toShortName(entry.inviter);
+            }
+            extraList.appendChild(li);
           });
 
-        container.appendChild(list);
+          container.appendChild(extraList);
+        }
       }
 
       function renderVoteTotals() {
