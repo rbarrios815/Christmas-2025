@@ -1,51 +1,42 @@
-const APPS_SCRIPT_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxyv1NvS2xlA-RwHh0czbD0gD73sGHTWwf69xBJoaMvwez-kTOCAvGbH4894mgP5cjg/exec';
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type'
-};
-
-async function handlePost(request) {
-  const upstreamResponse = await fetch(APPS_SCRIPT_EXEC_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: await request.text()
-  });
-
-  const responseBody = await upstreamResponse.text();
-  const response = new Response(responseBody, {
-    status: upstreamResponse.status,
-    statusText: upstreamResponse.statusText,
-    headers: {
-      ...corsHeaders
-    }
-  });
-
-  const contentType = upstreamResponse.headers.get('content-type');
-  if (contentType) {
-    response.headers.set('Content-Type', contentType);
-  }
-
-  return response;
-}
-
-async function handleRequest(request) {
-  if (request.method === 'OPTIONS') {
-    return new Response(null, { status: 204, headers: corsHeaders });
-  }
-
-  if (request.method !== 'POST') {
-    return new Response('Method Not Allowed', { status: 405, headers: corsHeaders });
-  }
-
-  return handlePost(request);
-}
-
 export default {
   async fetch(request, env, ctx) {
-    return handleRequest(request);
+    const url = new URL(request.url);
+
+    // ✅ Your Apps Script URL (exec)
+    const TARGET = "https://script.google.com/macros/s/AKfycbxyv1NvS2xlA-RwHh0czbD0gD73sGHTWwf69xBJoaMvwez-kTOCAvGbH4894mgP5cjg/exec";
+
+    // Handle CORS preflight
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        status: 204,
+        headers: {
+          "Access-Control-Allow-Origin": "https://rbarrios815.github.io",
+          "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
+          "Access-Control-Max-Age": "86400"
+        }
+      });
+    }
+
+    // Forward request to Apps Script
+    const upstream = await fetch(TARGET, {
+      method: request.method,
+      headers: {
+        "Content-Type": request.headers.get("Content-Type") || "text/plain;charset=utf-8"
+      },
+      body: request.method === "GET" || request.method === "HEAD" ? undefined : await request.text()
+    });
+
+    // Return response + add CORS
+    const respText = await upstream.text();
+    return new Response(respText, {
+      status: upstream.status,
+      headers: {
+        "Content-Type": upstream.headers.get("Content-Type") || "application/json; charset=utf-8",
+        "Access-Control-Allow-Origin": "https://rbarrios815.github.io",
+        "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type"
+      }
+    });
   }
 };
