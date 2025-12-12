@@ -880,7 +880,7 @@
       let lastHydratedName = '';
       let manualAgeSelection = '';
       let guestFieldsUnlocked = false;
-const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxyv1NvS2xlA-RwHh0czbD0gD73sGHTWwf69xBJoaMvwez-kTOCAvGbH4894mgP5cjg/exec";
+const APPS_SCRIPT_API_URL = 'https://apps-script-proxy.rbarrios815.workers.dev';
       const PREVIEW_DATA = {
         meta: {
           date: '12/24',
@@ -925,41 +925,13 @@ const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxyv1NvS2xl
       }
 
       function hasApiUrl() {
-        return !!APPS_SCRIPT_API_URL && APPS_SCRIPT_API_URL !== 'PASTE_EXEC_URL_HERE';
+        return !!APPS_SCRIPT_API_URL && APPS_SCRIPT_API_URL !== 'PASTE_WORKER_URL_HERE';
       }
 
-async function apiPost(action, payload) {
-  if (!hasApiUrl()) {
-    throw new Error('Apps Script API URL is not configured.');
-  }
-
-  const resp = await fetch(APPS_SCRIPT_API_URL, {
-    method: 'POST',
-    // IMPORTANT: text/plain avoids CORS preflight that breaks Apps Script calls from GitHub Pages
-    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-    body: JSON.stringify({ action: action, payload: payload })
-  });
-
-  const text = await resp.text();
-
-  if (!resp.ok) {
-    throw new Error('Request failed: ' + resp.status + ' ' + resp.statusText + ' — ' + text);
-  }
-
-  let json;
-  try {
-    json = JSON.parse(text);
-  } catch (e) {
-    throw new Error('Invalid JSON response: ' + text);
-  }
-
-  if (!json || json.ok === false) {
-    throw new Error((json && json.error) || 'Request failed');
-  }
-
-  return json.data;
-}
-
+      async function apiPost(action, payload) {
+        if (!hasApiUrl()) {
+          throw new Error('Apps Script API URL is not configured.');
+        }
 
         const resp = await fetch(APPS_SCRIPT_API_URL, {
           method: 'POST',
@@ -970,7 +942,8 @@ async function apiPost(action, payload) {
         });
 
         if (!resp.ok) {
-          throw new Error('Request failed: ' + resp.status + ' ' + resp.statusText);
+          const text = await resp.text();
+          throw new Error('Request failed: ' + resp.status + ' ' + resp.statusText + ' — ' + text);
         }
 
         const json = await resp.json();
