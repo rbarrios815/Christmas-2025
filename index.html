@@ -124,6 +124,37 @@
         color: #16302c;
       }
 
+      .guest-section {
+        margin-top: 14px;
+        padding: 12px;
+        border: 2px dashed rgba(11, 139, 98, 0.2);
+        border-radius: 16px;
+        background: rgba(11, 139, 98, 0.05);
+      }
+
+      .guest-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-top: 8px;
+      }
+
+      .guest-row input[type="text"] {
+        flex: 1 1 220px;
+      }
+
+      .guest-row select {
+        flex: 0 0 180px;
+      }
+
+      .guest-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+      }
+
       .name-label {
         font-size: clamp(1.3rem, 3.5vw, 1.6rem);
         font-weight: 900;
@@ -358,6 +389,16 @@
           </div>
         </div>
 
+        <div class="guest-section" aria-labelledby="guestHeader">
+          <div class="label-title" id="guestHeader">👥 Guests + ages (optional)</div>
+          <div class="subtitle">Add everyone coming with you so Santa knows how many stockings to hang.</div>
+          <div id="guestList"></div>
+          <div class="guest-actions">
+            <button type="button" class="ghost" id="addGuestBtn">➕ Add Guest</button>
+            <span class="pill" id="guestHint">Tip: add kids with their ages.</span>
+          </div>
+        </div>
+
         <div class="action-row">
           <button type="button" id="attendBtn">⭐ I'm Attending</button>
           <button type="button" class="ghost" id="refreshBtn">🔄 Refresh List</button>
@@ -423,6 +464,56 @@
       }
 
       function normalizeFoodItem(item) { return (item || "").trim().toLowerCase(); }
+
+      const AGE_OPTIONS = [
+        { value: "10-", label: "0-10" },
+        { value: "11-17", label: "11-17" },
+        { value: "18+", label: "18+" },
+      ];
+
+      function addGuestRow(prefill = {}) {
+        const row = document.createElement("div");
+        row.className = "guest-row";
+
+        const nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.placeholder = "Guest name";
+        nameInput.value = prefill.name || "";
+        row.appendChild(nameInput);
+
+        const ageSelect = document.createElement("select");
+        AGE_OPTIONS.forEach(opt => {
+          const option = document.createElement("option");
+          option.value = opt.value;
+          option.textContent = opt.label;
+          if ((prefill.age || "").trim() === opt.value) option.selected = true;
+          ageSelect.appendChild(option);
+        });
+        ageSelect.value = prefill.age || "18+";
+        row.appendChild(ageSelect);
+
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.className = "ghost";
+        removeBtn.textContent = "✖ Remove";
+        removeBtn.addEventListener("click", () => row.remove());
+        row.appendChild(removeBtn);
+
+        $("guestList").appendChild(row);
+        return row;
+      }
+
+      function getGuestEntries() {
+        const rows = Array.from(document.querySelectorAll(".guest-row"));
+        return rows
+          .map(row => {
+            const inputs = row.querySelectorAll("input, select");
+            const name = (inputs[0] && inputs[0].value ? inputs[0].value : "").trim();
+            const age = (inputs[1] && inputs[1].value ? inputs[1].value : "").trim() || "18+";
+            return name ? { name, age } : null;
+          })
+          .filter(Boolean);
+      }
 
       function getVoteChoice() {
         const radios = document.querySelectorAll('input[name="voteChoice"]');
@@ -767,24 +858,45 @@
         const vote = getVoteChoice();
         if (!vote) { showStatus("Pick game or cash first.", true); return; }
 
+        const guests = getGuestEntries();
+        const guestSummary = guests.length ? guests.map(g => `${g.name} (${g.age})`).join("; ") : "";
+
         const payload = {
           name,
-          ageGroup: "11+",
+          ageGroup: "18+",
           dish: foods.join("; "),
           vote,
-          questions: ($("questionsInput").value || "").trim(),
+          questions: [$("questionsInput").value || "", guestSummary ? "Guests: " + guestSummary : ""]
+            .map(x => x.trim())
+            .filter(Boolean)
+            .join(" | "),
           enteredBy: name,
         };
+
+        const submissions = [payload];
+        guests.forEach(g => {
+          submissions.push({
+            name: g.name,
+            ageGroup: g.age,
+            dish: "",
+            vote: "",
+            questions: `Guest of ${name}`,
+            enteredBy: name,
+          });
+        });
 
         $("attendBtn").disabled = true;
         showStatus("Submitting…");
 
         try {
-          await submitToForm(payload);
+          for (const submission of submissions) {
+            await submitToForm(submission);
+          }
           showStatus("Submitted! Refreshing list…");
           await hardRefresh();
           $("attendComplete").style.display = "";
-          $("attendComplete").textContent = "✅ " + toShortName(name) + " is on Santa’s Nice List";
+          const extra = guests.length ? ` with ${guests.length} guest${guests.length === 1 ? "" : "s"}` : "";
+          $("attendComplete").textContent = "✅ " + toShortName(name) + " is on Santa’s Nice List" + extra;
         } catch (e) {
           showStatus(String(e && e.message ? e.message : e), true);
         } finally {
@@ -798,6 +910,8 @@
       document.addEventListener("DOMContentLoaded", async () => {
         $("attendBtn").addEventListener("click", handleAttend);
         $("refreshBtn").addEventListener("click", hardRefresh);
+        $("addGuestBtn").addEventListener("click", () => addGuestRow());
+        addGuestRow();
         try { await hardRefresh(); }
         catch (e) { showStatus("Load error: " + String(e && e.message ? e.message : e), true); }
       });
