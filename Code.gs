@@ -14,6 +14,9 @@ function doGet(e) {
 function doPost(e) {
   var output = ContentService.createTextOutput();
   output.setMimeType(ContentService.MimeType.JSON);
+  output.setHeader('Access-Control-Allow-Origin', 'https://rbarrios815.github.io');
+  output.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  output.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   try {
     var body = e && e.postData && e.postData.contents;
