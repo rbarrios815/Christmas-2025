@@ -756,8 +756,8 @@
           <span id="metaText"></span>
           <span id="guestCount" class="meta-chip guest-count" aria-live="polite"></span>
         </div>
-        <div class="hero-line">🧦✨🎄🦌🎁☃️🍪✨🧦 Ho Ho Ho!<br>Christmas 2025<br>— Santa's Nice List is open — add your name & your tastiest treat! 🍪</div>
-        <div class="subtitle">Add yourself with a dish + vote, then list any guests and ages.</div>
+        <div class="hero-line">🧦✨🎄🦌🎁☃️🍪✨🧦 Ho Ho Ho!<br>Christmas 2025<br>Santa's Nice List is open. Add your name & your tastiest treat! 🍪</div>
+        <div class="subtitle">Add yourself with a dish + vote; guests + ages show up automatically.</div>
 
         <div class="merged-top">
           <div class="tagline" id="activeInviterTag" style="display:none;"></div>
@@ -808,6 +808,8 @@
               <button type="button" class="ghost" id="dishBtn" style="display:none;" onclick="handleAddDishes()">🍽️ Add dishes for your name</button>
               <button type="button" class="ghost" id="voteChangeBtn" style="display:none;" onclick="handleChangeVote()">🔄 Update vote</button>
             </div>
+
+            <div id="personalPreview" class="personal-tree-wrap" style="display:none;"></div>
 
             <div id="guestFields" style="display:none;">
               <label for="fullNameInput" class="indented-label">Guest name + age</label>
@@ -860,6 +862,13 @@
         return document.getElementById(id);
       }
 
+      const HARD_META = {
+        date: '12/24',
+        time: '3 pm - ?',
+        address: '5235 Jay Thrush Dr, Richmond, TX 77407',
+        questions: 'Text 281-707-5222'
+      };
+
       let state = {
         meta: {},
         attendees: [],
@@ -911,8 +920,8 @@
       }
 
       function onDataLoaded(data) {
-        state.meta = data.meta || {};
-        state.attendees = enrichAttendees(data.attendees || []);
+        state.meta = Object.assign({}, HARD_META, data.meta || {});
+        state.attendees = dedupeByName(enrichAttendees(data.attendees || []));
         state.menu = data.menu || [];
         state.currentRow = null;
         lastSavedInviter = '';
@@ -929,6 +938,7 @@
         updateInviterVotePreview();
         updateAttendButton();
         updateSaveButtons();
+        renderPersonalPreview();
 
         showStatus('Loaded.', false);
       }
@@ -947,23 +957,13 @@
       }
 
       function renderMeta() {
-        const meta = state.meta || {};
+        const meta = Object.assign({}, HARD_META, state.meta || {});
         const metaLine = [];
-        const guestCount = (state.attendees || []).length;
+        const guestCount = dedupeByName(state.attendees || []).length;
 
-        if (meta.date) {
-          metaLine.push('📅 ' + meta.date);
-        } else {
-          metaLine.push('📅 12/24');
-        }
-
-        if (meta.time) {
-          metaLine.push('⏰ ' + meta.time);
-        }
-
-        if (meta.address) {
-          metaLine.push('📍 ' + meta.address);
-        }
+        metaLine.push('📅 ' + (meta.date || HARD_META.date));
+        metaLine.push('⏰ ' + (meta.time || HARD_META.time));
+        metaLine.push('📍 ' + (meta.address || HARD_META.address));
 
         const metaEl = $('metaText');
         metaEl.innerHTML = '';
@@ -984,11 +984,11 @@
           guestTotal.textContent = guestCount;
         }
 
-        if (meta.questions) {
-          $('questionsText').textContent = '❓ Questions for Santa’s helpers: ' + meta.questions;
-        } else {
-          $('questionsText').textContent = '';
-        }
+        const footer = '❓ Questions for Santa’s helpers: ' + (meta.questions || HARD_META.questions)
+          + ' • ' + (meta.date || HARD_META.date)
+          + ' • ' + (meta.time || HARD_META.time)
+          + ' • ' + (meta.address || HARD_META.address);
+        $('questionsText').textContent = footer;
       }
 
       function ageEmoji(ageGroup) {
@@ -1027,6 +1027,16 @@
           result.push(item);
         });
         return result;
+      }
+
+      function dedupeByName(list) {
+        const seen = new Set();
+        return (list || []).filter(function(item) {
+          const key = (item && item.fullName ? item.fullName : '').trim().toLowerCase();
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
       }
 
       function getClusterEntries(inviterName) {
@@ -1078,6 +1088,13 @@
           .map(function(opt) { return opt.value; })
           .filter(function(v) { return !!v; });
         return Array.from(new Set(values));
+      }
+
+      function getPendingDishPreview() {
+        const inviter = currentInviterName();
+        const foods = getSelectedFoods();
+        if (!inviter || !foods.length) return null;
+        return { name: toShortName(inviter), foods: foods };
       }
 
       function clearFoodSelections() {
@@ -1213,6 +1230,7 @@
           preview.textContent = '';
           updateFoodVisibility();
           updateSaveButtons();
+          renderPersonalPreview();
           return;
         }
         const shortName = toShortName(fullName);
@@ -1230,6 +1248,7 @@
 
         updateFoodVisibility();
         updateSaveButtons();
+        renderPersonalPreview();
       }
 
       $('fullNameInput').addEventListener('input', function() {
@@ -1239,12 +1258,14 @@
           manualAgeSelection = '';
         }
         updateSaveButtons();
+        renderPersonalPreview();
       });
 
       $('ageSelect').addEventListener('change', function() {
         manualAgeSelection = this.value;
         updateShortNamePreview({ skipHydrate: true });
         updateSaveButtons();
+        renderPersonalPreview();
       });
 
       $('inviterInput').addEventListener('input', function() {
@@ -1262,10 +1283,29 @@
         updateGuestFieldsVisibility();
         updateFoodVisibility();
         updateSaveButtons();
+        renderPersonalPreview();
       });
 
       $('inviterInput').addEventListener('blur', function() {
         confirmInviter(true);
+      });
+
+      const foodSelectEl = $('foodSelect');
+      if (foodSelectEl) {
+        foodSelectEl.addEventListener('change', function() {
+          renderFoodList();
+          renderPersonalPreview();
+        });
+      }
+
+      ['voteGame', 'voteCash'].forEach(function(id) {
+        const el = $(id);
+        if (el) {
+          el.addEventListener('change', function() {
+            updateInviterVotePreview();
+            renderPersonalPreview();
+          });
+        }
       });
 
       function confirmInviter(silent) {
@@ -1405,7 +1445,9 @@
         const guestMode = guestFieldsUnlocked && !savingInviter;
 
         if (attendBtn) {
-          attendBtn.style.display = guestMode ? 'none' : attendBtn.style.display;
+          attendBtn.style.display = '';
+          attendBtn.textContent = guestMode ? '⭐ Save Guest' : '⭐ I\'m Attending';
+          attendBtn.disabled = guestMode && !attendee;
         }
 
         if (guestSaveBtn) {
@@ -1414,6 +1456,94 @@
         }
 
         updateAttendButton();
+      }
+
+      function renderPersonalPreview() {
+        const container = $('personalPreview');
+        if (!container) return;
+
+        const inviter = currentInviterName();
+        const inviterShort = inviter ? toShortName(inviter) : '';
+        const ownerEntry = inviter ? findAttendeeByName(inviter) : null;
+        const clusterEntries = inviter ? getClusterEntries(inviter) : [];
+        const pendingGuestName = $('fullNameInput').value.trim();
+        const pendingGuestAge = getSelectedAgeGroup();
+
+        const guestEntries = dedupeByName((clusterEntries || []).filter(function(a) { return !isClusterOwner(a); }));
+        if (pendingGuestName) {
+          const lookup = pendingGuestName.toLowerCase();
+          const exists = guestEntries.some(function(g) { return (g.fullName || '').toLowerCase() === lookup; });
+          if (!exists) {
+            guestEntries.push({
+              fullName: pendingGuestName,
+              shortName: toShortName(pendingGuestName),
+              ageGroup: pendingGuestAge || ''
+            });
+          }
+        }
+
+        const selectedFoods = getSelectedFoods();
+        const ownerDish = ownerEntry && ownerEntry.food ? ownerEntry.food : (selectedFoods.length ? selectedFoods.join('; ') : '');
+        const voteChoice = ownerEntry && (ownerEntry.gameVote || ownerEntry.cashVote)
+          ? (ownerEntry.gameVote ? 'game' : 'cash')
+          : getVoteChoice();
+
+        const hasContent = inviterShort && (ownerDish || voteChoice || guestEntries.length);
+        if (!hasContent) {
+          container.style.display = 'none';
+          container.innerHTML = '';
+          return;
+        }
+
+        container.innerHTML = '';
+        const tree = document.createElement('div');
+        tree.className = 'personal-tree';
+
+        const star = document.createElement('div');
+        star.className = 'tree-star';
+        star.textContent = '⭐';
+        tree.appendChild(star);
+
+        const ownerLine = document.createElement('div');
+        ownerLine.className = 'tree-owner';
+        ownerLine.textContent = inviterShort + (ownerDish ? ' — ' + ownerDish : '');
+        tree.appendChild(ownerLine);
+
+        const details = document.createElement('div');
+        details.className = 'branch-details';
+        if (voteChoice) {
+          const voteSpan = document.createElement('span');
+          voteSpan.textContent = voteChoice === 'cash' ? '💵 Voted: Cash donation' : '🎁 Voted: White Elephant game';
+          details.appendChild(voteSpan);
+        }
+        if (ownerDish) {
+          const dishSpan = document.createElement('span');
+          dishSpan.textContent = '🍽️ Dish: ' + ownerDish;
+          details.appendChild(dishSpan);
+        }
+        if (details.children.length) {
+          tree.appendChild(details);
+        }
+
+        if (guestEntries.length) {
+          const guestList = document.createElement('ul');
+          guestList.className = 'tree-branches';
+
+          guestEntries.forEach(function(guest) {
+            const li = document.createElement('li');
+            const title = document.createElement('div');
+            title.className = 'branch-title';
+            const age = ageShort(guest.ageGroup) || '';
+            title.textContent = ageEmoji(guest.ageGroup) + ' ' + (guest.shortName || toShortName(guest.fullName || '')) + (age ? ' — ' + age : '');
+            li.appendChild(title);
+            guestList.appendChild(li);
+          });
+
+          tree.appendChild(guestList);
+        }
+
+        container.appendChild(tree);
+        container.style.display = '';
       }
 
       function updateInviterTag() {
@@ -1626,8 +1756,8 @@
 
         google.script.run
           .withSuccessHandler(function(data) {
-            state.meta = data.meta || {};
-            state.attendees = enrichAttendees(data.attendees || []);
+            state.meta = Object.assign({}, HARD_META, data.meta || {});
+            state.attendees = dedupeByName(enrichAttendees(data.attendees || []));
             state.menu = data.menu || [];
 
             renderMeta();
@@ -1646,6 +1776,7 @@
             updateAttendButton();
             updateVoteButton();
             updateSaveButtons();
+            renderPersonalPreview();
 
             setSaveButtonsDisabled(false);
             showStatus('Dishes saved to column C for ' + toShortName(name) + '.', false);
@@ -1692,8 +1823,8 @@
 
         google.script.run
           .withSuccessHandler(function(data) {
-            state.meta = data.meta || {};
-            state.attendees = enrichAttendees(data.attendees || []);
+            state.meta = Object.assign({}, HARD_META, data.meta || {});
+            state.attendees = dedupeByName(enrichAttendees(data.attendees || []));
             state.menu = data.menu || [];
 
             renderMeta();
@@ -1716,6 +1847,7 @@
             updateAttendButton();
             updateVoteButton();
             updateSaveButtons();
+            renderPersonalPreview();
 
             setSaveButtonsDisabled(false);
             showStatus('Vote updated for ' + toShortName(name) + '.', false);
@@ -1810,8 +1942,8 @@
         google.script.run
           .withSuccessHandler(function(data) {
             // Refresh state & UI using latest snapshot
-            state.meta = data.meta || {};
-            state.attendees = enrichAttendees(data.attendees || []);
+            state.meta = Object.assign({}, HARD_META, data.meta || {});
+            state.attendees = dedupeByName(enrichAttendees(data.attendees || []));
             state.menu = data.menu || [];
 
             // keep the same name in the box
@@ -1839,6 +1971,8 @@
             updateAttendButton();
             updateVoteButton();
             lastHydratedName = lookup;
+
+            renderPersonalPreview();
 
             clearAttendeeFields();
 
@@ -1950,6 +2084,9 @@
         title.innerHTML = '🍽️🍪🎄 Holiday Dish Lineup';
         container.appendChild(title);
 
+        const pendingDish = getPendingDishPreview();
+        const pendingLabel = pendingDish ? pendingDish.name + ' (you)' : '';
+
         const attendees = (state.attendees || []).filter(function(a) {
           return !!a.food && isClusterOwner(a);
         });
@@ -1975,6 +2112,25 @@
             }
           });
         });
+
+        if (pendingDish) {
+          pendingDish.foods.forEach(function(food) {
+            const key = normalizeFoodItem(food);
+            if (key && lineupByItem.has(key)) {
+              const entry = lineupByItem.get(key);
+              if (!entry.claimants.includes(pendingLabel)) {
+                entry.claimants.push(pendingLabel);
+              }
+            } else if (food) {
+              const exists = extras.some(function(e) {
+                return normalizeFoodItem(e.food) === key && e.by === pendingLabel;
+              });
+              if (!exists) {
+                extras.push({ food: food, by: pendingLabel, inviter: pendingDish.name });
+              }
+            }
+          });
+        }
 
         if (!menuItems.length && !attendees.length) {
           const p = document.createElement('p');
