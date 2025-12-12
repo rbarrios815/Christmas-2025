@@ -7,7 +7,7 @@ const HEADER_ROW = 1;
 const FIRST_DATA_ROW = 2;
 
 function doGet(e) {
-  return HtmlService.createHtmlOutputFromFile('Index')
+  return HtmlService.createHtmlOutputFromFile('index')
     .setTitle('Christmas 2025 Sign-Up');
 }
 

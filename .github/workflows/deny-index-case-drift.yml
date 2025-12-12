@@ -1,0 +1,23 @@
+name: Deny index.html case drift
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fail if Index.html exists or duplicates
+        run: |
+          if [ -f "Index.html" ]; then
+            echo "ERROR: Index.html exists. GitHub Pages entry file must be index.html (lowercase)."
+            exit 1
+          fi
+
+          if [ -f "index.html" ] && [ -f "Index.html" ]; then
+            echo "ERROR: Both index.html and Index.html exist."
+            exit 1
+          fi
