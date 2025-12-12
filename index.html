@@ -1,201 +1,352 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Christmas 2025 Sign-Up 🎄</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Christmas 2025 Sign-Up</title>
 
-  <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(135deg, #fef6f0, #e3f6ff);
-      margin: 0;
-      padding: 24px;
-      color: #1e2b2a;
-    }
+    <style>
+      :root {
+        --candy-red: #e63946;
+        --evergreen: #0b8b62;
+        --frost: #eef6ff;
+        --gold: #f4a261;
+      }
 
-    .card {
-      max-width: 900px;
-      margin: 0 auto 24px;
-      background: #fff;
-      border-radius: 20px;
-      padding: 24px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-    }
+      html { font-size: 200%; }
 
-    h1, h2 {
-      color: #b83227;
-      margin-top: 0;
-    }
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: radial-gradient(circle at 20% 10%, rgba(255, 246, 235, 0.9), rgba(255, 255, 255, 0.4)),
+          radial-gradient(circle at 80% 0%, rgba(228, 247, 255, 0.9), rgba(228, 247, 255, 0.2)),
+          linear-gradient(135deg, #fef6f0 0%, #e3f6ff 45%, #f8efff 100%);
+        margin: 0;
+        padding: 32px;
+        color: #1e2b2a;
+        font-size: clamp(36px, 2.5rem, 40px);
+      }
 
-    label {
-      font-weight: 700;
-      display: block;
-      margin-top: 12px;
-    }
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+          radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+        background-size: 18px 18px, 24px 24px;
+        background-position: 0 0, 12px 12px;
+        opacity: 0.55;
+      }
 
-    input[type="text"], select {
-      width: 100%;
-      padding: 12px;
-      border-radius: 12px;
-      border: 2px solid #ccc;
-      font-size: 1rem;
-    }
+      #app { max-width: 1040px; margin: 0 auto; width: 100%; position: relative; }
 
-    select[multiple] {
-      height: 160px;
-    }
+      .card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 245, 0.96));
+        border-radius: 32px;
+        padding: 40px 44px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
+        margin-bottom: 32px;
+        border: 2px solid rgba(230, 57, 70, 0.18);
+        position: relative;
+        overflow: hidden;
+      }
 
-    .votes {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 6px;
-    }
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 18px;
+        padding: 2px;
+        background: repeating-linear-gradient(
+          45deg,
+          rgba(230, 57, 70, 0.35) 0,
+          rgba(230, 57, 70, 0.35) 10px,
+          rgba(11, 139, 98, 0.2) 10px,
+          rgba(11, 139, 98, 0.2) 20px
+        );
+        -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
 
-    button {
-      margin-top: 16px;
-      padding: 14px 22px;
-      border-radius: 999px;
-      border: none;
-      font-size: 1rem;
-      font-weight: 800;
-      background: linear-gradient(90deg, #e63946, #f4a261);
-      color: #fff;
-      cursor: pointer;
-    }
+      .hero-line {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 18px;
+        background: linear-gradient(120deg, rgba(230, 57, 70, 0.18), rgba(11, 139, 98, 0.18));
+        color: #0b3a32;
+        text-align: center;
+        font-size: 2.4rem;
+        margin-bottom: 12px;
+      }
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
+      .subtitle { font-size: 1rem; color: #2f3a39; margin-bottom: 10px; }
 
-    #status {
-      margin-top: 12px;
-      font-weight: 700;
-    }
+      label {
+        display: block;
+        font-size: 1rem;
+        margin: 8px 0 4px;
+        color: #16302c;
+        font-weight: 800;
+      }
 
-    .ok { color: #006400; }
-    .error { color: #b00020; }
+      input[type="text"], select, textarea {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 12px 12px;
+        border-radius: 12px;
+        border: 2px solid rgba(11, 139, 98, 0.2);
+        font-size: 1.05rem;
+        background: rgba(255, 255, 255, 0.92);
+      }
 
-    .note {
-      font-size: 0.9rem;
-      color: #444;
-      margin-top: 6px;
-    }
-  </style>
-</head>
+      textarea { min-height: 90px; resize: vertical; }
 
-<body>
+      input[type="text"]:focus, select:focus, textarea:focus {
+        outline: none;
+        border-color: #e63946;
+        box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.16);
+      }
 
-  <div class="card">
-    <h1>🎄 Christmas 2025 Sign-Up</h1>
-    <p>Add your name, pick a dish, and vote. Anyone with this link can use it.</p>
+      .row { display: flex; flex-wrap: wrap; gap: 14px; }
+      .col { flex: 1 1 240px; }
 
-    <label for="inviterInput">Your Name</label>
-    <input id="inviterInput" type="text" placeholder="First Last" />
+      .votes { display: grid; gap: 10px; margin-top: 6px; font-size: 1rem; }
+      .votes label { font-weight: 700; margin: 0; display: flex; gap: 10px; align-items: flex-start; }
 
-    <label for="foodSelect">🍽️ Dish you’re bringing</label>
-    <select id="foodSelect" multiple>
-      <option value="Ham">Ham</option>
-      <option value="Mashed Potatoes">Mashed Potatoes</option>
-      <option value="Green Bean Casserole">Green Bean Casserole</option>
-      <option value="Dessert">Dessert</option>
-      <option value="Rolls">Rolls</option>
-    </select>
-    <div class="note">Hold Ctrl / Cmd to select more than one.</div>
+      button {
+        border-radius: 999px;
+        border: none;
+        padding: 14px 22px;
+        font-size: 1.05rem;
+        font-weight: 800;
+        cursor: pointer;
+        background: linear-gradient(90deg, var(--candy-red), var(--gold));
+        color: #fff;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+        margin-top: 14px;
+        transition: transform 120ms ease, box-shadow 120ms ease;
+      }
 
-    <label>🗳️ Vote (pick one)</label>
-    <div class="votes">
-      <label>
-        <input type="radio" name="voteChoice" id="voteGame" />
-        White Elephant 🎁
-      </label>
-      <label>
-        <input type="radio" name="voteChoice" id="voteCash" />
-        $5–$10 Cash Donation 💵
-      </label>
+      button:hover:not([disabled]) {
+        transform: translateY(-1px) scale(1.01);
+        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+      }
+
+      button[disabled] { opacity: 0.6; cursor: default; box-shadow: none; }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        font-size: 0.95rem;
+        background: linear-gradient(135deg, #f1f5ff, #fff5f5);
+        border: 1px solid #dde4ff;
+        color: #0f3c2f;
+        font-weight: 800;
+      }
+
+      #status { margin-top: 10px; font-size: 0.95rem; }
+      #status.ok { color: #006400; }
+      #status.err { color: #b00020; }
+
+      .small { font-size: 0.9rem; font-weight: 650; color: #1f312e; opacity: 0.9; }
+
+      @media (max-width: 600px) {
+        body { padding: 10px; }
+        .card { padding: 14px; }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="app">
+      <div class="card">
+        <div class="hero-line">🧦✨🎄🦌🎁☃️🍪✨🧦<br />Christmas 2025<br />Santa’s Nice List Sign-Up</div>
+        <div class="subtitle">Fill this out and it will submit straight into your Google Form → Google Sheet.</div>
+
+        <div class="row">
+          <div class="col">
+            <label for="nameInput">Your Name</label>
+            <input id="nameInput" type="text" placeholder="e.g., Ricky Barrios" />
+          </div>
+
+          <div class="col">
+            <label for="ageGroupInput">11+ or 10-</label>
+            <select id="ageGroupInput">
+              <option value="">Select one</option>
+              <option value="11+">11+</option>
+              <option value="10-">10-</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="dishInput">Dish (Menu)</label>
+            <select id="dishInput"></select>
+            <div class="small">To edit the menu: scroll up in this file and edit <b>MENU_ITEMS</b>.</div>
+          </div>
+
+          <div class="col">
+            <label>Vote (pick one)</label>
+            <div class="votes">
+              <label>
+                <input type="radio" name="voteChoice" value="White Elephant" />
+                White Elephant 🎁
+              </label>
+              <label>
+                <input type="radio" name="voteChoice" value="Cash" />
+                $5–$10 cash donation 💵
+              </label>
+            </div>
+            <div class="small">This maps to your Form’s multiple choice question.</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <label for="questionsInput">Questions</label>
+            <textarea id="questionsInput" placeholder="Any questions for Santa’s helpers?"></textarea>
+          </div>
+
+          <div class="col">
+            <label for="enteredByInput">Entered By (who is submitting)</label>
+            <input id="enteredByInput" type="text" placeholder="Usually the same as Your Name" />
+            <div class="small">Tip: you can leave it blank — this page will auto-fill it with Your Name.</div>
+          </div>
+        </div>
+
+        <button id="submitBtn" type="button">✅ Submit to Christmas 2025 Form</button>
+        <div id="status" class=""></div>
+        <div class="pill" style="margin-top: 14px;">After you click Submit, the Sheet usually updates within ~5–20 seconds.</div>
+      </div>
+
+      <div class="card">
+        <div class="subtitle"><b>Optional:</b> show the live results</div>
+        <div class="small">
+          If you want the site to display the current RSVP list without Apps Script, publish your response Sheet tab to the web
+          and paste the “published” link into an iframe here.
+        </div>
+        <div id="embedHint" class="small" style="margin-top:10px;"></div>
+      </div>
     </div>
 
-    <button id="submitBtn">⭐ I’m Attending</button>
+    <script>
+      // ===== 1) EDIT YOUR MENU HERE =====
+      // This is the simplest “menu lives somewhere you can edit”.
+      // If you want the menu to live in Google Sheets column J automatically, that requires Apps Script or an add-on.
+      const MENU_ITEMS = [
+        "— I’m not sure yet —",
+        "Green bean casserole",
+        "Mashed potatoes",
+        "Mac & cheese",
+        "Dessert",
+        "Drinks",
+        "Rolls / bread",
+        "Salad",
+      ];
 
-    <div id="status"></div>
-  </div>
+      // ===== 2) GOOGLE FORM WIRING (from your prefill link) =====
+      const FORM_ACTION_URL =
+        "https://docs.google.com/forms/d/e/1FAIpQLSfxK8uJGgjtYua4-JldWjNHm9y0z4zG44jXgUzMQqKXHyiegw/formResponse";
 
-  <script>
-    /* =========================
-       GOOGLE FORM CONFIG
-       ========================= */
+      const FORM_FIELDS = {
+        name: "entry.976310989",
+        ageGroup: "entry.1157418981",
+        dish: "entry.1167945608",
+        whiteElephantVote: "entry.1744284863",
+        questions: "entry.1992175201",
+        enteredBy: "entry.932733425",
+      };
 
-    const FORM_ACTION_URL =
-      "https://docs.google.com/forms/d/e/1FAIpQLSfxK8uJGgjtYua4-JldWjNHm9y0z4zG44jXgUzMQqKXHyiegw/formResponse";
+      function $(id) { return document.getElementById(id); }
 
-    const FORM_FIELDS = {
-      name: "entry.976310989",
-      ageGroup: "entry.1157418981",
-      dish: "entry.1167945608",
-      vote: "entry.1744284863",
-      questions: "entry.1992175201",
-      enteredBy: "entry.932733425",
-    };
-
-    function showStatus(msg, isError = false) {
-      const el = document.getElementById("status");
-      el.textContent = msg;
-      el.className = isError ? "error" : "ok";
-    }
-
-    function getVoteText() {
-      if (document.getElementById("voteGame").checked) return "White Elephant";
-      if (document.getElementById("voteCash").checked) return "Cash Donation";
-      return "";
-    }
-
-    async function submitSignup() {
-      const name = document.getElementById("inviterInput").value.trim();
-      const dishSelect = document.getElementById("foodSelect");
-      const dishes = Array.from(dishSelect.selectedOptions)
-        .map(o => o.value)
-        .join("; ");
-
-      const vote = getVoteText();
-
-      if (!name) {
-        showStatus("Please enter your name.", true);
-        return;
-      }
-      if (!dishes) {
-        showStatus("Please select at least one dish.", true);
-        return;
-      }
-      if (!vote) {
-        showStatus("Please cast a vote.", true);
-        return;
+      function setStatus(msg, isErr) {
+        const el = $("status");
+        el.textContent = msg || "";
+        el.className = isErr ? "err" : "ok";
       }
 
-      const formData = new FormData();
-      formData.append(FORM_FIELDS.name, name);
-      formData.append(FORM_FIELDS.ageGroup, "11+");
-      formData.append(FORM_FIELDS.dish, dishes);
-      formData.append(FORM_FIELDS.vote, vote);
-      formData.append(FORM_FIELDS.questions, "");
-      formData.append(FORM_FIELDS.enteredBy, name);
+      function getVoteChoice() {
+        const radios = document.querySelectorAll('input[name="voteChoice"]');
+        for (const r of radios) if (r.checked) return r.value;
+        return "";
+      }
 
-      showStatus("Submitting…");
+      async function submitSignup({ name, ageGroup, dish, whiteElephantVote, questions, enteredBy }) {
+        const formData = new FormData();
+        formData.append(FORM_FIELDS.name, name);
+        formData.append(FORM_FIELDS.ageGroup, ageGroup);
+        formData.append(FORM_FIELDS.dish, dish);
+        formData.append(FORM_FIELDS.whiteElephantVote, whiteElephantVote);
+        formData.append(FORM_FIELDS.questions, questions);
+        formData.append(FORM_FIELDS.enteredBy, enteredBy);
 
-      await fetch(FORM_ACTION_URL, {
-        method: "POST",
-        mode: "no-cors",
-        body: formData
+        // no-cors is required because Google Forms doesn't send CORS headers
+        await fetch(FORM_ACTION_URL, { method: "POST", mode: "no-cors", body: formData });
+        return true;
+      }
+
+      function hydrateMenu() {
+        const dishSel = $("dishInput");
+        dishSel.innerHTML = "";
+        MENU_ITEMS.forEach((item) => {
+          const opt = document.createElement("option");
+          opt.value = item;
+          opt.textContent = item;
+          dishSel.appendChild(opt);
+        });
+      }
+
+      async function onSubmitClick() {
+        const name = $("nameInput").value.trim();
+        const ageGroup = $("ageGroupInput").value;
+        const dish = $("dishInput").value;
+        const vote = getVoteChoice();
+        const questions = $("questionsInput").value.trim();
+        const enteredBy = ($("enteredByInput").value.trim() || name);
+
+        if (!name) return setStatus("Enter your name.", true);
+        if (!ageGroup) return setStatus("Pick 11+ or 10-.", true);
+        if (!dish) return setStatus("Pick a dish.", true);
+        if (!vote) return setStatus("Pick a vote (White Elephant or Cash).", true);
+
+        $("submitBtn").disabled = true;
+        setStatus("Submitting…", false);
+
+        try {
+          await submitSignup({
+            name,
+            ageGroup,
+            dish,
+            whiteElephantVote: vote,
+            questions,
+            enteredBy
+          });
+
+          setStatus("Submitted! Check the Sheet in ~5–20 seconds.", false);
+
+          // optional: clear some fields
+          $("questionsInput").value = "";
+        } catch (e) {
+          setStatus("Submit failed. Try again. " + (e?.message || ""), true);
+        } finally {
+          $("submitBtn").disabled = false;
+        }
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        hydrateMenu();
+        $("submitBtn").addEventListener("click", onSubmitClick);
       });
-
-      showStatus("🎉 Submitted! Check the Sheet in ~5–20 seconds.");
-      document.getElementById("submitBtn").disabled = true;
-    }
-
-    document.getElementById("submitBtn")
-      .addEventListener("click", submitSignup);
-  </script>
-
-</body>
+    </script>
+  </body>
 </html>
