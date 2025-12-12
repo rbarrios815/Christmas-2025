@@ -1,0 +1,2224 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <meta charset="UTF-8">
+    <title>Christmas 2025 Sign-Up</title>
+    <style>
+      :root {
+        --candy-red: #e63946;
+        --evergreen: #0b8b62;
+        --frost: #eef6ff;
+        --gold: #f4a261;
+      }
+
+      html {
+        font-size: 200%;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: radial-gradient(circle at 20% 10%, rgba(255, 246, 235, 0.9), rgba(255, 255, 255, 0.4)),
+          radial-gradient(circle at 80% 0%, rgba(228, 247, 255, 0.9), rgba(228, 247, 255, 0.2)),
+          linear-gradient(135deg, #fef6f0 0%, #e3f6ff 45%, #f8efff 100%);
+        margin: 0;
+        padding: 32px;
+        color: #1e2b2a;
+        font-size: clamp(36px, 2.5rem, 40px);
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image: radial-gradient(rgba(255, 255, 255, 0.6) 1px, transparent 1px),
+          radial-gradient(rgba(255, 255, 255, 0.4) 1px, transparent 1px);
+        background-size: 18px 18px, 24px 24px;
+        background-position: 0 0, 12px 12px;
+        opacity: 0.55;
+      }
+
+      #app {
+        max-width: 1040px;
+        margin: 0 auto;
+        width: 100%;
+        position: relative;
+      }
+
+      .card {
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 245, 0.96));
+        border-radius: 32px;
+        padding: 40px 44px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.14);
+        margin-bottom: 32px;
+        border: 2px solid rgba(230, 57, 70, 0.18);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 18px;
+        padding: 2px;
+        background: repeating-linear-gradient(45deg, rgba(230, 57, 70, 0.35) 0, rgba(230, 57, 70, 0.35) 10px, rgba(11, 139, 98, 0.2) 10px, rgba(11, 139, 98, 0.2) 20px);
+        -webkit-mask: linear-gradient(#000, #000) content-box, linear-gradient(#000, #000);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        pointer-events: none;
+      }
+
+      .hero-line {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: 18px;
+        background: linear-gradient(120deg, rgba(230, 57, 70, 0.18), rgba(11, 139, 98, 0.18));
+        color: #0b3a32;
+        text-align: center;
+        font-size: 2.4rem;
+        margin-bottom: 12px;
+      }
+
+      h2 {
+        margin: 0 0 10px;
+        font-size: 1.35rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #b83227;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+        color: #2f3a39;
+        margin-bottom: 10px;
+      }
+
+      .festive-banner {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(90deg, rgba(11, 139, 98, 0.08), rgba(244, 162, 97, 0.14));
+        padding: 10px 14px;
+        border-radius: 14px;
+        font-weight: 700;
+        color: #0b3a32;
+        margin-bottom: 12px;
+        border: 1px solid rgba(11, 139, 98, 0.2);
+      }
+
+      label {
+        display: block;
+        font-size: 1rem;
+        margin: 8px 0 4px;
+        color: #16302c;
+      }
+
+      .name-label {
+        font-size: clamp(1.3rem, 3.5vw, 1.6rem);
+        font-weight: 900;
+        color: #b83227;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-shadow: 0 2px 8px rgba(230, 57, 70, 0.2);
+      }
+
+      .label-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 800;
+      }
+
+      .food-label-name {
+        margin-left: 6px;
+        color: #0c3f35;
+        font-weight: 600;
+      }
+
+      input[type="text"],
+      select {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 2px solid rgba(11, 139, 98, 0.2);
+        font-size: 1.05rem;
+        background: rgba(255, 255, 255, 0.92);
+      }
+
+      #inviterInput {
+        padding: 18px 18px;
+        font-size: clamp(1.15rem, 4vw, 1.55rem);
+        border-radius: 18px;
+        border: 3px solid rgba(230, 57, 70, 0.24);
+        background: linear-gradient(120deg, rgba(230, 57, 70, 0.12), rgba(11, 139, 98, 0.08), rgba(244, 162, 97, 0.12)),
+          rgba(255, 255, 255, 0.95);
+        box-shadow: 0 8px 18px rgba(11, 139, 98, 0.12), inset 0 0 0 3px rgba(255, 255, 255, 0.88);
+        transition: box-shadow 160ms ease, transform 160ms ease, border-color 160ms ease;
+      }
+
+      #inviterInput:focus {
+        border-color: #e63946;
+        box-shadow: 0 10px 24px rgba(230, 57, 70, 0.24), inset 0 0 0 3px rgba(255, 255, 255, 0.95);
+        transform: translateY(-1px);
+      }
+
+      #inviterInput::placeholder {
+        color: rgba(22, 48, 44, 0.68);
+        font-weight: 600;
+      }
+
+      .flash-highlight {
+        animation: flashField 1.2s ease;
+        border-color: var(--gold) !important;
+        box-shadow: 0 0 0 2px rgba(244, 162, 97, 0.25), 0 0 0 6px rgba(230, 57, 70, 0.12);
+      }
+
+      @keyframes flashField {
+        0% {
+          background: rgba(244, 162, 97, 0.16);
+        }
+        60% {
+          background: rgba(244, 162, 97, 0.05);
+        }
+        100% {
+          background: transparent;
+        }
+      }
+
+      input[type="text"]:focus,
+      select:focus {
+        outline: none;
+        border-color: #e63946;
+        box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.16);
+      }
+
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .guest-line {
+        align-items: center;
+      }
+
+      .col-half {
+        flex: 1 1 180px;
+      }
+
+      .age-group {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        margin: 6px 0 8px;
+        font-size: 1rem;
+      }
+
+      .age-group label {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        margin: 0;
+      }
+
+      .field-branch {
+        position: relative;
+        margin-left: 12px;
+        padding-left: 14px;
+        border-left: 3px solid rgba(11, 139, 98, 0.25);
+      }
+
+      .field-branch::before {
+        content: "";
+        position: absolute;
+        left: -3px;
+        top: 8px;
+        width: 14px;
+        height: 14px;
+        border-left: 3px solid rgba(11, 139, 98, 0.32);
+        border-bottom: 3px solid rgba(11, 139, 98, 0.32);
+        border-radius: 0 0 0 10px;
+      }
+
+      .indented-label {
+        margin-top: 6px;
+        display: block;
+      }
+
+      .branch-grid {
+        margin-top: 6px;
+      }
+
+      .age-branch {
+        margin-top: 4px;
+        padding-left: 10px;
+      }
+
+      .age-branch::before {
+        top: 4px;
+      }
+
+      .votes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 8px;
+        font-size: 1rem;
+      }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 12px;
+      }
+
+      .action-row button {
+        margin-top: 0;
+      }
+
+      .votes label {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin: 0;
+      }
+
+      #foodLabel {
+        color: #b83227;
+      }
+
+      #foodLabel strong {
+        color: #b83227;
+      }
+
+      button {
+        border-radius: 999px;
+        border: none;
+        padding: 12px 20px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        cursor: pointer;
+        background: linear-gradient(90deg, var(--candy-red), var(--gold));
+        color: #fff;
+        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+        margin-top: 12px;
+        transition: transform 120ms ease, box-shadow 120ms ease;
+      }
+
+      button.ghost {
+        background: rgba(11, 139, 98, 0.12);
+        border: 2px dashed rgba(11, 139, 98, 0.28);
+        color: #0b3a32;
+        box-shadow: none;
+        padding: 10px 14px;
+        margin-top: 0;
+      }
+
+      button:hover:not([disabled]) {
+        transform: translateY(-1px) scale(1.01);
+        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+      }
+
+      button[disabled] {
+        opacity: 0.6;
+        cursor: default;
+        box-shadow: none;
+      }
+
+      #status {
+        margin-top: 8px;
+        font-size: 0.95rem;
+      }
+
+      #status.error {
+        color: #b00020;
+      }
+
+      #status.ok {
+        color: #006400;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 0.95rem;
+        background: linear-gradient(135deg, #f1f5ff, #fff5f5);
+        border: 1px solid #dde4ff;
+        color: #0f3c2f;
+      }
+
+      .vote-preview {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .vote-header {
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 6px;
+        color: #b83227;
+      }
+
+      .cluster-preview {
+        display: grid;
+        gap: 4px;
+        text-align: left;
+        align-items: start;
+        width: 100%;
+      }
+
+      .cluster-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 800;
+        color: #0f372c;
+      }
+
+      .cluster-food {
+        font-weight: 650;
+        color: #1f312e;
+      }
+
+      #inviteTree ul,
+      #foodList ul {
+        list-style: none;
+        padding-left: 16px;
+        margin: 6px 0 0;
+      }
+
+      #inviteTree li,
+      #foodList li {
+        font-size: 1rem;
+        margin: 4px 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .personal-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: linear-gradient(120deg, rgba(11, 139, 98, 0.16), rgba(244, 162, 97, 0.18));
+        color: #0c3f35;
+        font-weight: 800;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .personal-note {
+        font-size: 0.95rem;
+        color: #224139;
+      }
+
+      .food-lineup {
+        list-style: none;
+        padding-left: 0;
+        margin: 10px 0 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .food-lineup li {
+        background: rgba(255, 255, 255, 0.86);
+        border: 1px solid rgba(11, 139, 98, 0.18);
+        border-radius: 14px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        font-size: 1rem;
+      }
+
+      .food-open {
+        color: #b83227;
+        font-weight: 800;
+      }
+
+      .food-claimer {
+        color: #0c3f35;
+        font-weight: 700;
+      }
+
+      .holly-note {
+        margin: 8px 0 4px;
+        padding: 10px 12px;
+        border-radius: 14px;
+        background: linear-gradient(90deg, rgba(230, 57, 70, 0.12), rgba(11, 139, 98, 0.14));
+        border: 1px solid rgba(244, 162, 97, 0.3);
+        color: #0b3a32;
+        font-weight: 750;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      }
+
+      .holly-note span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .personal-tree-wrap {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+        margin-top: 10px;
+        align-items: start;
+      }
+
+      .personal-tree {
+        position: relative;
+        padding: 14px 14px 12px;
+        border-radius: 16px;
+        background: radial-gradient(circle at 40% 10%, rgba(255, 247, 210, 0.9), rgba(255, 255, 255, 0.96)),
+          linear-gradient(135deg, rgba(230, 57, 70, 0.06), rgba(11, 139, 98, 0.08));
+        border: 2px solid rgba(244, 162, 97, 0.3);
+        box-shadow: inset 0 0 0 2px rgba(11, 139, 98, 0.14), 0 10px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      .tree-star {
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #ffd166, #f4a261);
+        display: grid;
+        place-items: center;
+        font-size: 1.5rem;
+        color: #7c3b00;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        margin: 0 auto 6px;
+      }
+
+      .tree-owner {
+        text-align: center;
+        font-weight: 800;
+        color: #0c4c39;
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+      }
+
+      .tree-branches {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 6px;
+      }
+
+      .tree-branches li {
+        background: rgba(11, 139, 98, 0.08);
+        border: 1px solid rgba(11, 139, 98, 0.2);
+        border-radius: 12px;
+        padding: 10px 10px;
+        display: flex;
+        align-items: flex-start;
+        gap: 6px;
+        flex-direction: column;
+        font-weight: 700;
+        color: #0f372c;
+        cursor: default;
+      }
+
+      .branch-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .age-chip {
+        display: inline-flex;
+        align-items: center;
+        margin-left: 12px;
+        padding: 2px 12px;
+        border-radius: 999px;
+        background: rgba(230, 57, 70, 0.08);
+        color: #0f372c;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+      }
+
+      .branch-details {
+        margin-left: 14px;
+        padding-left: 12px;
+        border-left: 2px dashed rgba(11, 139, 98, 0.4);
+        display: grid;
+        gap: 4px;
+        font-weight: 600;
+        color: #1f312e;
+      }
+
+      .branch-details span {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-weight: 600;
+      }
+
+      .branch-wrapper {
+        background: rgba(11, 139, 98, 0.06);
+        border: 1px solid rgba(11, 139, 98, 0.18);
+        border-radius: 12px;
+        padding: 8px 10px;
+        display: grid;
+        gap: 6px;
+      }
+
+      .tagline {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin: 6px 0 10px;
+      }
+
+      .merged-top {
+        display: grid;
+        gap: 10px;
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 14px 18px;
+        align-items: start;
+      }
+
+      .tree-branches li:hover {
+        background: rgba(230, 57, 70, 0.08);
+        border-color: rgba(230, 57, 70, 0.2);
+      }
+
+      .personal-actions {
+        display: grid;
+        gap: 8px;
+      }
+
+      .cluster-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .tree-cluster {
+        position: relative;
+        padding: 12px 12px 10px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(236, 252, 249, 0.96));
+        border: 2px dashed rgba(11, 139, 98, 0.22);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+      }
+
+      .tree-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 46px;
+        height: 36px;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #e63946, #f4a261);
+        color: #fff;
+        font-weight: 800;
+        font-size: 1rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      }
+
+      .cluster-star {
+        font-size: 1.25rem;
+      }
+
+      .cluster-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        color: #0c4c39;
+        margin-bottom: 6px;
+      }
+
+      .cluster-branches {
+        display: grid;
+        gap: 8px;
+      }
+
+      .cluster-branches span {
+        padding: 6px 10px;
+        border-radius: 10px;
+        background: rgba(11, 139, 98, 0.08);
+        border: 1px solid rgba(11, 139, 98, 0.18);
+        font-weight: 600;
+        color: #0f372c;
+        cursor: default;
+      }
+
+      .meta-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 1rem;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+
+      .guest-count {
+        background: linear-gradient(135deg, rgba(11, 139, 98, 0.18), rgba(244, 162, 97, 0.2));
+      }
+
+      .meta-line span {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      #metaText {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(11, 139, 98, 0.25);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-weight: 700;
+        color: #0c3f35;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .questions {
+        font-size: 0.95rem;
+        color: #2d3a3a;
+        margin-top: 6px;
+      }
+
+      #foodNote {
+        font-size: 0.9rem;
+        color: #1f312e;
+        margin-top: 4px;
+      }
+
+      @media (max-width: 600px) {
+        body {
+          padding: 10px;
+        }
+        .card {
+          padding: 14px;
+        }
+        h1 {
+          font-size: 2rem;
+        }
+        h2 {
+          font-size: 1.25rem;
+        }
+        .row {
+          flex-direction: column;
+        }
+        .personal-tree-wrap {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body onload="init()">
+    <div id="app">
+      <!-- Unified welcome + RSVP card -->
+      <div class="card">
+        <div class="meta-line">
+          <span id="metaText"></span>
+          <span id="guestCount" class="meta-chip guest-count" aria-live="polite"></span>
+        </div>
+        <div class="hero-line">🧦✨🎄🦌🎁☃️🍪✨🧦 Ho Ho Ho!<br>Christmas 2025<br>Santa's Nice List is open. Add your name & your tastiest treat! 🍪</div>
+        <div class="subtitle">Add yourself with a dish + vote; guests + ages show up automatically.</div>
+
+        <div class="merged-top">
+          <div class="tagline" id="activeInviterTag" style="display:none;"></div>
+
+          <label for="inviterInput" class="name-label">Your Name</label>
+          <div class="personal-note" id="nameHelper"></div>
+          <div class="field-branch">
+            <div class="row" style="align-items:center; gap:10px;">
+              <div style="flex:1 1 auto;">
+                <input type="text" id="inviterInput" placeholder="Type your name to join Santa’s Nice List">
+              </div>
+              <div>
+                <span id="attendComplete" class="pill" style="display:none;">✅ You’re on the Nice List</span>
+              </div>
+            </div>
+
+            <div id="inviterVotePreview" class="pill vote-preview" style="display:none;">🎯 Pick game or cash to save your star</div>
+
+            <div class="branch-grid">
+              <div class="form-grid">
+                <div id="foodSignupBlock">
+                  <label for="foodSelect" id="foodLabel">
+                    <span class="label-title">🍽️🍪🎄 <strong>Food signup</strong></span>
+                  </label>
+                  <select id="foodSelect" size="6" multiple aria-label="Food signup options">
+                    <option value="">-- I’m not bringing food yet --</option>
+                  </select>
+                  <div id="foodNote"></div>
+                </div>
+                <div>
+                  <div class="vote-header" id="voteHeader">🗳️ <strong>Vote</strong></div>
+                  <div class="votes" id="voteBlock" role="group" aria-label="Vote for one option">
+                    <label>
+                      <input type="radio" name="voteChoice" id="voteGame" value="game">
+                      White Elephant game 🎁 (pick this OR cash)
+                    </label>
+                    <label>
+                      <input type="radio" name="voteChoice" id="voteCash" value="cash">
+                      $5–$10 cash donation for prizes 💵 (pick this OR White Elephant)
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button type="button" id="attendBtn" onclick="handleSave()">⭐ I'm Attending</button>
+              <button type="button" class="ghost" id="dishBtn" style="display:none;" onclick="handleAddDishes()">🍽️ Add dishes for your name</button>
+              <button type="button" class="ghost" id="voteChangeBtn" style="display:none;" onclick="handleChangeVote()">🔄 Update vote</button>
+            </div>
+
+            <div id="personalPreview" class="personal-tree-wrap" style="display:none;"></div>
+
+            <div id="guestFields" style="display:none;">
+              <label for="fullNameInput" class="indented-label">Guest name + age</label>
+              <div class="row guest-line">
+                <div class="col-half">
+                  <input type="text" id="fullNameInput" placeholder="e.g., Ricky Barrios">
+                </div>
+                <div class="col-half">
+                  <select id="ageSelect">
+                    <option value="">Select an age group</option>
+                    <option value="11+">11+</option>
+                    <option value="10-">10- 🎁</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row" style="gap:8px;align-items:center;">
+                <span id="shortNamePreview" class="pill" style="display:none;"></span>
+              </div>
+              <div class="row" style="justify-content:flex-start;gap:10px;align-items:center;flex-wrap:wrap;">
+                <button type="button" id="guestSaveBtn" onclick="handleSave()" style="display:none;">➕ Add Guest</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="status"></div>
+        </div>
+      </div>
+
+      <!-- Invite tree -->
+      <div class="card" id="inviteTree">
+        <!-- Filled by JS -->
+      </div>
+
+      <!-- Food list -->
+      <div class="card" id="foodList">
+        <!-- Filled by JS -->
+      </div>
+
+      <!-- Vote totals -->
+      <div class="card" id="voteTotals">
+        <!-- Filled by JS -->
+      </div>
+
+      <div class="questions" id="questionsText"></div>
+    </div>
+
+    <script>
+      // Simple helper
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      const HARD_META = {
+        date: '12/24',
+        time: '3 pm - ?',
+        address: '5235 Jay Thrush Dr, Richmond, TX 77407',
+        questions: 'Text 281-707-5222'
+      };
+
+      let state = {
+        meta: {},
+        attendees: [],
+        menu: [],
+        currentRow: null
+      };
+
+      let lastSavedInviter = '';
+      let lastHydratedName = '';
+      let manualAgeSelection = '';
+      let guestFieldsUnlocked = false;
+
+      function ensureSingleAgeField() {
+        const ageLabels = document.querySelectorAll('label[for="ageSelect"]');
+        const ageSelects = document.querySelectorAll('#ageSelect');
+        for (let i = 1; i < ageLabels.length; i++) ageLabels[i].remove();
+        for (let i = 1; i < ageSelects.length; i++) ageSelects[i].remove();
+
+        const ageSelect = $('ageSelect');
+        if (ageSelect) {
+          ageSelect.disabled = false;
+          ageSelect.removeAttribute('aria-disabled');
+        }
+      }
+
+      function updateGuestFieldsVisibility() {
+        const guestFields = $('guestFields');
+        if (!guestFields) return;
+        guestFields.style.display = guestFieldsUnlocked ? '' : 'none';
+        updateSaveButtons();
+      }
+
+      function isClusterOwner(att) {
+        if (!att) return false;
+        const full = (att.fullName || '').toLowerCase();
+        const entered = (att.enteredBy || att.fullName || '').toLowerCase();
+        return !!full && full === entered;
+      }
+
+      function init() {
+        ensureSingleAgeField();
+        guestFieldsUnlocked = false;
+        updateGuestFieldsVisibility();
+        showStatus('Loading…');
+        google.script.run
+          .withSuccessHandler(onDataLoaded)
+          .withFailureHandler(onError)
+          .getChristmasData();
+      }
+
+      function onDataLoaded(data) {
+        state.meta = Object.assign({}, HARD_META, data.meta || {});
+        state.attendees = dedupeByName(enrichAttendees(data.attendees || []));
+        state.menu = data.menu || [];
+        state.currentRow = null;
+        lastSavedInviter = '';
+
+        renderMeta();
+        renderInviteTree();
+        renderFoodList();
+        renderVoteTotals();
+        refreshFoodSelect();
+        updateDishButton();
+        updateVoteButton();
+        updateFoodLabel();
+        updateInviterTag();
+        updateInviterVotePreview();
+        updateAttendButton();
+        updateSaveButtons();
+        renderPersonalPreview();
+
+        showStatus('Loaded.', false);
+      }
+
+      function onError(err) {
+        const msg = (err && err.message) ? err.message : String(err || 'Unknown error');
+        showStatus(msg, true);
+      }
+
+      function showStatus(msg, isError) {
+        const el = $('status');
+        el.textContent = msg || '';
+        el.className = '';
+        if (!msg) return;
+        el.classList.add(isError ? 'error' : 'ok');
+      }
+
+      function renderMeta() {
+        const meta = Object.assign({}, HARD_META, state.meta || {});
+        const metaLine = [];
+        const guestCount = dedupeByName(state.attendees || []).length;
+
+        metaLine.push('📅 ' + (meta.date || HARD_META.date));
+        metaLine.push('⏰ ' + (meta.time || HARD_META.time));
+        metaLine.push('📍 ' + (meta.address || HARD_META.address));
+
+        const metaEl = $('metaText');
+        metaEl.innerHTML = '';
+        metaLine.forEach(function(text) {
+          const chip = document.createElement('span');
+          chip.className = 'meta-chip';
+          chip.textContent = text;
+          metaEl.appendChild(chip);
+        });
+
+        const guestChip = $('guestCount');
+        if (guestChip) {
+          guestChip.textContent = '👥 Guests Signed Up: ' + guestCount;
+        }
+
+        const guestTotal = $('guestTotal');
+        if (guestTotal) {
+          guestTotal.textContent = guestCount;
+        }
+
+        const footer = '❓ Questions for Santa’s helpers: ' + (meta.questions || HARD_META.questions)
+          + ' • ' + (meta.date || HARD_META.date)
+          + ' • ' + (meta.time || HARD_META.time)
+          + ' • ' + (meta.address || HARD_META.address);
+        $('questionsText').textContent = footer;
+      }
+
+      function ageEmoji(ageGroup) {
+        // Christmasy emoji for 10-
+        if (ageGroup === '10-') return '🧸';
+        return '🎄';
+      }
+
+      function ageLabel(ageGroup) {
+        if (ageGroup === '10-') return '10-';
+        if (ageGroup === '11+') return '11+';
+        return 'Unknown age';
+      }
+
+      function ageShort(ageGroup) {
+        if (ageGroup === '10-') return '10-';
+        if (ageGroup === '11+') return '11+';
+        return '';
+      }
+
+      function findAttendeeByName(fullName) {
+        if (!fullName) return null;
+        const lookup = fullName.toLowerCase();
+        return (state.attendees || []).find(function(a) {
+          return (a.fullName || '').toLowerCase() === lookup;
+        }) || null;
+      }
+
+      function uniqueByRow(list) {
+        const seen = new Set();
+        const result = [];
+        (list || []).forEach(function(item) {
+          const key = item && item.row != null ? String(item.row) : item ? item.fullName || '' : '';
+          if (seen.has(key)) return;
+          seen.add(key);
+          result.push(item);
+        });
+        return result;
+      }
+
+      function dedupeByName(list) {
+        const seen = new Set();
+        return (list || []).filter(function(item) {
+          const key = (item && item.fullName ? item.fullName : '').trim().toLowerCase();
+          if (!key || seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+      }
+
+      function getClusterEntries(inviterName) {
+        if (!inviterName) return [];
+
+        const matchesRaw = (state.attendees || []).filter(function(a) {
+          return (a.enteredBy || '').toLowerCase() === inviterName.toLowerCase();
+        });
+
+        const selfEntry = findAttendeeByName(inviterName);
+        if (selfEntry) {
+          matchesRaw.push(selfEntry);
+        }
+
+        return uniqueByRow(matchesRaw);
+      }
+
+      function enrichAttendees(list) {
+        return (list || []).map(function(a) {
+          return Object.assign({}, a, { shortName: a.shortName || toShortName(a.fullName || '') });
+        });
+      }
+
+      function displayName(attendee) {
+        if (!attendee) return '';
+        return attendee.shortName || toShortName(attendee.fullName || '');
+      }
+
+      function parseFoods(value) {
+        if (!value) return [];
+        return value
+          .split(/[;\n,]/)
+          .map(function(v) { return v.trim(); })
+          .filter(function(v) { return !!v; });
+      }
+
+      function normalizeFoodItem(item) {
+        return (item || '').trim().toLowerCase();
+      }
+
+      function isInviterComplete(att) {
+        return !!att && isClusterOwner(att);
+      }
+
+      function getSelectedFoods() {
+        const select = $('foodSelect');
+        if (!select) return [];
+        const values = Array.from(select.selectedOptions || [])
+          .map(function(opt) { return opt.value; })
+          .filter(function(v) { return !!v; });
+        return Array.from(new Set(values));
+      }
+
+      function getPendingDishPreview() {
+        const inviter = currentInviterName();
+        const foods = getSelectedFoods();
+        if (!inviter || !foods.length) return null;
+        return { name: toShortName(inviter), foods: foods };
+      }
+
+      function clearFoodSelections() {
+        const select = $('foodSelect');
+        if (!select) return;
+        Array.from(select.options).forEach(function(opt) { opt.selected = false; });
+      }
+
+      function flashGuestNameField() {
+        const input = $('fullNameInput');
+        if (!input) return;
+        input.classList.remove('flash-highlight');
+        void input.offsetWidth; // force reflow so animation can replay
+        input.classList.add('flash-highlight');
+        input.focus({ preventScroll: true });
+      }
+
+      function refreshFoodSelect(selectedFoodList) {
+        const select = $('foodSelect');
+        select.innerHTML = '';
+
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = '-- I’m not bringing food yet --';
+        placeholder.selected = !(selectedFoodList && selectedFoodList.length);
+        select.appendChild(placeholder);
+
+        const selectedSet = new Set((selectedFoodList || []).map(normalizeFoodItem));
+
+        const claimedFoods = new Set();
+        (state.attendees || []).forEach(function(att) {
+          parseFoods(att.food).forEach(function(food) {
+            const key = normalizeFoodItem(food);
+            if (key) claimedFoods.add(key);
+          });
+        });
+
+        const menuItems = (state.menu || [])
+          .filter(function(item) { return !!item; })
+          .filter(function(item) {
+            const key = normalizeFoodItem(item);
+            if (!key) return false;
+            if (selectedSet.has(key)) return true;
+            return !claimedFoods.has(key);
+          })
+          .sort(function(a, b) { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+
+        menuItems.forEach(function(item) {
+          const opt = document.createElement('option');
+          opt.value = item;
+          opt.textContent = item;
+          opt.selected = selectedSet.has(normalizeFoodItem(item));
+          select.appendChild(opt);
+        });
+
+        (selectedFoodList || [])
+          .filter(function(item) {
+            return !menuItems.some(function(menuItem) { return menuItem.toLowerCase() === item.toLowerCase(); });
+          })
+          .forEach(function(item) {
+            const opt = document.createElement('option');
+            opt.value = item;
+            opt.textContent = item + ' (custom)';
+            opt.selected = true;
+            select.appendChild(opt);
+          });
+
+        const note = $('foodNote');
+        if (!state.menu || !state.menu.length) {
+          note.textContent = 'Menu will go in column J (starting J2). Once items are listed, pick one dish and save it to your star.';
+        } else {
+          note.textContent = '';
+        }
+
+        updateFoodVisibility();
+      }
+
+      function updateFoodVisibility() {
+        const block = $('foodSignupBlock');
+        const select = $('foodSelect');
+        const voteBlock = $('voteBlock');
+        const voteHeader = $('voteHeader');
+        if (!block || !select || !voteBlock) return;
+
+        const inviterRaw = ($('inviterInput').value || '').trim().toLowerCase();
+        const attendeeRaw = ($('fullNameInput').value || '').trim().toLowerCase();
+        const isClusterHead = inviterRaw && attendeeRaw && inviterRaw === attendeeRaw;
+        const editingInviter = inviterRaw && (!attendeeRaw || isClusterHead);
+
+        block.style.display = editingInviter ? '' : 'none';
+        voteBlock.style.display = editingInviter ? '' : 'none';
+        if (voteHeader) {
+          voteHeader.style.display = editingInviter ? '' : 'none';
+        }
+
+        if (!editingInviter) {
+          clearFoodSelections();
+          setVoteChoice('');
+        }
+      }
+
+      function getSelectedAgeGroup() {
+        return $('ageSelect').value;
+      }
+
+      function getVoteChoice() {
+        const radios = document.querySelectorAll('input[name="voteChoice"]');
+        for (let i = 0; i < radios.length; i++) {
+          if (radios[i].checked) return radios[i].value;
+        }
+        return '';
+      }
+
+      function setVoteChoice(value) {
+        const radios = document.querySelectorAll('input[name="voteChoice"]');
+        radios.forEach(function(r) {
+          r.checked = value ? (r.value === value) : false;
+        });
+      }
+
+      function setAgeGroup(value) {
+        $('ageSelect').value = value || '';
+        updateShortNamePreview();
+      }
+
+      function updateShortNamePreview(options) {
+        const fullName = $('fullNameInput').value.trim();
+        const preview = $('shortNamePreview');
+        const skipHydrate = options && options.skipHydrate;
+
+        if (!fullName) {
+          preview.style.display = 'none';
+          preview.textContent = '';
+          updateFoodVisibility();
+          updateSaveButtons();
+          renderPersonalPreview();
+          return;
+        }
+        const shortName = toShortName(fullName);
+        const lowerName = fullName.toLowerCase();
+        const inviterName = currentInviterName().toLowerCase();
+        const ageText = inviterName && lowerName === inviterName ? '' : ageShort(getSelectedAgeGroup());
+        preview.textContent = ageText ? shortName + ' • ' + ageText : shortName;
+        preview.style.display = 'inline-flex';
+        const hydratedMatch = manualAgeSelection && lastHydratedName === lowerName;
+
+        // Auto-load existing selections if this name already exists, unless the user is actively changing the age.
+        if (!skipHydrate && !hydratedMatch) {
+          hydrateExistingSignup(fullName);
+        }
+
+        updateFoodVisibility();
+        updateSaveButtons();
+        renderPersonalPreview();
+      }
+
+      $('fullNameInput').addEventListener('input', function() {
+        updateShortNamePreview();
+        state.currentRow = null; // typing a new name resets current row
+        if (!this.value.trim()) {
+          manualAgeSelection = '';
+        }
+        updateSaveButtons();
+        renderPersonalPreview();
+      });
+
+      $('ageSelect').addEventListener('change', function() {
+        manualAgeSelection = this.value;
+        updateShortNamePreview({ skipHydrate: true });
+        updateSaveButtons();
+        renderPersonalPreview();
+      });
+
+      $('inviterInput').addEventListener('input', function() {
+        lastSavedInviter = '';
+        updateDishButton();
+        updateFoodLabel();
+        updateInviterTag();
+        updateInviterVotePreview();
+        renderInviteTree();
+        updateVoteButton();
+        updateAttendButton();
+        if (!this.value.trim()) {
+          guestFieldsUnlocked = false;
+        }
+        updateGuestFieldsVisibility();
+        updateFoodVisibility();
+        updateSaveButtons();
+        renderPersonalPreview();
+      });
+
+      $('inviterInput').addEventListener('blur', function() {
+        confirmInviter(true);
+      });
+
+      const foodSelectEl = $('foodSelect');
+      if (foodSelectEl) {
+        foodSelectEl.addEventListener('change', function() {
+          renderFoodList();
+          renderPersonalPreview();
+        });
+      }
+
+      ['voteGame', 'voteCash'].forEach(function(id) {
+        const el = $(id);
+        if (el) {
+          el.addEventListener('change', function() {
+            updateInviterVotePreview();
+            renderPersonalPreview();
+          });
+        }
+      });
+
+      function confirmInviter(silent) {
+        const name = $('inviterInput').value.trim();
+        const attendee = $('fullNameInput').value.trim();
+        if (!name) {
+          if (!silent) {
+            showStatus('Please enter your name first so we can personalize your tree.', true);
+          }
+          return;
+        }
+
+        $('inviterInput').value = name;
+        lastSavedInviter = name;
+        updateInviterTag();
+        updateInviterVotePreview();
+        renderInviteTree();
+        updateAttendButton();
+        updateFoodLabel();
+        updateFoodVisibility();
+        updateSaveButtons();
+
+        const sameAsAttendee = !attendee || attendee.toLowerCase() === name.toLowerCase();
+        if (sameAsAttendee) {
+          hydrateExistingSignup(name);
+        }
+
+        if (!silent) {
+          showStatus('Locked in ' + toShortName(name) + '. Save to add yourself or guests under your star.', false);
+        }
+      }
+
+      function updateDishButton() {
+        const btn = $('dishBtn');
+        if (!btn) return;
+
+        const inviterName = currentInviterName() || lastSavedInviter;
+        const ownerEntry = findAttendeeByName(inviterName);
+        const canEditDishes = isClusterOwner(ownerEntry);
+        const accepted = !!ownerEntry;
+
+        btn.style.display = accepted && canEditDishes ? '' : 'none';
+        if (accepted && canEditDishes) {
+          const targetName = inviterName;
+          btn.textContent = '🍽️ Add dishes for ' + toShortName(targetName);
+          btn.dataset.targetName = targetName;
+        }
+      }
+
+      function updateVoteButton() {
+        const btn = $('voteChangeBtn');
+        if (!btn) return;
+
+        const typedInviter = ($('inviterInput').value || '').trim();
+        const inviterName = currentInviterName() || lastSavedInviter;
+        const ownerEntry = findAttendeeByName(inviterName);
+        const showButton = !!typedInviter && isClusterOwner(ownerEntry);
+
+        btn.style.display = showButton ? '' : 'none';
+
+        if (showButton) {
+          btn.textContent = '🔄 Update vote for ' + toShortName(inviterName);
+        }
+      }
+
+      function updateAttendButton() {
+        const attendBtn = $('attendBtn');
+        const badge = $('attendComplete');
+        if (!attendBtn || !badge) return;
+
+        const typedInviter = ($('inviterInput').value || '').trim();
+        const inviterName = currentInviterName();
+        const inviterEntry = findAttendeeByName(inviterName);
+        const accepted = !!inviterEntry;
+
+        if (!typedInviter) {
+          badge.style.display = 'none';
+          attendBtn.style.display = 'none';
+          updateDishButton();
+          updateVoteButton();
+          return;
+        }
+
+        badge.style.display = accepted ? '' : 'none';
+        attendBtn.style.display = accepted ? 'none' : '';
+
+        if (accepted) {
+          badge.textContent = '✅ ' + toShortName(inviterName || inviterEntry.fullName) + ' is on Santa’s Nice List';
+        }
+
+        updateDishButton();
+        updateVoteButton();
+      }
+
+      function updateFoodLabel() {
+        const label = $('foodLabel');
+        if (!label) return;
+
+        const inviterName = currentInviterName();
+        label.innerHTML = '';
+
+        const titleSpan = document.createElement('span');
+        titleSpan.className = 'label-title';
+
+        const emoji = document.createElement('span');
+        emoji.textContent = '🍽️🍪🎄';
+        titleSpan.appendChild(emoji);
+
+        const bold = document.createElement('strong');
+        bold.textContent = 'Food signup';
+        titleSpan.appendChild(bold);
+
+        label.appendChild(titleSpan);
+
+        if (inviterName) {
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'food-label-name';
+          nameSpan.textContent = 'for ' + inviterName;
+          label.appendChild(nameSpan);
+        }
+      }
+
+      function setSaveButtonsDisabled(disabled) {
+        ['attendBtn', 'guestSaveBtn', 'dishBtn', 'voteChangeBtn'].forEach(function(id) {
+          const el = $(id);
+          if (el) el.disabled = disabled;
+        });
+      }
+
+      function updateSaveButtons() {
+        const attendBtn = $('attendBtn');
+        const guestSaveBtn = $('guestSaveBtn');
+
+        const inviter = $('inviterInput').value.trim();
+        const attendee = $('fullNameInput').value.trim();
+        const savingInviter = !attendee || inviter.toLowerCase() === attendee.toLowerCase();
+        const guestMode = guestFieldsUnlocked && !savingInviter;
+
+        if (attendBtn) {
+          attendBtn.style.display = '';
+          attendBtn.textContent = guestMode ? '⭐ Save Guest' : '⭐ I\'m Attending';
+          attendBtn.disabled = guestMode && !attendee;
+        }
+
+        if (guestSaveBtn) {
+          guestSaveBtn.style.display = guestMode ? '' : 'none';
+          guestSaveBtn.disabled = !guestMode || !attendee;
+        }
+
+        updateAttendButton();
+      }
+
+      function renderPersonalPreview() {
+        const container = $('personalPreview');
+        if (!container) return;
+
+        const inviter = currentInviterName();
+        const inviterShort = inviter ? toShortName(inviter) : '';
+        const ownerEntry = inviter ? findAttendeeByName(inviter) : null;
+        const clusterEntries = inviter ? getClusterEntries(inviter) : [];
+        const pendingGuestName = $('fullNameInput').value.trim();
+        const pendingGuestAge = getSelectedAgeGroup();
+
+        const guestEntries = dedupeByName((clusterEntries || []).filter(function(a) { return !isClusterOwner(a); }));
+        if (pendingGuestName) {
+          const lookup = pendingGuestName.toLowerCase();
+          const exists = guestEntries.some(function(g) { return (g.fullName || '').toLowerCase() === lookup; });
+          if (!exists) {
+            guestEntries.push({
+              fullName: pendingGuestName,
+              shortName: toShortName(pendingGuestName),
+              ageGroup: pendingGuestAge || ''
+            });
+          }
+        }
+
+        const selectedFoods = getSelectedFoods();
+        const ownerDish = ownerEntry && ownerEntry.food ? ownerEntry.food : (selectedFoods.length ? selectedFoods.join('; ') : '');
+        const voteChoice = ownerEntry && (ownerEntry.gameVote || ownerEntry.cashVote)
+          ? (ownerEntry.gameVote ? 'game' : 'cash')
+          : getVoteChoice();
+
+        const hasContent = inviterShort && (ownerDish || voteChoice || guestEntries.length);
+        if (!hasContent) {
+          container.style.display = 'none';
+          container.innerHTML = '';
+          return;
+        }
+
+        container.innerHTML = '';
+        const tree = document.createElement('div');
+        tree.className = 'personal-tree';
+
+        const star = document.createElement('div');
+        star.className = 'tree-star';
+        star.textContent = '⭐';
+        tree.appendChild(star);
+
+        const ownerLine = document.createElement('div');
+        ownerLine.className = 'tree-owner';
+        ownerLine.textContent = inviterShort + (ownerDish ? ' — ' + ownerDish : '');
+        tree.appendChild(ownerLine);
+
+        const details = document.createElement('div');
+        details.className = 'branch-details';
+        if (voteChoice) {
+          const voteSpan = document.createElement('span');
+          voteSpan.textContent = voteChoice === 'cash' ? '💵 Voted: Cash donation' : '🎁 Voted: White Elephant game';
+          details.appendChild(voteSpan);
+        }
+        if (ownerDish) {
+          const dishSpan = document.createElement('span');
+          dishSpan.textContent = '🍽️ Dish: ' + ownerDish;
+          details.appendChild(dishSpan);
+        }
+        if (details.children.length) {
+          tree.appendChild(details);
+        }
+
+        if (guestEntries.length) {
+          const guestList = document.createElement('ul');
+          guestList.className = 'tree-branches';
+
+          guestEntries.forEach(function(guest) {
+            const li = document.createElement('li');
+            const title = document.createElement('div');
+            title.className = 'branch-title';
+            const age = ageShort(guest.ageGroup) || '';
+            title.textContent = ageEmoji(guest.ageGroup) + ' ' + (guest.shortName || toShortName(guest.fullName || '')) + (age ? ' — ' + age : '');
+            li.appendChild(title);
+            guestList.appendChild(li);
+          });
+
+          tree.appendChild(guestList);
+        }
+
+        container.appendChild(tree);
+        container.style.display = '';
+      }
+
+      function updateInviterTag() {
+        const tag = $('activeInviterTag');
+        if (!tag) return;
+
+        const inviter = currentInviterName();
+        tag.innerHTML = '';
+        tag.style.display = 'none';
+
+        if (!inviter) {
+          return;
+        }
+
+        tag.style.display = 'none';
+      }
+
+      function updateInviterVotePreview() {
+        const preview = $('inviterVotePreview');
+        if (!preview) return;
+
+        const inviter = currentInviterName();
+        if (!inviter) {
+          preview.style.display = 'none';
+          preview.textContent = '';
+          return;
+        }
+
+        const inviterEntry = findAttendeeByName(inviter);
+        let text = '🎯 Pick game or cash to save your star';
+        if (inviterEntry) {
+          if (inviterEntry.gameVote) {
+            text = '🎁 Voted: White Elephant game';
+          } else if (inviterEntry.cashVote) {
+            text = '💵 Voted: Cash donation';
+          }
+        }
+
+        preview.innerHTML = '';
+        const voteLine = document.createElement('div');
+        voteLine.textContent = text;
+        preview.appendChild(voteLine);
+
+        const clusterEntries = getClusterEntries(inviter);
+        if (clusterEntries.length) {
+          const clusterWrap = document.createElement('div');
+          clusterWrap.className = 'cluster-preview';
+
+          clusterEntries
+            .slice()
+            .sort(function(a, b) {
+              const ownerA = isClusterOwner(a);
+              const ownerB = isClusterOwner(b);
+              if (ownerA && !ownerB) return -1;
+              if (!ownerA && ownerB) return 1;
+              return displayName(a).localeCompare(displayName(b));
+            })
+            .forEach(function(entry) {
+              const item = document.createElement('div');
+              item.className = 'cluster-item';
+              const icon = isClusterOwner(entry) ? '⭐' : '🎄';
+              item.textContent = icon + ' ' + displayName(entry);
+
+              const foodTag = document.createElement('span');
+              foodTag.className = 'cluster-food';
+              if (isClusterOwner(entry)) {
+                const foods = parseFoods(entry.food);
+                foodTag.textContent = foods.length ? '— ' + foods.join(' • ') : '— No dish yet';
+              } else {
+                const age = ageShort(entry.ageGroup) || 'Age?';
+                foodTag.textContent = '— ' + age;
+              }
+
+              item.appendChild(foodTag);
+              clusterWrap.appendChild(item);
+            });
+
+          preview.appendChild(clusterWrap);
+        }
+
+        preview.style.display = 'inline-flex';
+      }
+
+      function toShortName(fullName) {
+        const parts = fullName.trim().split(/\s+/);
+        if (!parts.length) return '';
+        if (parts.length === 1) return parts[0];
+        const first = parts[0];
+        const last = parts[parts.length - 1];
+        return first + ' ' + (last.charAt(0).toUpperCase() || '') + '.';
+      }
+
+      function currentInviterName() {
+        return ($('inviterInput').value || lastSavedInviter || '').trim();
+      }
+
+      function hydrateExistingSignup(fullName) {
+        if (!fullName) {
+          lastHydratedName = '';
+          state.currentRow = null;
+          setAgeGroup('');
+          setVoteChoice('');
+          refreshFoodSelect([]);
+          manualAgeSelection = '';
+          return;
+        }
+
+        const lookup = fullName.toLowerCase();
+        const found = (state.attendees || []).find(function(a) {
+          return (a.fullName || '').toLowerCase() === lookup;
+        });
+
+        if (!found) {
+          if (lastHydratedName) {
+            state.currentRow = null;
+            setAgeGroup('');
+            setVoteChoice('');
+            refreshFoodSelect([]);
+            lastHydratedName = '';
+          }
+          if (manualAgeSelection) {
+            setAgeGroup(manualAgeSelection);
+          }
+          updateFoodVisibility();
+          return;
+        }
+
+        state.currentRow = found.row;
+        guestFieldsUnlocked = isInviterComplete(found);
+        updateGuestFieldsVisibility();
+        setAgeGroup(found.ageGroup || '');
+        manualAgeSelection = found.ageGroup || '';
+        setVoteChoice(found.gameVote ? 'game' : found.cashVote ? 'cash' : '');
+        $('inviterInput').value = found.enteredBy || found.fullName || '';
+        refreshFoodSelect(parseFoods(found.food));
+        lastSavedInviter = $('inviterInput').value.trim() || fullName;
+        updateDishButton();
+        updateFoodLabel();
+        updateInviterTag();
+        updateInviterVotePreview();
+        updateAttendButton();
+        updateVoteButton();
+
+        if (lastHydratedName !== lookup) {
+          showStatus('Loaded existing signup for ' + toShortName(fullName) + '. Update and save if needed.', false);
+          lastHydratedName = lookup;
+        }
+
+        updateFoodVisibility();
+      }
+
+      function renderPersonalTree() {
+        // Personal Nice List display removed – keeping hook for future use.
+        return;
+      }
+
+      function prepGuestAdd() {
+        if (!lastSavedInviter) {
+          showStatus('Save yourself first, then add guests beneath you.', true);
+          return;
+        }
+        guestFieldsUnlocked = true;
+        updateGuestFieldsVisibility();
+        $('fullNameInput').value = '';
+        updateShortNamePreview();
+        $('inviterInput').value = lastSavedInviter;
+        setAgeGroup('');
+        setVoteChoice('');
+        refreshFoodSelect([]);
+        updateInviterTag();
+        showStatus('Adding a guest under ' + toShortName(lastSavedInviter) + '. Enter their full name and details.', false);
+      }
+
+      function startDishAdd() {
+        handleAddDishes();
+      }
+
+      function handleAddDishes() {
+        const name = lastSavedInviter || currentInviterName();
+        if (!name) {
+          showStatus('Save your name first to claim menu items.', true);
+          return;
+        }
+
+        const inviterEntry = findAttendeeByName(name);
+        if (!inviterEntry || !isClusterOwner(inviterEntry)) {
+          showStatus('Save your RSVP first so we know who to attach dishes to.', true);
+          return;
+        }
+
+        const newFoods = getSelectedFoods();
+        if (!newFoods.length) {
+          showStatus('Select at least one dish to add to your Nice List entry.', true);
+          return;
+        }
+
+        const mergedFoods = Array.from(new Set(parseFoods(inviterEntry.food).concat(newFoods)));
+        const payload = {
+          row: inviterEntry.row,
+          fullName: inviterEntry.fullName,
+          ageGroup: inviterEntry.ageGroup || '11+',
+          food: mergedFoods,
+          gameVote: !!inviterEntry.gameVote,
+          cashVote: !!inviterEntry.cashVote,
+          enteredBy: inviterEntry.enteredBy || inviterEntry.fullName
+        };
+
+        setSaveButtonsDisabled(true);
+        showStatus('Saving dishes for ' + toShortName(name) + '…');
+
+        google.script.run
+          .withSuccessHandler(function(data) {
+            state.meta = Object.assign({}, HARD_META, data.meta || {});
+            state.attendees = dedupeByName(enrichAttendees(data.attendees || []));
+            state.menu = data.menu || [];
+
+            renderMeta();
+            renderInviteTree();
+            renderFoodList();
+            renderVoteTotals();
+            refreshFoodSelect(mergedFoods);
+
+            lastSavedInviter = name;
+            guestFieldsUnlocked = isInviterComplete(findAttendeeByName(name));
+            updateGuestFieldsVisibility();
+            updateDishButton();
+            updateFoodLabel();
+            updateInviterTag();
+            updateInviterVotePreview();
+            updateAttendButton();
+            updateVoteButton();
+            updateSaveButtons();
+            renderPersonalPreview();
+
+            setSaveButtonsDisabled(false);
+            showStatus('Dishes saved to column C for ' + toShortName(name) + '.', false);
+          })
+          .withFailureHandler(function(err) {
+            setSaveButtonsDisabled(false);
+            onError(err);
+          })
+          .saveAttendee(payload);
+      }
+
+      function handleChangeVote() {
+        const typedInviter = $('inviterInput').value.trim();
+        const name = typedInviter || lastSavedInviter || '';
+        if (!name) {
+          showStatus('Type your name first to update your vote.', true);
+          return;
+        }
+
+        const inviterEntry = findAttendeeByName(name);
+        if (!inviterEntry || !isClusterOwner(inviterEntry)) {
+          showStatus('Save your RSVP first so we know whose vote to update.', true);
+          return;
+        }
+
+        const voteChoice = getVoteChoice();
+        if (!voteChoice) {
+          showStatus('Pick game or cash to update your vote.', true);
+          return;
+        }
+
+        const payload = {
+          row: inviterEntry.row,
+          fullName: inviterEntry.fullName,
+          ageGroup: inviterEntry.ageGroup || '11+',
+          food: parseFoods(inviterEntry.food),
+          gameVote: voteChoice === 'game',
+          cashVote: voteChoice === 'cash',
+          enteredBy: inviterEntry.enteredBy || inviterEntry.fullName
+        };
+
+        setSaveButtonsDisabled(true);
+        showStatus('Updating vote for ' + toShortName(name) + '…');
+
+        google.script.run
+          .withSuccessHandler(function(data) {
+            state.meta = Object.assign({}, HARD_META, data.meta || {});
+            state.attendees = dedupeByName(enrichAttendees(data.attendees || []));
+            state.menu = data.menu || [];
+
+            renderMeta();
+            renderInviteTree();
+            renderFoodList();
+            renderVoteTotals();
+
+            const updatedEntry = findAttendeeByName(name);
+            const foods = parseFoods(updatedEntry ? updatedEntry.food : inviterEntry.food);
+            refreshFoodSelect(foods);
+            setVoteChoice(updatedEntry && updatedEntry.gameVote ? 'game' : updatedEntry && updatedEntry.cashVote ? 'cash' : voteChoice);
+
+            lastSavedInviter = name;
+            guestFieldsUnlocked = isInviterComplete(updatedEntry || inviterEntry);
+            updateGuestFieldsVisibility();
+            updateDishButton();
+            updateFoodLabel();
+            updateInviterTag();
+            updateInviterVotePreview();
+            updateAttendButton();
+            updateVoteButton();
+            updateSaveButtons();
+            renderPersonalPreview();
+
+            setSaveButtonsDisabled(false);
+            showStatus('Vote updated for ' + toShortName(name) + '.', false);
+          })
+          .withFailureHandler(function(err) {
+            setSaveButtonsDisabled(false);
+            onError(err);
+          })
+          .saveAttendee(payload);
+      }
+
+      function clearAttendeeFields() {
+        $('fullNameInput').value = '';
+        setAgeGroup('');
+        setVoteChoice('');
+        manualAgeSelection = '';
+        state.currentRow = null;
+        updateShortNamePreview();
+        updateFoodVisibility();
+      }
+
+      function handleSave() {
+        const inviter = $('inviterInput').value.trim();
+        const typedName = $('fullNameInput').value.trim();
+        const name = typedName || inviter;
+
+        if (!inviter) {
+          showStatus('Please enter your name first so we can personalize your tree.', true);
+          return;
+        }
+
+        if (!name) {
+          showStatus('Please enter your name so we can save your spot.', true);
+          return;
+        }
+
+        const isGuest = typedName && inviter.toLowerCase() !== typedName.toLowerCase();
+        if (isGuest && !guestFieldsUnlocked) {
+          showStatus('Save your name with a food choice and vote using ⭐ I\'m Attending to unlock guest spots.', true);
+          return;
+        }
+
+        const isClusterHead = inviter && inviter.toLowerCase() === name.toLowerCase();
+        let ageGroup = getSelectedAgeGroup();
+        if (isClusterHead) {
+          ageGroup = '11+'; // signer-upper is always treated as adult, no need to display
+        } else if (!ageGroup) {
+          showStatus('Please select an age group for your guest (11+ or 10-).', true);
+          return;
+        }
+
+        let selectedFoods = [];
+        let voteChoice = '';
+        if (isClusterHead) {
+          selectedFoods = getSelectedFoods();
+          voteChoice = getVoteChoice();
+
+          if (!selectedFoods.length) {
+            showStatus('Pick at least one food item before saving your star.', true);
+            return;
+          }
+
+          if (!voteChoice) {
+            showStatus('Cast a quick vote (game or cash) to finish saving your spot.', true);
+            return;
+          }
+        }
+
+        const food = isClusterHead ? selectedFoods.join('; ') : '';
+
+        const lookup = name.toLowerCase();
+        const existing = (state.attendees || []).find(function(a) {
+          return (a.fullName || '').toLowerCase() === lookup;
+        });
+        if (existing) {
+          state.currentRow = existing.row;
+        }
+
+        const payload = {
+          row: state.currentRow,          // may be null/undefined if new
+          fullName: name,
+          ageGroup: ageGroup,
+          food: parseFoods(food),
+          gameVote: isClusterHead && voteChoice === 'game',
+          cashVote: isClusterHead && voteChoice === 'cash',
+          enteredBy: inviter             // first time this row is created, this is stored in column K
+        };
+
+        setSaveButtonsDisabled(true);
+        showStatus('Saving…');
+
+        google.script.run
+          .withSuccessHandler(function(data) {
+            // Refresh state & UI using latest snapshot
+            state.meta = Object.assign({}, HARD_META, data.meta || {});
+            state.attendees = dedupeByName(enrichAttendees(data.attendees || []));
+            state.menu = data.menu || [];
+
+            // keep the same name in the box
+            const lookup = name.toLowerCase();
+            const updated = state.attendees.find(function(a) {
+              return (a.fullName || '').toLowerCase() === lookup;
+            });
+            state.currentRow = updated ? updated.row : null;
+
+            renderMeta();
+            renderInviteTree();
+            renderFoodList();
+            renderVoteTotals();
+            refreshFoodSelect(parseFoods(updated ? updated.food || '' : food || ''));
+
+            lastSavedInviter = inviter;
+            const inviterEntry = findAttendeeByName(inviter);
+            guestFieldsUnlocked = isInviterComplete(inviterEntry);
+            updateGuestFieldsVisibility();
+            updateDishButton();
+            updateFoodLabel();
+            updateInviterTag();
+            updateInviterVotePreview();
+            updateSaveButtons();
+            updateAttendButton();
+            updateVoteButton();
+            lastHydratedName = lookup;
+
+            renderPersonalPreview();
+
+            clearAttendeeFields();
+
+            setSaveButtonsDisabled(false);
+            const unlockedText = guestFieldsUnlocked
+              ? ' 🎄 Guests + ages are unlocked—add another under ' + toShortName(inviter || name) + ' when you’re ready.'
+              : ' Add a food choice and vote to unlock guests beneath your star.';
+            showStatus('Saved!' + unlockedText, !guestFieldsUnlocked);
+
+            if (isClusterHead && guestFieldsUnlocked) {
+              flashGuestNameField();
+            }
+          })
+          .withFailureHandler(function(err) {
+            setSaveButtonsDisabled(false);
+            onError(err);
+          })
+          .saveAttendee(payload);
+      }
+
+      function renderInviteTree() {
+        const container = $('inviteTree');
+        container.innerHTML = '';
+
+        const title = document.createElement('h2');
+        title.innerHTML = '🌲 Santa’s Nice List';
+        container.appendChild(title);
+
+        if (!state.attendees || !state.attendees.length) {
+          const p = document.createElement('p');
+          p.textContent = 'No RSVPs yet – be the first ornament on the tree! 🎀';
+          container.appendChild(p);
+          return;
+        }
+
+        // Group by "Entered By" (column K)
+        const groups = {};
+        state.attendees.forEach(function(a) {
+          const inviter = a.enteredBy || a.fullName || 'Host';
+          if (!groups[inviter]) groups[inviter] = [];
+          const already = groups[inviter].some(function(entry) { return entry.row === a.row; });
+          if (!already) {
+            groups[inviter].push(a);
+          }
+        });
+
+        const clusterWrap = document.createElement('div');
+        clusterWrap.className = 'cluster-grid';
+
+        Object.keys(groups)
+          .sort()
+          .forEach(function(inviter) {
+          const card = document.createElement('div');
+          card.className = 'tree-cluster';
+
+          const header = document.createElement('div');
+          header.className = 'cluster-header';
+          const headName = document.createElement('span');
+          headName.textContent = toShortName(inviter || 'Host') + ' ' + groups[inviter].length;
+          header.appendChild(headName);
+          card.appendChild(header);
+
+          const branches = document.createElement('div');
+          branches.className = 'cluster-branches';
+
+          groups[inviter]
+            .slice()
+            .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
+            .forEach(function(a) {
+              const person = document.createElement('div');
+              person.className = 'branch-wrapper';
+
+              const title = document.createElement('div');
+              title.className = 'branch-title';
+              const isOwner = isClusterOwner(a);
+              const icon = isOwner ? '⭐' : ageEmoji(a.ageGroup);
+              const nameSpan = document.createElement('span');
+              let nameText = icon + ' ' + displayName(a);
+              if (!isOwner) {
+                const ageBadge = ageShort(a.ageGroup);
+                if (ageBadge) {
+                  nameText += ' (' + ageBadge + ')';
+                }
+              } else {
+                const foodText = a.food || 'Not chosen yet';
+                if (foodText) {
+                  nameText += ' (' + foodText + ')';
+                }
+              }
+              nameSpan.textContent = nameText;
+              title.appendChild(nameSpan);
+              person.appendChild(title);
+              person.title = (isOwner ? '' : 'Age: ' + ageLabel(a.ageGroup)) + (a.food ? '\nFood: ' + a.food : '');
+              branches.appendChild(person);
+            });
+
+          card.appendChild(branches);
+          clusterWrap.appendChild(card);
+        });
+
+        container.appendChild(clusterWrap);
+      }
+
+      function renderFoodList() {
+        const container = $('foodList');
+        container.innerHTML = '';
+
+        const title = document.createElement('h2');
+        title.innerHTML = '🍽️🍪🎄 Holiday Dish Lineup';
+        container.appendChild(title);
+
+        const pendingDish = getPendingDishPreview();
+        const pendingLabel = pendingDish ? pendingDish.name + ' (you)' : '';
+
+        const attendees = (state.attendees || []).filter(function(a) {
+          return !!a.food && isClusterOwner(a);
+        });
+
+        const menuItems = (state.menu || []).filter(function(item) { return !!item; });
+        const lineupByItem = new Map();
+
+        menuItems.forEach(function(item) {
+          const key = normalizeFoodItem(item);
+          if (!key) return;
+          lineupByItem.set(key, { label: item, claimants: [] });
+        });
+
+        const extras = [];
+        attendees.forEach(function(a) {
+          const foods = parseFoods(a.food);
+          foods.forEach(function(food) {
+            const key = normalizeFoodItem(food);
+            if (key && lineupByItem.has(key)) {
+              lineupByItem.get(key).claimants.push(displayName(a));
+            } else if (food) {
+              extras.push({ food: food, by: displayName(a), inviter: a.enteredBy });
+            }
+          });
+        });
+
+        if (pendingDish) {
+          pendingDish.foods.forEach(function(food) {
+            const key = normalizeFoodItem(food);
+            if (key && lineupByItem.has(key)) {
+              const entry = lineupByItem.get(key);
+              if (!entry.claimants.includes(pendingLabel)) {
+                entry.claimants.push(pendingLabel);
+              }
+            } else if (food) {
+              const exists = extras.some(function(e) {
+                return normalizeFoodItem(e.food) === key && e.by === pendingLabel;
+              });
+              if (!exists) {
+                extras.push({ food: food, by: pendingLabel, inviter: pendingDish.name });
+              }
+            }
+          });
+        }
+
+        if (!menuItems.length && !attendees.length) {
+          const p = document.createElement('p');
+          p.textContent = 'No food signups yet. Once the menu (column J) is filled, pick a dish to bring and make Santa proud! 🍰';
+          container.appendChild(p);
+          return;
+        }
+
+        if (menuItems.length) {
+          const list = document.createElement('ul');
+          list.className = 'food-lineup';
+
+          menuItems
+            .slice()
+            .forEach(function(item) {
+              const key = normalizeFoodItem(item);
+              const entry = key ? lineupByItem.get(key) : null;
+              const li = document.createElement('li');
+
+              const name = document.createElement('strong');
+              name.textContent = item;
+              li.appendChild(document.createTextNode('🎄 '));
+              li.appendChild(name);
+              li.appendChild(document.createTextNode(' — '));
+
+              if (entry && entry.claimants.length) {
+                const claimer = document.createElement('span');
+                claimer.textContent = entry.claimants.join(', ');
+                claimer.className = 'food-claimer';
+                li.appendChild(claimer);
+              } else {
+                const open = document.createElement('span');
+                open.textContent = 'Open to claim';
+                open.className = 'food-open';
+                li.appendChild(open);
+              }
+
+              list.appendChild(li);
+            });
+
+          container.appendChild(list);
+        }
+
+        if (extras.length) {
+          const extrasTitle = document.createElement('div');
+          extrasTitle.className = 'subtitle';
+          extrasTitle.textContent = 'Bonus dishes already claimed:';
+          container.appendChild(extrasTitle);
+
+          const extraList = document.createElement('ul');
+          extraList.className = 'food-lineup';
+
+          extras.forEach(function(entry) {
+            const li = document.createElement('li');
+            const foodName = document.createElement('strong');
+            foodName.textContent = entry.food;
+
+            li.appendChild(document.createTextNode('⭐ '));
+            li.appendChild(foodName);
+            li.appendChild(document.createTextNode(' — ' + entry.by));
+            if (entry.inviter) {
+              li.title = 'Invited by: ' + toShortName(entry.inviter);
+            }
+            extraList.appendChild(li);
+          });
+
+          container.appendChild(extraList);
+        }
+      }
+
+      function renderVoteTotals() {
+        const container = $('voteTotals');
+        if (!container) return;
+
+        container.innerHTML = '';
+        const title = document.createElement('h2');
+        title.innerHTML = '🗳️ Vote Totals';
+        container.appendChild(title);
+
+        const banner = document.createElement('div');
+        banner.className = 'festive-banner';
+
+        const totalGame = (state.attendees || []).filter(function(a) { return !!a.gameVote; }).length;
+        const totalCash = (state.attendees || []).filter(function(a) { return !!a.cashVote; }).length;
+        
+        banner.textContent = '🎁 Game votes: ' + totalGame + ' • 💵 Cash votes: ' + totalCash;
+        container.appendChild(banner);
+      }
+    </script>
+  </body>
+</html>
