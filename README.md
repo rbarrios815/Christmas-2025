@@ -13,3 +13,5 @@ Apps Script web app for the Christmas 2025 sign-up.
 4. Click **Deploy**. Updates usually appear immediately, but caches can take a few minutes to refresh; an incognito window often shows changes right away.
 
 > Note: A lowercase `index.html` existed before but was not served by `Code.gs`; it was removed to avoid confusion. All UI edits should be in `Index.html`.
+
+If you visit the repo via GitHub Pages, you'll see a placeholder `index.html` that simply explains the app is hosted through Apps Script. The live form is only reachable via the Apps Script Web App deployment URL.
