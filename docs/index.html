@@ -980,13 +980,15 @@
           apiPost('getChristmasData', {})
             .then(onDataLoaded)
             .catch(function(err) {
+              const msg = (err && err.message) ? err.message : String(err || 'Unknown error');
               if (hasGoogleScript()) {
+                showStatus('Direct API load failed: ' + msg + ' — retrying via Apps Script…', true);
                 google.script.run
                   .withSuccessHandler(onDataLoaded)
                   .withFailureHandler(onError)
                   .getChristmasData();
               } else {
-                showStatus('Preview mode – data will not be saved until APPS_SCRIPT_API_URL is set.', true);
+                showStatus('Could not reach Apps Script API: ' + msg + ' — showing preview data only.', true);
                 onDataLoaded(PREVIEW_DATA);
               }
             });
