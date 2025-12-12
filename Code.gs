@@ -38,7 +38,6 @@ function doPost(e) {
     output.setContent(JSON.stringify({ ok: false, error: err && err.message ? err.message : String(err) }));
   }
 
-  output.setHeader('Access-Control-Allow-Origin', '*');
   return output;
 }
 
