@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Christmas 2025 Sign-Up 🎄</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #fef6f0, #e3f6ff);
+      margin: 0;
+      padding: 24px;
+      color: #1e2b2a;
+    }
+
+    .card {
+      max-width: 900px;
+      margin: 0 auto 24px;
+      background: #fff;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    }
+
+    h1, h2 {
+      color: #b83227;
+      margin-top: 0;
+    }
+
+    label {
+      font-weight: 700;
+      display: block;
+      margin-top: 12px;
+    }
+
+    input[type="text"], select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 2px solid #ccc;
+      font-size: 1rem;
+    }
+
+    select[multiple] {
+      height: 160px;
+    }
+
+    .votes {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    button {
+      margin-top: 16px;
+      padding: 14px 22px;
+      border-radius: 999px;
+      border: none;
+      font-size: 1rem;
+      font-weight: 800;
+      background: linear-gradient(90deg, #e63946, #f4a261);
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #status {
+      margin-top: 12px;
+      font-weight: 700;
+    }
+
+    .ok { color: #006400; }
+    .error { color: #b00020; }
+
+    .note {
+      font-size: 0.9rem;
+      color: #444;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+    <h1>🎄 Christmas 2025 Sign-Up</h1>
+    <p>Add your name, pick a dish, and vote. Anyone with this link can use it.</p>
+
+    <label for="inviterInput">Your Name</label>
+    <input id="inviterInput" type="text" placeholder="First Last" />
+
+    <label for="foodSelect">🍽️ Dish you’re bringing</label>
+    <select id="foodSelect" multiple>
+      <option value="Ham">Ham</option>
+      <option value="Mashed Potatoes">Mashed Potatoes</option>
+      <option value="Green Bean Casserole">Green Bean Casserole</option>
+      <option value="Dessert">Dessert</option>
+      <option value="Rolls">Rolls</option>
+    </select>
+    <div class="note">Hold Ctrl / Cmd to select more than one.</div>
+
+    <label>🗳️ Vote (pick one)</label>
+    <div class="votes">
+      <label>
+        <input type="radio" name="voteChoice" id="voteGame" />
+        White Elephant 🎁
+      </label>
+      <label>
+        <input type="radio" name="voteChoice" id="voteCash" />
+        $5–$10 Cash Donation 💵
+      </label>
+    </div>
+
+    <button id="submitBtn">⭐ I’m Attending</button>
+
+    <div id="status"></div>
+  </div>
+
+  <script>
+    /* =========================
+       GOOGLE FORM CONFIG
+       ========================= */
+
+    const FORM_ACTION_URL =
+      "https://docs.google.com/forms/d/e/1FAIpQLSfxK8uJGgjtYua4-JldWjNHm9y0z4zG44jXgUzMQqKXHyiegw/formResponse";
+
+    const FORM_FIELDS = {
+      name: "entry.976310989",
+      ageGroup: "entry.1157418981",
+      dish: "entry.1167945608",
+      vote: "entry.1744284863",
+      questions: "entry.1992175201",
+      enteredBy: "entry.932733425",
+    };
+
+    function showStatus(msg, isError = false) {
+      const el = document.getElementById("status");
+      el.textContent = msg;
+      el.className = isError ? "error" : "ok";
+    }
+
+    function getVoteText() {
+      if (document.getElementById("voteGame").checked) return "White Elephant";
+      if (document.getElementById("voteCash").checked) return "Cash Donation";
+      return "";
+    }
+
+    async function submitSignup() {
+      const name = document.getElementById("inviterInput").value.trim();
+      const dishSelect = document.getElementById("foodSelect");
+      const dishes = Array.from(dishSelect.selectedOptions)
+        .map(o => o.value)
+        .join("; ");
+
+      const vote = getVoteText();
+
+      if (!name) {
+        showStatus("Please enter your name.", true);
+        return;
+      }
+      if (!dishes) {
+        showStatus("Please select at least one dish.", true);
+        return;
+      }
+      if (!vote) {
+        showStatus("Please cast a vote.", true);
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append(FORM_FIELDS.name, name);
+      formData.append(FORM_FIELDS.ageGroup, "11+");
+      formData.append(FORM_FIELDS.dish, dishes);
+      formData.append(FORM_FIELDS.vote, vote);
+      formData.append(FORM_FIELDS.questions, "");
+      formData.append(FORM_FIELDS.enteredBy, name);
+
+      showStatus("Submitting…");
+
+      await fetch(FORM_ACTION_URL, {
+        method: "POST",
+        mode: "no-cors",
+        body: formData
+      });
+
+      showStatus("🎉 Submitted! Check the Sheet in ~5–20 seconds.");
+      document.getElementById("submitBtn").disabled = true;
+    }
+
+    document.getElementById("submitBtn")
+      .addEventListener("click", submitSignup);
+  </script>
+
+</body>
+</html>
