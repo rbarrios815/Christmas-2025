@@ -2,9 +2,8 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Christmas 2025 Sign-Up</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <style>
       :root {
         --candy-red: #e63946;
@@ -38,7 +37,12 @@
         opacity: 0.55;
       }
 
-      #app { max-width: 1040px; margin: 0 auto; width: 100%; position: relative; }
+      #app {
+        max-width: 1040px;
+        margin: 0 auto;
+        width: 100%;
+        position: relative;
+      }
 
       .card {
         background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 248, 245, 0.96));
@@ -85,83 +89,229 @@
         margin-bottom: 12px;
       }
 
-      .subtitle { font-size: 1rem; color: #2f3a39; margin-bottom: 10px; }
+      h2 {
+        margin: 0 0 10px;
+        font-size: 1.35rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #b83227;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+        color: #2f3a39;
+        margin-bottom: 10px;
+      }
+
+      .festive-banner {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(90deg, rgba(11, 139, 98, 0.08), rgba(244, 162, 97, 0.14));
+        padding: 10px 14px;
+        border-radius: 14px;
+        font-weight: 700;
+        color: #0b3a32;
+        margin-bottom: 12px;
+        border: 1px solid rgba(11, 139, 98, 0.2);
+      }
 
       label {
         display: block;
         font-size: 1rem;
         margin: 8px 0 4px;
         color: #16302c;
+      }
+
+      .name-label {
+        font-size: clamp(1.3rem, 3.5vw, 1.6rem);
+        font-weight: 900;
+        color: #b83227;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-shadow: 0 2px 8px rgba(230, 57, 70, 0.2);
+      }
+
+      .label-title {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         font-weight: 800;
       }
 
-      input[type="text"], select, textarea {
+      input[type="text"],
+      select {
         width: 100%;
         box-sizing: border-box;
-        padding: 12px 12px;
+        padding: 10px 12px;
         border-radius: 12px;
         border: 2px solid rgba(11, 139, 98, 0.2);
         font-size: 1.05rem;
         background: rgba(255, 255, 255, 0.92);
       }
 
-      textarea { min-height: 90px; resize: vertical; }
-
-      input[type="text"]:focus, select:focus, textarea:focus {
-        outline: none;
-        border-color: #e63946;
-        box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.16);
+      #inviterInput {
+        padding: 18px 18px;
+        font-size: clamp(1.15rem, 4vw, 1.55rem);
+        border-radius: 18px;
+        border: 3px solid rgba(230, 57, 70, 0.24);
+        background: linear-gradient(120deg, rgba(230, 57, 70, 0.12), rgba(11, 139, 98, 0.08), rgba(244, 162, 97, 0.12)),
+          rgba(255, 255, 255, 0.95);
+        box-shadow: 0 8px 18px rgba(11, 139, 98, 0.12), inset 0 0 0 3px rgba(255, 255, 255, 0.88);
       }
 
-      .row { display: flex; flex-wrap: wrap; gap: 14px; }
-      .col { flex: 1 1 240px; }
+      .row { display: flex; flex-wrap: wrap; gap: 10px; }
 
-      .votes { display: grid; gap: 10px; margin-top: 6px; font-size: 1rem; }
-      .votes label { font-weight: 700; margin: 0; display: flex; gap: 10px; align-items: flex-start; }
+      .votes {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 8px;
+        font-size: 1rem;
+      }
+
+      .votes label { display: flex; align-items: center; gap: 6px; margin: 0; }
+
+      .action-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: flex-start;
+        margin-top: 12px;
+      }
 
       button {
         border-radius: 999px;
         border: none;
-        padding: 14px 22px;
+        padding: 12px 20px;
         font-size: 1.05rem;
-        font-weight: 800;
+        font-weight: 700;
         cursor: pointer;
         background: linear-gradient(90deg, var(--candy-red), var(--gold));
         color: #fff;
         box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
-        margin-top: 14px;
-        transition: transform 120ms ease, box-shadow 120ms ease;
+        margin-top: 12px;
       }
 
-      button:hover:not([disabled]) {
-        transform: translateY(-1px) scale(1.01);
-        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.2);
+      button.ghost {
+        background: rgba(11, 139, 98, 0.12);
+        border: 2px dashed rgba(11, 139, 98, 0.28);
+        color: #0b3a32;
+        box-shadow: none;
+        padding: 10px 14px;
+        margin-top: 0;
       }
 
-      button[disabled] { opacity: 0.6; cursor: default; box-shadow: none; }
+      #status { margin-top: 8px; font-size: 0.95rem; }
+      #status.error { color: #b00020; }
+      #status.ok { color: #006400; }
 
       .pill {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
-        padding: 10px 14px;
+        gap: 6px;
+        padding: 6px 10px;
         border-radius: 999px;
         font-size: 0.95rem;
         background: linear-gradient(135deg, #f1f5ff, #fff5f5);
         border: 1px solid #dde4ff;
         color: #0f3c2f;
-        font-weight: 800;
       }
 
-      #status { margin-top: 10px; font-size: 0.95rem; }
-      #status.ok { color: #006400; }
-      #status.err { color: #b00020; }
+      .meta-line {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 1rem;
+        align-items: center;
+        margin-bottom: 12px;
+      }
 
-      .small { font-size: 0.9rem; font-weight: 650; color: #1f312e; opacity: 0.9; }
+      #metaText { display: flex; flex-wrap: wrap; gap: 8px; }
+
+      .meta-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(11, 139, 98, 0.25);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-weight: 700;
+        color: #0c3f35;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .guest-count { background: linear-gradient(135deg, rgba(11, 139, 98, 0.18), rgba(244, 162, 97, 0.2)); }
+
+      .food-lineup {
+        list-style: none;
+        padding-left: 0;
+        margin: 10px 0 0;
+        display: grid;
+        gap: 8px;
+      }
+
+      .food-lineup li {
+        background: rgba(255, 255, 255, 0.86);
+        border: 1px solid rgba(11, 139, 98, 0.18);
+        border-radius: 14px;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+        font-size: 1rem;
+      }
+
+      .food-open { color: #b83227; font-weight: 800; }
+      .food-claimer { color: #0c3f35; font-weight: 700; }
+
+      .cluster-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 12px;
+        margin-top: 10px;
+      }
+
+      .tree-cluster {
+        position: relative;
+        padding: 12px 12px 10px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(236, 252, 249, 0.96));
+        border: 2px dashed rgba(11, 139, 98, 0.22);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+      }
+
+      .cluster-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 800;
+        color: #0c4c39;
+        margin-bottom: 6px;
+      }
+
+      .cluster-branches { display: grid; gap: 8px; }
+
+      .branch-wrapper {
+        background: rgba(11, 139, 98, 0.06);
+        border: 1px solid rgba(11, 139, 98, 0.18);
+        border-radius: 12px;
+        padding: 8px 10px;
+        display: grid;
+        gap: 6px;
+      }
+
+      .branch-title { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; color: #0f372c; }
 
       @media (max-width: 600px) {
         body { padding: 10px; }
         .card { padding: 14px; }
+        .row { flex-direction: column; }
       }
     </style>
   </head>
@@ -169,183 +319,487 @@
   <body>
     <div id="app">
       <div class="card">
-        <div class="hero-line">🧦✨🎄🦌🎁☃️🍪✨🧦<br />Christmas 2025<br />Santa’s Nice List Sign-Up</div>
-        <div class="subtitle">Fill this out and it will submit straight into your Google Form → Google Sheet.</div>
+        <div class="meta-line">
+          <span id="metaText"></span>
+          <span id="guestCount" class="meta-chip guest-count" aria-live="polite"></span>
+        </div>
 
-        <div class="row">
-          <div class="col">
-            <label for="nameInput">Your Name</label>
-            <input id="nameInput" type="text" placeholder="e.g., Ricky Barrios" />
-          </div>
+        <div class="hero-line">
+          🧦✨🎄🦌🎁☃️🍪✨🧦 Ho Ho Ho!<br />
+          Christmas 2025<br />
+          — Santa's Nice List is open — add your name & your tastiest treat! 🍪
+        </div>
 
-          <div class="col">
-            <label for="ageGroupInput">11+ or 10-</label>
-            <select id="ageGroupInput">
-              <option value="">Select one</option>
-              <option value="11+">11+</option>
-              <option value="10-">10-</option>
+        <div class="subtitle">Add yourself with a dish + vote, then refresh to see the list.</div>
+
+        <label for="inviterInput" class="name-label">Your Name</label>
+        <input type="text" id="inviterInput" placeholder="Type your name to join Santa’s Nice List" />
+
+        <div class="row" style="gap:14px; margin-top:12px;">
+          <div style="flex:1 1 320px;">
+            <label for="foodSelect" id="foodLabel">
+              <span class="label-title">🍽️🍪🎄 <strong>Food signup</strong></span>
+            </label>
+            <select id="foodSelect" size="6" multiple aria-label="Food signup options">
+              <option value="">Loading menu…</option>
             </select>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col">
-            <label for="dishInput">Dish (Menu)</label>
-            <select id="dishInput"></select>
-            <div class="small">To edit the menu: scroll up in this file and edit <b>MENU_ITEMS</b>.</div>
+            <div id="foodNote" style="font-size:0.9rem; margin-top:6px;"></div>
           </div>
 
-          <div class="col">
-            <label>Vote (pick one)</label>
-            <div class="votes">
-              <label>
-                <input type="radio" name="voteChoice" value="White Elephant" />
-                White Elephant 🎁
-              </label>
-              <label>
-                <input type="radio" name="voteChoice" value="Cash" />
-                $5–$10 cash donation 💵
-              </label>
+          <div style="flex:1 1 320px;">
+            <div class="vote-header" id="voteHeader">🗳️ <strong>Vote</strong></div>
+            <div class="votes" id="voteBlock" role="group" aria-label="Vote for one option">
+              <label><input type="radio" name="voteChoice" id="voteGame" value="White Elephant" /> White Elephant game 🎁</label>
+              <label><input type="radio" name="voteChoice" id="voteCash" value="Cash" /> $5–$10 cash donation for prizes 💵</label>
             </div>
-            <div class="small">This maps to your Form’s multiple choice question.</div>
+
+            <label for="questionsInput" style="margin-top:14px;">Questions / notes</label>
+            <input type="text" id="questionsInput" placeholder="Optional: allergies, +1 info, etc." />
           </div>
         </div>
 
-        <div class="row">
-          <div class="col">
-            <label for="questionsInput">Questions</label>
-            <textarea id="questionsInput" placeholder="Any questions for Santa’s helpers?"></textarea>
-          </div>
-
-          <div class="col">
-            <label for="enteredByInput">Entered By (who is submitting)</label>
-            <input id="enteredByInput" type="text" placeholder="Usually the same as Your Name" />
-            <div class="small">Tip: you can leave it blank — this page will auto-fill it with Your Name.</div>
-          </div>
+        <div class="action-row">
+          <button type="button" id="attendBtn">⭐ I'm Attending</button>
+          <button type="button" class="ghost" id="refreshBtn">🔄 Refresh List</button>
+          <span id="attendComplete" class="pill" style="display:none;">✅ You’re on the Nice List</span>
         </div>
 
-        <button id="submitBtn" type="button">✅ Submit to Christmas 2025 Form</button>
-        <div id="status" class=""></div>
-        <div class="pill" style="margin-top: 14px;">After you click Submit, the Sheet usually updates within ~5–20 seconds.</div>
+        <div id="status"></div>
       </div>
 
-      <div class="card">
-        <div class="subtitle"><b>Optional:</b> show the live results</div>
-        <div class="small">
-          If you want the site to display the current RSVP list without Apps Script, publish your response Sheet tab to the web
-          and paste the “published” link into an iframe here.
-        </div>
-        <div id="embedHint" class="small" style="margin-top:10px;"></div>
-      </div>
+      <div class="card" id="inviteTree"></div>
+      <div class="card" id="foodList"></div>
+      <div class="card" id="voteTotals"></div>
     </div>
 
     <script>
-      // ===== 1) EDIT YOUR MENU HERE =====
-      // This is the simplest “menu lives somewhere you can edit”.
-      // If you want the menu to live in Google Sheets column J automatically, that requires Apps Script or an add-on.
-      const MENU_ITEMS = [
-        "— I’m not sure yet —",
-        "Green bean casserole",
-        "Mashed potatoes",
-        "Mac & cheese",
-        "Dessert",
-        "Drinks",
-        "Rolls / bread",
-        "Salad",
-      ];
+      // ----------------------------
+      // CONFIG (FILLED IN)
+      // ----------------------------
 
-      // ===== 2) GOOGLE FORM WIRING (from your prefill link) =====
+      // ✅ This is the REAL Google Forms submit endpoint (NOT CSV).
       const FORM_ACTION_URL =
         "https://docs.google.com/forms/d/e/1FAIpQLSfxK8uJGgjtYua4-JldWjNHm9y0z4zG44jXgUzMQqKXHyiegw/formResponse";
 
+      // ✅ Your published CSV URLs
+      const RESPONSES_CSV_URL =
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vSf_cAET3_eUD9W3QAjfizhNDujiFI7jiapGD2lHZxSNDT-iyApP_jz_xlzR3SOinmvxXT5lGeLjy6S/pub?gid=238964823&single=true&output=csv";
+
+      const MENU_CSV_URL =
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vSf_cAET3_eUD9W3QAjfizhNDujiFI7jiapGD2lHZxSNDT-iyApP_jz_xlzR3SOinmvxXT5lGeLjy6S/pub?gid=1728026064&single=true&output=csv";
+
+      // Your form entry IDs (from your prefilled link)
       const FORM_FIELDS = {
         name: "entry.976310989",
         ageGroup: "entry.1157418981",
         dish: "entry.1167945608",
-        whiteElephantVote: "entry.1744284863",
+        vote: "entry.1744284863",
         questions: "entry.1992175201",
         enteredBy: "entry.932733425",
       };
 
+      // ----------------------------
+      // HELPERS
+      // ----------------------------
       function $(id) { return document.getElementById(id); }
 
-      function setStatus(msg, isErr) {
+      let state = { menu: [], attendees: [], meta: { date: "12/24" } };
+
+      function showStatus(msg, isError) {
         const el = $("status");
         el.textContent = msg || "";
-        el.className = isErr ? "err" : "ok";
+        el.className = "";
+        if (!msg) return;
+        el.classList.add(isError ? "error" : "ok");
       }
+
+      function toShortName(fullName) {
+        const parts = (fullName || "").trim().split(/\s+/).filter(Boolean);
+        if (!parts.length) return "";
+        if (parts.length === 1) return parts[0];
+        const first = parts[0];
+        const last = parts[parts.length - 1];
+        return first + " " + (last.charAt(0).toUpperCase() || "") + ".";
+      }
+
+      function normalizeFoodItem(item) { return (item || "").trim().toLowerCase(); }
 
       function getVoteChoice() {
         const radios = document.querySelectorAll('input[name="voteChoice"]');
-        for (const r of radios) if (r.checked) return r.value;
+        for (let i = 0; i < radios.length; i++) if (radios[i].checked) return radios[i].value;
         return "";
       }
 
-      async function submitSignup({ name, ageGroup, dish, whiteElephantVote, questions, enteredBy }) {
+      function getSelectedFoods() {
+        const select = $("foodSelect");
+        if (!select) return [];
+        const values = Array.from(select.selectedOptions || [])
+          .map(opt => opt.value)
+          .filter(v => !!v);
+        return Array.from(new Set(values));
+      }
+
+      function parseCSV(text) {
+        const rows = [];
+        let row = [];
+        let cur = "";
+        let inQuotes = false;
+
+        for (let i = 0; i < text.length; i++) {
+          const ch = text[i];
+          const next = text[i + 1];
+
+          if (ch === '"' && inQuotes && next === '"') { cur += '"'; i++; continue; }
+          if (ch === '"') { inQuotes = !inQuotes; continue; }
+
+          if (!inQuotes && ch === ",") { row.push(cur); cur = ""; continue; }
+          if (!inQuotes && (ch === "\n" || ch === "\r")) {
+            if (ch === "\r" && next === "\n") i++;
+            row.push(cur);
+            rows.push(row);
+            row = [];
+            cur = "";
+            continue;
+          }
+          cur += ch;
+        }
+        if (cur.length || row.length) { row.push(cur); rows.push(row); }
+        return rows;
+      }
+
+      async function fetchCSV(url) {
+        const res = await fetch(url, { cache: "no-store" });
+        if (!res.ok) throw new Error("Failed to fetch CSV: " + res.status);
+        return await res.text();
+      }
+
+      // ----------------------------
+      // LOADERS
+      // ----------------------------
+      async function loadMenu() {
+        const csv = await fetchCSV(MENU_CSV_URL);
+        const rows = parseCSV(csv);
+        state.menu = rows.slice(1).map(r => (r[0] || "").trim()).filter(Boolean);
+      }
+
+      async function loadResponses() {
+        const csv = await fetchCSV(RESPONSES_CSV_URL);
+        const rows = parseCSV(csv);
+        if (rows.length < 2) { state.attendees = []; return; }
+
+        const header = rows[0].map(h => (h || "").trim().toLowerCase());
+        const dataRows = rows.slice(1);
+
+        function colIdx(includes) {
+          const idx = header.findIndex(h => h.includes(includes));
+          return idx;
+        }
+
+        const idxName = colIdx("name") >= 0 ? colIdx("name") : 1;
+        const idxAge = colIdx("older") >= 0 || colIdx("age") >= 0 ? (colIdx("age") >= 0 ? colIdx("age") : 2) : 2;
+        const idxDish = colIdx("dish") >= 0 ? colIdx("dish") : 3;
+        const idxVote = colIdx("white") >= 0 || colIdx("vote") >= 0 ? (colIdx("vote") >= 0 ? colIdx("vote") : 4) : 4;
+        const idxQuestions = colIdx("question") >= 0 ? colIdx("question") : 5;
+        const idxEnteredBy = colIdx("entered") >= 0 ? colIdx("entered") : 6;
+
+        state.attendees = dataRows
+          .map((r, i) => {
+            const fullName = (r[idxName] || "").trim();
+            if (!fullName) return null;
+            const ageGroup = (r[idxAge] || "").trim();
+            const food = (r[idxDish] || "").trim();
+            const vote = (r[idxVote] || "").trim();
+            const enteredBy = (r[idxEnteredBy] || "").trim() || fullName;
+
+            return {
+              row: i + 2,
+              fullName,
+              shortName: toShortName(fullName),
+              ageGroup,
+              food,
+              vote,
+              enteredBy,
+              gameVote: vote.toLowerCase().includes("white"),
+              cashVote: vote.toLowerCase().includes("cash"),
+            };
+          })
+          .filter(Boolean);
+      }
+
+      // ----------------------------
+      // RENDER
+      // ----------------------------
+      function renderMeta() {
+        const metaEl = $("metaText");
+        metaEl.innerHTML = "";
+
+        const chips = ["📅 " + (state.meta.date || "12/24")];
+        chips.forEach(text => {
+          const chip = document.createElement("span");
+          chip.className = "meta-chip";
+          chip.textContent = text;
+          metaEl.appendChild(chip);
+        });
+
+        $("guestCount").textContent = "👥 Guests Signed Up: " + (state.attendees || []).length;
+      }
+
+      function refreshFoodSelect() {
+        const select = $("foodSelect");
+        select.innerHTML = "";
+
+        const placeholder = document.createElement("option");
+        placeholder.value = "";
+        placeholder.textContent = "-- Pick at least one dish --";
+        placeholder.selected = true;
+        select.appendChild(placeholder);
+
+        const claimed = new Set();
+        (state.attendees || []).forEach(a => {
+          (a.food || "").split(/[;\n,]/).map(x => x.trim()).filter(Boolean).forEach(f => claimed.add(normalizeFoodItem(f)));
+        });
+
+        const items = (state.menu || []).slice().sort((a,b)=>a.toLowerCase().localeCompare(b.toLowerCase()));
+        items.forEach(item => {
+          const key = normalizeFoodItem(item);
+          const opt = document.createElement("option");
+          opt.value = item;
+          opt.textContent = claimed.has(key) ? item + " (claimed)" : item;
+          select.appendChild(opt);
+        });
+
+        $("foodNote").textContent = state.menu.length
+          ? ""
+          : "Menu CSV is empty. Add menu items in your Sheet (Menu tab col A), then publish to web (CSV).";
+      }
+
+      function renderInviteTree() {
+        const container = $("inviteTree");
+        container.innerHTML = "";
+
+        const title = document.createElement("h2");
+        title.textContent = "🌲 Santa’s Nice List";
+        container.appendChild(title);
+
+        if (!state.attendees.length) {
+          const p = document.createElement("p");
+          p.textContent = "No RSVPs yet – be the first ornament on the tree! 🎀";
+          container.appendChild(p);
+          return;
+        }
+
+        const groups = {};
+        state.attendees.forEach(a => {
+          const inviter = a.enteredBy || a.fullName || "Host";
+          if (!groups[inviter]) groups[inviter] = [];
+          groups[inviter].push(a);
+        });
+
+        const wrap = document.createElement("div");
+        wrap.className = "cluster-grid";
+
+        Object.keys(groups).sort().forEach(inviter => {
+          const card = document.createElement("div");
+          card.className = "tree-cluster";
+
+          const header = document.createElement("div");
+          header.className = "cluster-header";
+          header.textContent = toShortName(inviter) + " • " + groups[inviter].length;
+          card.appendChild(header);
+
+          const branches = document.createElement("div");
+          branches.className = "cluster-branches";
+
+          groups[inviter].slice().sort((a,b)=>(a.shortName||"").localeCompare(b.shortName||""))
+            .forEach(a => {
+              const person = document.createElement("div");
+              person.className = "branch-wrapper";
+
+              const line = document.createElement("div");
+              line.className = "branch-title";
+
+              const isOwner = (a.fullName || "").toLowerCase() === (a.enteredBy || "").toLowerCase();
+              const icon = isOwner ? "⭐" : (a.ageGroup === "10-" ? "🧸" : "🎄");
+
+              let text = icon + " " + (a.shortName || toShortName(a.fullName));
+              if (isOwner) text += a.food ? " (" + a.food + ")" : " (No dish yet)";
+              else text += a.ageGroup ? " (" + a.ageGroup + ")" : " (Age?)";
+
+              line.textContent = text;
+              person.appendChild(line);
+              branches.appendChild(person);
+            });
+
+          card.appendChild(branches);
+          wrap.appendChild(card);
+        });
+
+        container.appendChild(wrap);
+      }
+
+      function renderFoodList() {
+        const container = $("foodList");
+        container.innerHTML = "";
+
+        const title = document.createElement("h2");
+        title.textContent = "🍽️🍪🎄 Holiday Dish Lineup";
+        container.appendChild(title);
+
+        const menuItems = (state.menu || []).filter(Boolean);
+        const lineup = new Map();
+        menuItems.forEach(item => lineup.set(normalizeFoodItem(item), { label: item, claimants: [] }));
+
+        const extras = [];
+        state.attendees.forEach(a => {
+          (a.food || "").split(/[;\n,]/).map(x=>x.trim()).filter(Boolean).forEach(food => {
+            const key = normalizeFoodItem(food);
+            if (lineup.has(key)) lineup.get(key).claimants.push(a.shortName || toShortName(a.fullName));
+            else extras.push({ food, by: a.shortName || toShortName(a.fullName) });
+          });
+        });
+
+        if (menuItems.length) {
+          const list = document.createElement("ul");
+          list.className = "food-lineup";
+
+          menuItems.forEach(item => {
+            const li = document.createElement("li");
+            const key = normalizeFoodItem(item);
+            const entry = lineup.get(key);
+
+            li.appendChild(document.createTextNode("🎄 "));
+            const strong = document.createElement("strong");
+            strong.textContent = item;
+            li.appendChild(strong);
+            li.appendChild(document.createTextNode(" — "));
+
+            if (entry && entry.claimants.length) {
+              const span = document.createElement("span");
+              span.className = "food-claimer";
+              span.textContent = entry.claimants.join(", ");
+              li.appendChild(span);
+            } else {
+              const span = document.createElement("span");
+              span.className = "food-open";
+              span.textContent = "Open to claim";
+              li.appendChild(span);
+            }
+
+            list.appendChild(li);
+          });
+
+          container.appendChild(list);
+        }
+
+        if (extras.length) {
+          const sub = document.createElement("div");
+          sub.className = "subtitle";
+          sub.textContent = "Bonus dishes already claimed:";
+          container.appendChild(sub);
+
+          const list = document.createElement("ul");
+          list.className = "food-lineup";
+          extras.forEach(e => {
+            const li = document.createElement("li");
+            li.appendChild(document.createTextNode("⭐ "));
+            const strong = document.createElement("strong");
+            strong.textContent = e.food;
+            li.appendChild(strong);
+            li.appendChild(document.createTextNode(" — " + e.by));
+            list.appendChild(li);
+          });
+          container.appendChild(list);
+        }
+      }
+
+      function renderVoteTotals() {
+        const container = $("voteTotals");
+        container.innerHTML = "";
+
+        const title = document.createElement("h2");
+        title.textContent = "🗳️ Vote Totals";
+        container.appendChild(title);
+
+        const totalGame = state.attendees.filter(a => a.gameVote).length;
+        const totalCash = state.attendees.filter(a => a.cashVote).length;
+
+        const banner = document.createElement("div");
+        banner.className = "festive-banner";
+        banner.textContent = "🎁 Game votes: " + totalGame + " • 💵 Cash votes: " + totalCash;
+        container.appendChild(banner);
+      }
+
+      // ----------------------------
+      // SUBMIT
+      // ----------------------------
+      async function submitToForm({ name, ageGroup, dish, vote, questions, enteredBy }) {
         const formData = new FormData();
         formData.append(FORM_FIELDS.name, name);
         formData.append(FORM_FIELDS.ageGroup, ageGroup);
         formData.append(FORM_FIELDS.dish, dish);
-        formData.append(FORM_FIELDS.whiteElephantVote, whiteElephantVote);
-        formData.append(FORM_FIELDS.questions, questions);
+        formData.append(FORM_FIELDS.vote, vote);
+        formData.append(FORM_FIELDS.questions, questions || "");
         formData.append(FORM_FIELDS.enteredBy, enteredBy);
 
-        // no-cors is required because Google Forms doesn't send CORS headers
         await fetch(FORM_ACTION_URL, { method: "POST", mode: "no-cors", body: formData });
         return true;
       }
 
-      function hydrateMenu() {
-        const dishSel = $("dishInput");
-        dishSel.innerHTML = "";
-        MENU_ITEMS.forEach((item) => {
-          const opt = document.createElement("option");
-          opt.value = item;
-          opt.textContent = item;
-          dishSel.appendChild(opt);
-        });
+      async function hardRefresh() {
+        showStatus("Loading menu + signups…");
+        await loadMenu();
+        await loadResponses();
+        renderMeta();
+        refreshFoodSelect();
+        renderInviteTree();
+        renderFoodList();
+        renderVoteTotals();
+        showStatus("Loaded.", false);
       }
 
-      async function onSubmitClick() {
-        const name = $("nameInput").value.trim();
-        const ageGroup = $("ageGroupInput").value;
-        const dish = $("dishInput").value;
+      async function handleAttend() {
+        const name = ($("inviterInput").value || "").trim();
+        if (!name) { showStatus("Type your name first.", true); return; }
+
+        const foods = getSelectedFoods();
+        if (!foods.length) { showStatus("Pick at least one dish first.", true); return; }
+
         const vote = getVoteChoice();
-        const questions = $("questionsInput").value.trim();
-        const enteredBy = ($("enteredByInput").value.trim() || name);
+        if (!vote) { showStatus("Pick game or cash first.", true); return; }
 
-        if (!name) return setStatus("Enter your name.", true);
-        if (!ageGroup) return setStatus("Pick 11+ or 10-.", true);
-        if (!dish) return setStatus("Pick a dish.", true);
-        if (!vote) return setStatus("Pick a vote (White Elephant or Cash).", true);
+        const payload = {
+          name,
+          ageGroup: "11+",
+          dish: foods.join("; "),
+          vote,
+          questions: ($("questionsInput").value || "").trim(),
+          enteredBy: name,
+        };
 
-        $("submitBtn").disabled = true;
-        setStatus("Submitting…", false);
+        $("attendBtn").disabled = true;
+        showStatus("Submitting…");
 
         try {
-          await submitSignup({
-            name,
-            ageGroup,
-            dish,
-            whiteElephantVote: vote,
-            questions,
-            enteredBy
-          });
-
-          setStatus("Submitted! Check the Sheet in ~5–20 seconds.", false);
-
-          // optional: clear some fields
-          $("questionsInput").value = "";
+          await submitToForm(payload);
+          showStatus("Submitted! Refreshing list…");
+          await hardRefresh();
+          $("attendComplete").style.display = "";
+          $("attendComplete").textContent = "✅ " + toShortName(name) + " is on Santa’s Nice List";
         } catch (e) {
-          setStatus("Submit failed. Try again. " + (e?.message || ""), true);
+          showStatus(String(e && e.message ? e.message : e), true);
         } finally {
-          $("submitBtn").disabled = false;
+          $("attendBtn").disabled = false;
         }
       }
 
-      document.addEventListener("DOMContentLoaded", () => {
-        hydrateMenu();
-        $("submitBtn").addEventListener("click", onSubmitClick);
+      // ----------------------------
+      // BOOT
+      // ----------------------------
+      document.addEventListener("DOMContentLoaded", async () => {
+        $("attendBtn").addEventListener("click", handleAttend);
+        $("refreshBtn").addEventListener("click", hardRefresh);
+        try { await hardRefresh(); }
+        catch (e) { showStatus("Load error: " + String(e && e.message ? e.message : e), true); }
       });
     </script>
   </body>
