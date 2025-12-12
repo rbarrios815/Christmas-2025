@@ -880,7 +880,7 @@
       let lastHydratedName = '';
       let manualAgeSelection = '';
       let guestFieldsUnlocked = false;
-const APPS_SCRIPT_API_URL = 'https://apps-script-proxy.rbarrios815.workers.dev';
+      const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxyv1NvS2xlA-RwHh0czbD0gD73sGHTWwf69xBJoaMvwez-kTOCAvGbH4894mgP5cjg/exec";
       const PREVIEW_DATA = {
         meta: {
           date: '12/24',
@@ -929,28 +929,18 @@ const APPS_SCRIPT_API_URL = 'https://apps-script-proxy.rbarrios815.workers.dev';
       }
 
       async function apiPost(action, payload) {
-        if (!hasApiUrl()) {
-          throw new Error('Apps Script API URL is not configured.');
-        }
+        if (!hasApiUrl()) throw new Error("Apps Script API URL is not configured.");
 
         const resp = await fetch(APPS_SCRIPT_API_URL, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ action: action, payload: payload })
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action, payload })
         });
 
-        if (!resp.ok) {
-          const text = await resp.text();
-          throw new Error('Request failed: ' + resp.status + ' ' + resp.statusText + ' — ' + text);
-        }
+        if (!resp.ok) throw new Error("Request failed: " + resp.status + " " + resp.statusText);
 
         const json = await resp.json();
-        if (!json || json.ok === false) {
-          throw new Error((json && json.error) || 'Request failed');
-        }
-
+        if (!json || json.ok === false) throw new Error((json && json.error) || "Request failed");
         return json.data;
       }
 
