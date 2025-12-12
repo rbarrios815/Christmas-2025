@@ -880,7 +880,7 @@
       let lastHydratedName = '';
       let manualAgeSelection = '';
       let guestFieldsUnlocked = false;
-      const APPS_SCRIPT_API_URL = 'PASTE_EXEC_URL_HERE';
+      const APPS_SCRIPT_API_URL = 'https://apps-script-proxy.rbarrios815.workers.dev';
       const PREVIEW_DATA = {
         meta: {
           date: '12/24',
@@ -925,7 +925,7 @@
       }
 
       function hasApiUrl() {
-        return !!APPS_SCRIPT_API_URL && APPS_SCRIPT_API_URL !== 'PASTE_EXEC_URL_HERE';
+        return !!APPS_SCRIPT_API_URL && APPS_SCRIPT_API_URL !== 'PASTE_WORKER_URL_HERE';
       }
 
       async function apiPost(action, payload) {
@@ -942,7 +942,8 @@
         });
 
         if (!resp.ok) {
-          throw new Error('Request failed: ' + resp.status + ' ' + resp.statusText);
+          const text = await resp.text();
+          throw new Error('Request failed: ' + resp.status + ' ' + resp.statusText + ' — ' + text);
         }
 
         const json = await resp.json();
