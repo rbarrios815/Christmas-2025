@@ -11,6 +11,37 @@ function doGet(e) {
     .setTitle('Christmas 2025 Sign-Up');
 }
 
+function doPost(e) {
+  var output = ContentService.createTextOutput();
+  output.setMimeType(ContentService.MimeType.JSON);
+
+  try {
+    var body = e && e.postData && e.postData.contents;
+    var parsed = body ? JSON.parse(body) : {};
+    var action = parsed && parsed.action;
+    var payload = parsed && parsed.payload;
+    var data;
+
+    switch (action) {
+      case 'getChristmasData':
+        data = getChristmasData();
+        break;
+      case 'saveAttendee':
+        data = saveAttendee(payload);
+        break;
+      default:
+        throw new Error('Unknown action: ' + action);
+    }
+
+    output.setContent(JSON.stringify({ ok: true, data: data }));
+  } catch (err) {
+    output.setContent(JSON.stringify({ ok: false, error: err && err.message ? err.message : String(err) }));
+  }
+
+  output.setHeader('Access-Control-Allow-Origin', '*');
+  return output;
+}
+
 /**
  * Returns:
  * {

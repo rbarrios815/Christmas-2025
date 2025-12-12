@@ -880,6 +880,7 @@
       let lastHydratedName = '';
       let manualAgeSelection = '';
       let guestFieldsUnlocked = false;
+      const APPS_SCRIPT_API_URL = 'PASTE_EXEC_URL_HERE';
       const PREVIEW_DATA = {
         meta: {
           date: '12/24',
@@ -923,6 +924,35 @@
         return typeof google !== 'undefined' && google.script && google.script.run;
       }
 
+      function hasApiUrl() {
+        return !!APPS_SCRIPT_API_URL && APPS_SCRIPT_API_URL !== 'PASTE_EXEC_URL_HERE';
+      }
+
+      async function apiPost(action, payload) {
+        if (!hasApiUrl()) {
+          throw new Error('Apps Script API URL is not configured.');
+        }
+
+        const resp = await fetch(APPS_SCRIPT_API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ action: action, payload: payload })
+        });
+
+        if (!resp.ok) {
+          throw new Error('Request failed: ' + resp.status + ' ' + resp.statusText);
+        }
+
+        const json = await resp.json();
+        if (!json || json.ok === false) {
+          throw new Error((json && json.error) || 'Request failed');
+        }
+
+        return json.data;
+      }
+
       function ensureSingleAgeField() {
         const ageLabels = document.querySelectorAll('label[for="ageSelect"]');
         const ageSelects = document.querySelectorAll('#ageSelect');
@@ -955,13 +985,27 @@
         guestFieldsUnlocked = false;
         updateGuestFieldsVisibility();
         showStatus('Loading…');
-        if (hasGoogleScript()) {
+        if (hasApiUrl()) {
+          apiPost('getChristmasData', {})
+            .then(onDataLoaded)
+            .catch(function(err) {
+              if (hasGoogleScript()) {
+                google.script.run
+                  .withSuccessHandler(onDataLoaded)
+                  .withFailureHandler(onError)
+                  .getChristmasData();
+              } else {
+                showStatus('Preview mode – data will not be saved until APPS_SCRIPT_API_URL is set.', true);
+                onDataLoaded(PREVIEW_DATA);
+              }
+            });
+        } else if (hasGoogleScript()) {
           google.script.run
             .withSuccessHandler(onDataLoaded)
             .withFailureHandler(onError)
             .getChristmasData();
         } else {
-          showStatus('Preview mode – data will not be saved.', false);
+          showStatus('Preview mode – data will not be saved until APPS_SCRIPT_API_URL is set.', true);
           onDataLoaded(PREVIEW_DATA);
         }
       }
@@ -1775,8 +1819,8 @@
           return;
         }
 
-        if (!hasGoogleScript()) {
-          showStatus('Saving dishes only works in the deployed Apps Script.', true);
+        if (!hasApiUrl()) {
+          showStatus('Add the APPS_SCRIPT_API_URL to enable saving dishes.', true);
           return;
         }
 
@@ -1806,8 +1850,8 @@
         setSaveButtonsDisabled(true);
         showStatus('Saving dishes for ' + toShortName(name) + '…');
 
-        google.script.run
-          .withSuccessHandler(function(data) {
+        apiPost('saveAttendee', payload)
+          .then(function(data) {
             state.meta = Object.assign({}, HARD_META, data.meta || {});
             state.attendees = dedupeByName(enrichAttendees(data.attendees || []));
             state.menu = data.menu || [];
@@ -1833,11 +1877,10 @@
             setSaveButtonsDisabled(false);
             showStatus('Dishes saved to column C for ' + toShortName(name) + '.', false);
           })
-          .withFailureHandler(function(err) {
+          .catch(function(err) {
             setSaveButtonsDisabled(false);
             onError(err);
-          })
-          .saveAttendee(payload);
+          });
       }
 
       function handleChangeVote() {
@@ -1848,8 +1891,8 @@
           return;
         }
 
-        if (!hasGoogleScript()) {
-          showStatus('Voting updates only work in the deployed Apps Script.', true);
+        if (!hasApiUrl()) {
+          showStatus('Add the APPS_SCRIPT_API_URL to enable vote updates.', true);
           return;
         }
 
@@ -1878,8 +1921,8 @@
         setSaveButtonsDisabled(true);
         showStatus('Updating vote for ' + toShortName(name) + '…');
 
-        google.script.run
-          .withSuccessHandler(function(data) {
+        apiPost('saveAttendee', payload)
+          .then(function(data) {
             state.meta = Object.assign({}, HARD_META, data.meta || {});
             state.attendees = dedupeByName(enrichAttendees(data.attendees || []));
             state.menu = data.menu || [];
@@ -1909,11 +1952,10 @@
             setSaveButtonsDisabled(false);
             showStatus('Vote updated for ' + toShortName(name) + '.', false);
           })
-          .withFailureHandler(function(err) {
+          .catch(function(err) {
             setSaveButtonsDisabled(false);
             onError(err);
-          })
-          .saveAttendee(payload);
+          });
       }
 
       function clearAttendeeFields() {
@@ -1941,8 +1983,8 @@
           return;
         }
 
-        if (!hasGoogleScript()) {
-          showStatus('Saving only works in the deployed Apps Script version of this page.', true);
+        if (!hasApiUrl()) {
+          showStatus('Add the APPS_SCRIPT_API_URL to enable saving.', true);
           return;
         }
 
@@ -2001,8 +2043,8 @@
         setSaveButtonsDisabled(true);
         showStatus('Saving…');
 
-        google.script.run
-          .withSuccessHandler(function(data) {
+        apiPost('saveAttendee', payload)
+          .then(function(data) {
             // Refresh state & UI using latest snapshot
             state.meta = Object.assign({}, HARD_META, data.meta || {});
             state.attendees = dedupeByName(enrichAttendees(data.attendees || []));
@@ -2048,11 +2090,10 @@
               flashGuestNameField();
             }
           })
-          .withFailureHandler(function(err) {
+          .catch(function(err) {
             setSaveButtonsDisabled(false);
             onError(err);
-          })
-          .saveAttendee(payload);
+          });
       }
 
       function renderInviteTree() {
