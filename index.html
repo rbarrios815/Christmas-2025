@@ -876,11 +876,11 @@
         currentRow: null
       };
 
+      const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxyv1NvS2xlA-RwHh0czbD0gD73sGHTWwf69xBJoaMvwez-kTOCAvGbH4894mgP5cjg/exec";
       let lastSavedInviter = '';
       let lastHydratedName = '';
       let manualAgeSelection = '';
       let guestFieldsUnlocked = false;
-      const APPS_SCRIPT_API_URL = "https://christmas-proxy.rbarrios815.workers.dev";
       const PREVIEW_DATA = {
         meta: {
           date: '12/24',
@@ -980,13 +980,15 @@
           apiPost('getChristmasData', {})
             .then(onDataLoaded)
             .catch(function(err) {
+              const msg = (err && err.message) ? err.message : String(err || 'Unknown error');
               if (hasGoogleScript()) {
+                showStatus('Direct API load failed: ' + msg + ' — retrying via Apps Script…', true);
                 google.script.run
                   .withSuccessHandler(onDataLoaded)
                   .withFailureHandler(onError)
                   .getChristmasData();
               } else {
-                showStatus('Preview mode – data will not be saved until APPS_SCRIPT_API_URL is set.', true);
+                showStatus('Could not reach Apps Script API: ' + msg + ' — showing preview data only.', true);
                 onDataLoaded(PREVIEW_DATA);
               }
             });
