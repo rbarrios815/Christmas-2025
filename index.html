@@ -880,6 +880,48 @@
       let lastHydratedName = '';
       let manualAgeSelection = '';
       let guestFieldsUnlocked = false;
+      const PREVIEW_DATA = {
+        meta: {
+          date: '12/24',
+          time: '3 pm - ?',
+          address: '5235 Jay Thrush Dr, Richmond, TX 77407',
+          questions: 'Text 281-707-5222'
+        },
+        attendees: [
+          {
+            row: 2,
+            fullName: 'Emily Claus',
+            ageGroup: '11+',
+            food: 'Hot cocoa bar',
+            gameVote: true,
+            cashVote: false,
+            enteredBy: 'Emily Claus'
+          },
+          {
+            row: 3,
+            fullName: 'Noel Claus',
+            ageGroup: '10-',
+            food: '',
+            gameVote: false,
+            cashVote: true,
+            enteredBy: 'Emily Claus'
+          },
+          {
+            row: 4,
+            fullName: 'Holly Bright',
+            ageGroup: '11+',
+            food: 'Stuffing',
+            gameVote: false,
+            cashVote: true,
+            enteredBy: 'Holly Bright'
+          }
+        ],
+        menu: ['Turkey', 'Stuffing', 'Hot cocoa bar', 'Sugar cookies', 'Tamales']
+      };
+
+      function hasGoogleScript() {
+        return typeof google !== 'undefined' && google.script && google.script.run;
+      }
 
       function ensureSingleAgeField() {
         const ageLabels = document.querySelectorAll('label[for="ageSelect"]');
@@ -913,10 +955,15 @@
         guestFieldsUnlocked = false;
         updateGuestFieldsVisibility();
         showStatus('Loading…');
-        google.script.run
-          .withSuccessHandler(onDataLoaded)
-          .withFailureHandler(onError)
-          .getChristmasData();
+        if (hasGoogleScript()) {
+          google.script.run
+            .withSuccessHandler(onDataLoaded)
+            .withFailureHandler(onError)
+            .getChristmasData();
+        } else {
+          showStatus('Preview mode – data will not be saved.', false);
+          onDataLoaded(PREVIEW_DATA);
+        }
       }
 
       function onDataLoaded(data) {
@@ -1728,6 +1775,11 @@
           return;
         }
 
+        if (!hasGoogleScript()) {
+          showStatus('Saving dishes only works in the deployed Apps Script.', true);
+          return;
+        }
+
         const inviterEntry = findAttendeeByName(name);
         if (!inviterEntry || !isClusterOwner(inviterEntry)) {
           showStatus('Save your RSVP first so we know who to attach dishes to.', true);
@@ -1793,6 +1845,11 @@
         const name = typedInviter || lastSavedInviter || '';
         if (!name) {
           showStatus('Type your name first to update your vote.', true);
+          return;
+        }
+
+        if (!hasGoogleScript()) {
+          showStatus('Voting updates only work in the deployed Apps Script.', true);
           return;
         }
 
@@ -1881,6 +1938,11 @@
 
         if (!name) {
           showStatus('Please enter your name so we can save your spot.', true);
+          return;
+        }
+
+        if (!hasGoogleScript()) {
+          showStatus('Saving only works in the deployed Apps Script version of this page.', true);
           return;
         }
 
