@@ -876,11 +876,11 @@
         currentRow: null
       };
 
+      const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxyv1NvS2xlA-RwHh0czbD0gD73sGHTWwf69xBJoaMvwez-kTOCAvGbH4894mgP5cjg/exec";
       let lastSavedInviter = '';
       let lastHydratedName = '';
       let manualAgeSelection = '';
       let guestFieldsUnlocked = false;
-      const APPS_SCRIPT_API_URL = "https://script.google.com/macros/s/AKfycbxyv1NvS2xlA-RwHh0czbD0gD73sGHTWwf69xBJoaMvwez-kTOCAvGbH4894mgP5cjg/exec";
       const PREVIEW_DATA = {
         meta: {
           date: '12/24',
@@ -1813,6 +1813,7 @@
         }
 
         if (!hasApiUrl()) {
+          
           showStatus('Add the APPS_SCRIPT_API_URL to enable saving dishes.', true);
           return;
         }
