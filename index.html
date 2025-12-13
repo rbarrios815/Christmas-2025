@@ -3,7 +3,7 @@
   <head>
     <base target="_top">
     <meta charset="UTF-8">
-    <title>Christmas 2025 Signup</title>
+    <title>Christmas 2025 Sign-Up</title>
     <style>
       :root {
         --candy-red: #e63946;
@@ -1135,7 +1135,7 @@
           matchesRaw.push(selfEntry);
         }
 
-        return dedupeByName(uniqueByRow(matchesRaw));
+        return uniqueByRow(matchesRaw);
       }
 
       function enrichAttendees(list) {
@@ -2107,7 +2107,7 @@
 
         // Group by "Entered By" (column K)
         const groups = {};
-        dedupeByName(state.attendees || []).forEach(function(a) {
+        state.attendees.forEach(function(a) {
           const inviter = a.enteredBy || a.fullName || 'Host';
           if (!groups[inviter]) groups[inviter] = [];
           const already = groups[inviter].some(function(entry) { return entry.row === a.row; });
@@ -2135,7 +2135,8 @@
           const branches = document.createElement('div');
           branches.className = 'cluster-branches';
 
-          dedupeByName(groups[inviter].slice())
+          groups[inviter]
+            .slice()
             .sort(function(a, b) { return displayName(a).localeCompare(displayName(b)); })
             .forEach(function(a) {
               const person = document.createElement('div');
@@ -2197,15 +2198,12 @@
         });
 
         const extras = [];
-        dedupeByName(attendees).forEach(function(a) {
+        attendees.forEach(function(a) {
           const foods = parseFoods(a.food);
           foods.forEach(function(food) {
             const key = normalizeFoodItem(food);
             if (key && lineupByItem.has(key)) {
-              const claimants = lineupByItem.get(key).claimants;
-              if (!claimants.includes(displayName(a))) {
-                claimants.push(displayName(a));
-              }
+              lineupByItem.get(key).claimants.push(displayName(a));
             } else if (food) {
               extras.push({ food: food, by: displayName(a), inviter: a.enteredBy });
             }
