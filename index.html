@@ -558,11 +558,13 @@
         return rows;
       }
 
-      async function fetchCSV(url) {
-        const res = await fetch(url, { cache: "no-store" });
-        if (!res.ok) throw new Error("Failed to fetch CSV: " + res.status);
-        return await res.text();
-      }
+async function fetchCSV(url) {
+  const bustedUrl = url + (url.includes("?") ? "&" : "?") + "cb=" + Date.now();
+  const res = await fetch(bustedUrl, { cache: "no-store" });
+  if (!res.ok) throw new Error("Failed to fetch CSV: " + res.status);
+  return await res.text();
+}
+
 
       // ----------------------------
       // LOADERS
