@@ -1,0 +1,17 @@
+name: Verify docs/index.html matches index.html
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ensure docs/index.html is synced
+        run: |
+          if ! cmp --silent index.html docs/index.html; then
+            echo "docs/index.html is out of sync with index.html. Run ./scripts/sync-docs.sh to copy the latest template." >&2
+            exit 1
+          fi
