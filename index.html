@@ -928,20 +928,57 @@
         return !!APPS_SCRIPT_API_URL && APPS_SCRIPT_API_URL !== 'PASTE_WORKER_URL_HERE';
       }
 
-      async function apiPost(action, payload) {
-        if (!hasApiUrl()) throw new Error("Apps Script API URL is not configured.");
+      function hasBackend() {
+        return hasApiUrl() || hasGoogleScript();
+      }
 
-        const resp = await fetch(APPS_SCRIPT_API_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ action, payload })
+      function callGoogleScript(action, payload) {
+        if (!hasGoogleScript()) return Promise.reject(new Error('Apps Script runtime unavailable.'));
+
+        return new Promise(function(resolve, reject) {
+          const runner = google.script.run
+            .withSuccessHandler(resolve)
+            .withFailureHandler(function(err) {
+              const msg = (err && err.message) ? err.message : String(err || 'Unknown error');
+              reject(new Error(msg));
+            });
+
+          if (action === 'getChristmasData') {
+            runner.getChristmasData();
+          } else if (action === 'saveAttendee') {
+            runner.saveAttendee(payload);
+          } else {
+            reject(new Error('Unknown Apps Script action: ' + action));
+          }
         });
+      }
 
-        if (!resp.ok) throw new Error("Request failed: " + resp.status + " " + resp.statusText);
+      async function apiPost(action, payload) {
+        const hasUrl = hasApiUrl();
+        if (!hasUrl && !hasGoogleScript()) throw new Error("Apps Script API URL is not configured.");
 
-        const json = await resp.json();
-        if (!json || json.ok === false) throw new Error((json && json.error) || "Request failed");
-        return json.data;
+        if (hasUrl) {
+          try {
+            const resp = await fetch(APPS_SCRIPT_API_URL, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify({ action, payload })
+            });
+
+            if (!resp.ok) throw new Error("Request failed: " + resp.status + " " + resp.statusText);
+
+            const json = await resp.json();
+            if (!json || json.ok === false) throw new Error((json && json.error) || "Request failed");
+            return json.data;
+          } catch (err) {
+            if (hasGoogleScript()) {
+              return callGoogleScript(action, payload);
+            }
+            throw err;
+          }
+        }
+
+        return callGoogleScript(action, payload);
       }
 
       function ensureSingleAgeField() {
@@ -976,27 +1013,21 @@
         guestFieldsUnlocked = false;
         updateGuestFieldsVisibility();
         showStatus('Loading…');
-        if (hasApiUrl()) {
+        if (hasBackend()) {
           apiPost('getChristmasData', {})
             .then(onDataLoaded)
             .catch(function(err) {
               const msg = (err && err.message) ? err.message : String(err || 'Unknown error');
               if (hasGoogleScript()) {
-                showStatus('Direct API load failed: ' + msg + ' — retrying via Apps Script…', true);
-                google.script.run
-                  .withSuccessHandler(onDataLoaded)
-                  .withFailureHandler(onError)
-                  .getChristmasData();
+                showStatus('Could not reach direct API: ' + msg + ' — retrying via Apps Script…', true);
+                callGoogleScript('getChristmasData', {})
+                  .then(onDataLoaded)
+                  .catch(onError);
               } else {
                 showStatus('Could not reach Apps Script API: ' + msg + ' — showing preview data only.', true);
                 onDataLoaded(PREVIEW_DATA);
               }
             });
-        } else if (hasGoogleScript()) {
-          google.script.run
-            .withSuccessHandler(onDataLoaded)
-            .withFailureHandler(onError)
-            .getChristmasData();
         } else {
           showStatus('Preview mode – data will not be saved until APPS_SCRIPT_API_URL is set.', true);
           onDataLoaded(PREVIEW_DATA);
@@ -1812,9 +1843,8 @@
           return;
         }
 
-        if (!hasApiUrl()) {
-          
-          showStatus('Add the APPS_SCRIPT_API_URL to enable saving dishes.', true);
+        if (!hasBackend()) {
+          showStatus('Add the APPS_SCRIPT_API_URL (or run inside Apps Script) to enable saving dishes.', true);
           return;
         }
 
@@ -1885,8 +1915,8 @@
           return;
         }
 
-        if (!hasApiUrl()) {
-          showStatus('Add the APPS_SCRIPT_API_URL to enable vote updates.', true);
+        if (!hasBackend()) {
+          showStatus('Add the APPS_SCRIPT_API_URL (or run inside Apps Script) to enable vote updates.', true);
           return;
         }
 
@@ -1977,8 +2007,8 @@
           return;
         }
 
-        if (!hasApiUrl()) {
-          showStatus('Add the APPS_SCRIPT_API_URL to enable saving.', true);
+        if (!hasBackend()) {
+          showStatus('Add the APPS_SCRIPT_API_URL (or run inside Apps Script) to enable saving.', true);
           return;
         }
 
