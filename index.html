@@ -822,19 +822,56 @@
 
       // ----------------------------
       // SUBMIT
-      // ----------------------------
-      async function submitToForm({ name, ageGroup, dish, vote, questions, enteredBy }) {
-        const formData = new FormData();
-        formData.append(FORM_FIELDS.name, name);
-        formData.append(FORM_FIELDS.ageGroup, ageGroup);
-        formData.append(FORM_FIELDS.dish, dish);
-        formData.append(FORM_FIELDS.vote, vote);
-        formData.append(FORM_FIELDS.questions, questions || "");
-        formData.append(FORM_FIELDS.enteredBy, enteredBy);
 
-        await fetch(FORM_ACTION_URL, { method: "POST", mode: "no-cors", body: formData });
-        return true;
+      function submitToForm({ name, ageGroup, dish, vote, questions, enteredBy }) {
+  return new Promise((resolve, reject) => {
+    try {
+      const iframeName = "hidden_iframe_submit_" + Math.random().toString(36).slice(2);
+
+      const iframe = document.createElement("iframe");
+      iframe.name = iframeName;
+      iframe.style.display = "none";
+      document.body.appendChild(iframe);
+
+      const form = document.createElement("form");
+      form.action = FORM_ACTION_URL;
+      form.method = "POST";
+      form.target = iframeName;
+      form.style.display = "none";
+
+      function addField(key, value) {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value == null ? "" : String(value);
+        form.appendChild(input);
       }
+
+      addField(FORM_FIELDS.name, name);
+      addField(FORM_FIELDS.ageGroup, ageGroup);
+      addField(FORM_FIELDS.dish, dish);
+      addField(FORM_FIELDS.vote, vote);
+      addField(FORM_FIELDS.questions, questions || "");
+      addField(FORM_FIELDS.enteredBy, enteredBy);
+
+      document.body.appendChild(form);
+
+      setTimeout(() => {
+        form.submit();
+
+        // cleanup
+        setTimeout(() => {
+          try { form.remove(); } catch {}
+          try { iframe.remove(); } catch {}
+          resolve(true);
+        }, 800);
+      }, 50);
+    } catch (e) {
+      reject(e);
+    }
+  });
+}
+
 
       async function hardRefresh() {
         showStatus("Loading menu + signups…");
@@ -890,8 +927,10 @@
 
         try {
           for (const submission of submissions) {
-            await submitToForm(submission);
-          }
+  await submitToForm(submission);
+  await new Promise(r => setTimeout(r, 250));
+}
+
           showStatus("Submitted! Refreshing list…");
           await hardRefresh();
           $("attendComplete").style.display = "";
