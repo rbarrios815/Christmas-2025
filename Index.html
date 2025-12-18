@@ -267,14 +267,6 @@
         top: 4px;
       }
 
-      .votes {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-top: 8px;
-        font-size: 1rem;
-      }
-
       .action-row {
         display: flex;
         flex-wrap: wrap;
@@ -286,13 +278,6 @@
 
       .action-row button {
         margin-top: 0;
-      }
-
-      .votes label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin: 0;
       }
 
       #foodLabel {
@@ -360,21 +345,6 @@
         background: linear-gradient(135deg, #f1f5ff, #fff5f5);
         border: 1px solid #dde4ff;
         color: #0f3c2f;
-      }
-
-      .vote-preview {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-      }
-
-      .vote-header {
-        font-weight: 800;
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        margin-bottom: 6px;
-        color: #b83227;
       }
 
       .cluster-preview {
@@ -757,7 +727,7 @@
           <span id="guestCount" class="meta-chip guest-count" aria-live="polite"></span>
         </div>
         <div class="hero-line">🧦✨🎄🦌🎁☃️🍪🧦 <br>Ho Ho Ho!<br>Christmas 2025<br>Santa's Nice List is open! Add your name & your tastiest treat! 🍪</div>
-        <div class="subtitle">Add yourself with a dish + vote, then list any guests and ages.</div>
+        <div class="subtitle">Add yourself with a dish, then list any guests and ages.</div>
 
         <div class="merged-top">
           <div class="tagline" id="activeInviterTag" style="display:none;"></div>
@@ -774,8 +744,6 @@
               </div>
             </div>
 
-            <div id="inviterVotePreview" class="pill vote-preview" style="display:none;">🎯 Pick game or cash to save your star</div>
-
             <div class="branch-grid">
               <div class="form-grid">
                 <div id="foodSignupBlock">
@@ -788,26 +756,12 @@
 
                   <div id="foodNote"></div>
                 </div>
-                <div>
-                  <div class="vote-header" id="voteHeader">🗳️ <strong>Vote</strong></div>
-                  <div class="votes" id="voteBlock" role="group" aria-label="Vote for one option">
-                    <label>
-                      <input type="radio" name="voteChoice" id="voteGame" value="game">
-                      White Elephant game 🎁 (pick this OR cash)
-                    </label>
-                    <label>
-                      <input type="radio" name="voteChoice" id="voteCash" value="cash">
-                      $5–$10 cash donation for prizes 💵 (pick this OR White Elephant)
-                    </label>
-                  </div>
-                </div>
               </div>
             </div>
 
             <div class="action-row">
               <button type="button" id="attendBtn" onclick="handleSave()">⭐ I'm Attending</button>
               <button type="button" class="ghost" id="dishBtn" style="display:none;" onclick="handleAddDishes()">🍽️ Add dishes for your name</button>
-              <button type="button" class="ghost" id="voteChangeBtn" style="display:none;" onclick="handleChangeVote()">🔄 Update vote</button>
             </div>
 
             <div id="guestFields" style="display:none;">
@@ -847,12 +801,16 @@
         <!-- Filled by JS -->
       </div>
 
-      <!-- Vote totals -->
-      <div class="card" id="voteTotals">
-        <!-- Filled by JS -->
+      <div class="card" id="festiveInfo">
+        <h2>🎅 Festive Notes from Santa's Helpers</h2>
+        <div class="questions">
+          <p><strong>Questions:</strong> Text 281-707-5222.</p>
+          <p>Families should bring a couple of gifts for their own kids to open for littles. No obligation to bring gifts for anyone else.</p>
+          <p>GIfts- Families should bring a couple of girfts for their own kids to open for littles. No obligation to bring gifts for anyone else.</p>
+          <p><strong>Optional White Elephant gift</strong> – bring a gift / get a gift for adults - $20 budget - no gag gifts- no gift cards- no cash- wrapped</p>
+          <p>Games and prizes (by host)</p>
+        </div>
       </div>
-
-      <div class="questions" id="questionsText"></div>
     </div>
 
     <script>
@@ -921,13 +879,10 @@
         renderMeta();
         renderInviteTree();
         renderFoodList();
-        renderVoteTotals();
         refreshFoodSelect();
         updateDishButton();
-        updateVoteButton();
         updateFoodLabel();
         updateInviterTag();
-        updateInviterVotePreview();
         updateAttendButton();
         updateSaveButtons();
 
@@ -985,11 +940,6 @@
           guestTotal.textContent = guestCount;
         }
 
-        if (meta.questions) {
-          $('questionsText').textContent = '❓ Questions for Santa’s helpers: ' + meta.questions;
-        } else {
-          $('questionsText').textContent = '';
-        }
       }
 
       function ageEmoji(ageGroup) {
@@ -1164,9 +1114,7 @@ select.appendChild(placeholder);
       function updateFoodVisibility() {
         const block = $('foodSignupBlock');
         const select = $('foodSelect');
-        const voteBlock = $('voteBlock');
-        const voteHeader = $('voteHeader');
-        if (!block || !select || !voteBlock) return;
+        if (!block || !select) return;
 
         const inviterRaw = ($('inviterInput').value || '').trim().toLowerCase();
         const attendeeRaw = ($('fullNameInput').value || '').trim().toLowerCase();
@@ -1174,34 +1122,13 @@ select.appendChild(placeholder);
         const editingInviter = inviterRaw && (!attendeeRaw || isClusterHead);
 
         block.style.display = editingInviter ? '' : 'none';
-        voteBlock.style.display = editingInviter ? '' : 'none';
-        if (voteHeader) {
-          voteHeader.style.display = editingInviter ? '' : 'none';
-        }
-
         if (!editingInviter) {
           clearFoodSelections();
-          setVoteChoice('');
         }
       }
 
       function getSelectedAgeGroup() {
         return $('ageSelect').value;
-      }
-
-      function getVoteChoice() {
-        const radios = document.querySelectorAll('input[name="voteChoice"]');
-        for (let i = 0; i < radios.length; i++) {
-          if (radios[i].checked) return radios[i].value;
-        }
-        return '';
-      }
-
-      function setVoteChoice(value) {
-        const radios = document.querySelectorAll('input[name="voteChoice"]');
-        radios.forEach(function(r) {
-          r.checked = value ? (r.value === value) : false;
-        });
       }
 
       function setAgeGroup(value) {
@@ -1258,9 +1185,7 @@ select.appendChild(placeholder);
         updateDishButton();
         updateFoodLabel();
         updateInviterTag();
-        updateInviterVotePreview();
         renderInviteTree();
-        updateVoteButton();
         updateAttendButton();
         if (!this.value.trim()) {
           guestFieldsUnlocked = false;
@@ -1287,7 +1212,6 @@ select.appendChild(placeholder);
         $('inviterInput').value = name;
         lastSavedInviter = name;
         updateInviterTag();
-        updateInviterVotePreview();
         renderInviteTree();
         updateAttendButton();
         updateFoodLabel();
@@ -1321,22 +1245,6 @@ select.appendChild(placeholder);
         }
       }
 
-      function updateVoteButton() {
-        const btn = $('voteChangeBtn');
-        if (!btn) return;
-
-        const typedInviter = ($('inviterInput').value || '').trim();
-        const inviterName = currentInviterName() || lastSavedInviter;
-        const ownerEntry = findAttendeeByName(inviterName);
-        const showButton = !!typedInviter && isClusterOwner(ownerEntry);
-
-        btn.style.display = showButton ? '' : 'none';
-
-        if (showButton) {
-          btn.textContent = '🔄 Update vote for ' + toShortName(inviterName);
-        }
-      }
-
       function updateAttendButton() {
         const attendBtn = $('attendBtn');
         const badge = $('attendComplete');
@@ -1351,7 +1259,6 @@ select.appendChild(placeholder);
           badge.style.display = 'none';
           attendBtn.style.display = 'none';
           updateDishButton();
-          updateVoteButton();
           return;
         }
 
@@ -1363,7 +1270,6 @@ select.appendChild(placeholder);
         }
 
         updateDishButton();
-        updateVoteButton();
       }
 
       function updateFoodLabel() {
@@ -1395,7 +1301,7 @@ select.appendChild(placeholder);
       }
 
       function setSaveButtonsDisabled(disabled) {
-        ['attendBtn', 'guestSaveBtn', 'dishBtn', 'voteChangeBtn'].forEach(function(id) {
+        ['attendBtn', 'guestSaveBtn', 'dishBtn'].forEach(function(id) {
           const el = $(id);
           if (el) el.disabled = disabled;
         });
@@ -1437,72 +1343,6 @@ select.appendChild(placeholder);
         tag.style.display = 'none';
       }
 
-      function updateInviterVotePreview() {
-        const preview = $('inviterVotePreview');
-        if (!preview) return;
-
-        const inviter = currentInviterName();
-        if (!inviter) {
-          preview.style.display = 'none';
-          preview.textContent = '';
-          return;
-        }
-
-        const inviterEntry = findAttendeeByName(inviter);
-        let text = '🎯 Pick game or cash to save your star';
-        if (inviterEntry) {
-          if (inviterEntry.gameVote) {
-            text = '🎁 Voted: White Elephant game';
-          } else if (inviterEntry.cashVote) {
-            text = '💵 Voted: Cash donation';
-          }
-        }
-
-        preview.innerHTML = '';
-        const voteLine = document.createElement('div');
-        voteLine.textContent = text;
-        preview.appendChild(voteLine);
-
-        const clusterEntries = getClusterEntries(inviter);
-        if (clusterEntries.length) {
-          const clusterWrap = document.createElement('div');
-          clusterWrap.className = 'cluster-preview';
-
-          clusterEntries
-            .slice()
-            .sort(function(a, b) {
-              const ownerA = isClusterOwner(a);
-              const ownerB = isClusterOwner(b);
-              if (ownerA && !ownerB) return -1;
-              if (!ownerA && ownerB) return 1;
-              return displayName(a).localeCompare(displayName(b));
-            })
-            .forEach(function(entry) {
-              const item = document.createElement('div');
-              item.className = 'cluster-item';
-              const icon = isClusterOwner(entry) ? '⭐' : '🎄';
-              item.textContent = icon + ' ' + displayName(entry);
-
-              const foodTag = document.createElement('span');
-              foodTag.className = 'cluster-food';
-              if (isClusterOwner(entry)) {
-                const foods = parseFoods(entry.food);
-                foodTag.textContent = foods.length ? '— ' + foods.join(' • ') : '— No dish yet';
-              } else {
-                const age = ageShort(entry.ageGroup) || 'Age?';
-                foodTag.textContent = '— ' + age;
-              }
-
-              item.appendChild(foodTag);
-              clusterWrap.appendChild(item);
-            });
-
-          preview.appendChild(clusterWrap);
-        }
-
-        preview.style.display = 'inline-flex';
-      }
-
       function toShortName(fullName) {
         const parts = fullName.trim().split(/\s+/);
         if (!parts.length) return '';
@@ -1521,7 +1361,6 @@ select.appendChild(placeholder);
           lastHydratedName = '';
           state.currentRow = null;
           setAgeGroup('');
-          setVoteChoice('');
           refreshFoodSelect([]);
           manualAgeSelection = '';
           return;
@@ -1536,7 +1375,6 @@ select.appendChild(placeholder);
           if (lastHydratedName) {
             state.currentRow = null;
             setAgeGroup('');
-            setVoteChoice('');
             refreshFoodSelect([]);
             lastHydratedName = '';
           }
@@ -1552,16 +1390,14 @@ select.appendChild(placeholder);
         updateGuestFieldsVisibility();
         setAgeGroup(found.ageGroup || '');
         manualAgeSelection = found.ageGroup || '';
-        setVoteChoice(found.gameVote ? 'game' : found.cashVote ? 'cash' : '');
         $('inviterInput').value = found.enteredBy || found.fullName || '';
         refreshFoodSelect(parseFoods(found.food));
         lastSavedInviter = $('inviterInput').value.trim() || fullName;
         updateDishButton();
         updateFoodLabel();
         updateInviterTag();
-        updateInviterVotePreview();
         updateAttendButton();
-        updateVoteButton();
+        updateSaveButtons();
 
         if (lastHydratedName !== lookup) {
           showStatus('Loaded existing signup for ' + toShortName(fullName) + '. Update and save if needed.', false);
@@ -1587,7 +1423,6 @@ select.appendChild(placeholder);
         updateShortNamePreview();
         $('inviterInput').value = lastSavedInviter;
         setAgeGroup('');
-        setVoteChoice('');
         refreshFoodSelect([]);
         updateInviterTag();
         showStatus('Adding a guest under ' + toShortName(lastSavedInviter) + '. Enter their full name and details.', false);
@@ -1622,8 +1457,6 @@ select.appendChild(placeholder);
           fullName: inviterEntry.fullName,
           ageGroup: inviterEntry.ageGroup || '11+',
           food: mergedFoods,
-          gameVote: !!inviterEntry.gameVote,
-          cashVote: !!inviterEntry.cashVote,
           enteredBy: inviterEntry.enteredBy || inviterEntry.fullName
         };
 
@@ -1639,7 +1472,6 @@ select.appendChild(placeholder);
             renderMeta();
             renderInviteTree();
             renderFoodList();
-            renderVoteTotals();
             refreshFoodSelect(mergedFoods);
 
             lastSavedInviter = name;
@@ -1648,9 +1480,7 @@ select.appendChild(placeholder);
             updateDishButton();
             updateFoodLabel();
             updateInviterTag();
-            updateInviterVotePreview();
             updateAttendButton();
-            updateVoteButton();
             updateSaveButtons();
 
             setSaveButtonsDisabled(false);
@@ -1663,80 +1493,9 @@ select.appendChild(placeholder);
           .saveAttendee(payload);
       }
 
-      function handleChangeVote() {
-        const typedInviter = $('inviterInput').value.trim();
-        const name = typedInviter || lastSavedInviter || '';
-        if (!name) {
-          showStatus('Type your name first to update your vote.', true);
-          return;
-        }
-
-        const inviterEntry = findAttendeeByName(name);
-        if (!inviterEntry || !isClusterOwner(inviterEntry)) {
-          showStatus('Save your RSVP first so we know whose vote to update.', true);
-          return;
-        }
-
-        const voteChoice = getVoteChoice();
-        if (!voteChoice) {
-          showStatus('Pick game or cash to update your vote.', true);
-          return;
-        }
-
-        const payload = {
-          row: inviterEntry.row,
-          fullName: inviterEntry.fullName,
-          ageGroup: inviterEntry.ageGroup || '11+',
-          food: parseFoods(inviterEntry.food),
-          gameVote: voteChoice === 'game',
-          cashVote: voteChoice === 'cash',
-          enteredBy: inviterEntry.enteredBy || inviterEntry.fullName
-        };
-
-        setSaveButtonsDisabled(true);
-        showStatus('Updating vote for ' + toShortName(name) + '…');
-
-        google.script.run
-          .withSuccessHandler(function(data) {
-            state.meta = data.meta || {};
-            state.attendees = enrichAttendees(data.attendees || []);
-            state.menu = data.menu || [];
-
-            renderMeta();
-            renderInviteTree();
-            renderFoodList();
-            renderVoteTotals();
-
-            const updatedEntry = findAttendeeByName(name);
-            const foods = parseFoods(updatedEntry ? updatedEntry.food : inviterEntry.food);
-            refreshFoodSelect(foods);
-            setVoteChoice(updatedEntry && updatedEntry.gameVote ? 'game' : updatedEntry && updatedEntry.cashVote ? 'cash' : voteChoice);
-
-            lastSavedInviter = name;
-            guestFieldsUnlocked = isInviterComplete(updatedEntry || inviterEntry);
-            updateGuestFieldsVisibility();
-            updateDishButton();
-            updateFoodLabel();
-            updateInviterTag();
-            updateInviterVotePreview();
-            updateAttendButton();
-            updateVoteButton();
-            updateSaveButtons();
-
-            setSaveButtonsDisabled(false);
-            showStatus('Vote updated for ' + toShortName(name) + '.', false);
-          })
-          .withFailureHandler(function(err) {
-            setSaveButtonsDisabled(false);
-            onError(err);
-          })
-          .saveAttendee(payload);
-      }
-
       function clearAttendeeFields() {
         $('fullNameInput').value = '';
         setAgeGroup('');
-        setVoteChoice('');
         manualAgeSelection = '';
         state.currentRow = null;
         updateShortNamePreview();
@@ -1760,7 +1519,7 @@ select.appendChild(placeholder);
 
         const isGuest = typedName && inviter.toLowerCase() !== typedName.toLowerCase();
         if (isGuest && !guestFieldsUnlocked) {
-          showStatus('Save your name with a food choice and vote using ⭐ I\'m Attending to unlock guest spots.', true);
+          showStatus('Save your name with a food choice using ⭐ I\'m Attending to unlock guest spots.', true);
           return;
         }
 
@@ -1773,21 +1532,10 @@ select.appendChild(placeholder);
           return;
         }
 
-        let selectedFoods = [];
-        let voteChoice = '';
-        if (isClusterHead) {
-          selectedFoods = getSelectedFoods();
-          voteChoice = getVoteChoice();
-
-          if (!selectedFoods.length) {
-            showStatus('Pick at least one food item before saving your star.', true);
-            return;
-          }
-
-          if (!voteChoice) {
-            showStatus('Cast a quick vote (game or cash) to finish saving your spot.', true);
-            return;
-          }
+        const selectedFoods = isClusterHead ? getSelectedFoods() : [];
+        if (isClusterHead && !selectedFoods.length) {
+          showStatus('Pick at least one food item before saving your star.', true);
+          return;
         }
 
         const food = isClusterHead ? selectedFoods.join('; ') : '';
@@ -1805,8 +1553,6 @@ select.appendChild(placeholder);
           fullName: name,
           ageGroup: ageGroup,
           food: parseFoods(food),
-          gameVote: isClusterHead && voteChoice === 'game',
-          cashVote: isClusterHead && voteChoice === 'cash',
           enteredBy: inviter             // first time this row is created, this is stored in column K
         };
 
@@ -1830,7 +1576,6 @@ select.appendChild(placeholder);
             renderMeta();
             renderInviteTree();
             renderFoodList();
-            renderVoteTotals();
             refreshFoodSelect(parseFoods(updated ? updated.food || '' : food || ''));
 
             lastSavedInviter = inviter;
@@ -1840,10 +1585,8 @@ select.appendChild(placeholder);
             updateDishButton();
             updateFoodLabel();
             updateInviterTag();
-            updateInviterVotePreview();
             updateSaveButtons();
             updateAttendButton();
-            updateVoteButton();
             lastHydratedName = lookup;
 
             clearAttendeeFields();
@@ -1851,7 +1594,7 @@ select.appendChild(placeholder);
             setSaveButtonsDisabled(false);
             const unlockedText = guestFieldsUnlocked
               ? ' 🎄 Guests + ages are unlocked—add another under ' + toShortName(inviter || name) + ' when you’re ready.'
-              : ' Add a food choice and vote to unlock guests beneath your star.';
+              : ' Add a food choice to unlock guests beneath your star.';
             showStatus('Saved!' + unlockedText, !guestFieldsUnlocked);
 
             if (isClusterHead && guestFieldsUnlocked) {
@@ -2051,24 +1794,6 @@ select.appendChild(placeholder);
         }
       }
 
-      function renderVoteTotals() {
-        const container = $('voteTotals');
-        if (!container) return;
-
-        container.innerHTML = '';
-        const title = document.createElement('h2');
-        title.innerHTML = '🗳️ Vote Totals';
-        container.appendChild(title);
-
-        const banner = document.createElement('div');
-        banner.className = 'festive-banner';
-
-        const totalGame = (state.attendees || []).filter(function(a) { return !!a.gameVote; }).length;
-        const totalCash = (state.attendees || []).filter(function(a) { return !!a.cashVote; }).length;
-        
-        banner.textContent = '🎁 Game votes: ' + totalGame + ' • 💵 Cash votes: ' + totalCash;
-        container.appendChild(banner);
-      }
     </script>
   </body>
 </html>

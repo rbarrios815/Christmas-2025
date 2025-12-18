@@ -56,7 +56,7 @@ function doGet(e) {
  * {
  *   meta: {time, date, address, questions},
  *   attendees: [
- *     { row, fullName, shortName, ageGroup, food, gameVote, cashVote, enteredBy }
+ *     { row, fullName, shortName, ageGroup, food, enteredBy }
  *   ],
  *   menu: [ 'Mashed potatoes', 'Turkey', ... ]
  * }
@@ -76,12 +76,15 @@ function getChristmasData() {
 
   var attendees = [];
   if (lastRow >= FIRST_DATA_ROW) {
-    // Columns A–K (11 columns)
-    var rows = sheet
-      .getRange(FIRST_DATA_ROW, 1, lastRow - FIRST_DATA_ROW + 1, 11)
+    var baseRows = sheet
+      .getRange(FIRST_DATA_ROW, 1, lastRow - FIRST_DATA_ROW + 1, 3) // Cols A-C
       .getValues();
 
-    rows.forEach(function(rowVals, idx) {
+    var enteredByCol = sheet
+      .getRange(FIRST_DATA_ROW, 11, lastRow - FIRST_DATA_ROW + 1, 1) // Col K
+      .getValues();
+
+    baseRows.forEach(function(rowVals, idx) {
       var fullName = rowVals[0];              // Col A
       if (!fullName) return;                  // skip blank
 
@@ -91,9 +94,7 @@ function getChristmasData() {
         shortName: toShortName_(fullName),
         ageGroup: rowVals[1] || '',           // Col B: 11+ or 10-
         food: rowVals[2] || '',               // Col C
-        gameVote: rowVals[3] === '👍',        // Col D
-        cashVote: rowVals[4] === '👍',        // Col E
-        enteredBy: rowVals[10] || ''          // Col K
+        enteredBy: (enteredByCol[idx] && enteredByCol[idx][0]) || '' // Col K
       });
     });
   }
@@ -134,8 +135,6 @@ function getChristmasData() {
  *   fullName,
  *   ageGroup,   // '11+' or '10-'
  *   food,       // menu item text or ''
- *   gameVote: true/false,
- *   cashVote: true/false,
  *   enteredBy   // name of person submitting (used only when first created)
  * }
  *
@@ -185,9 +184,6 @@ function saveAttendee(att) {
   sheet.getRange(row, 1).setValue(att.fullName);          // Col A: Name of Person Attending
   sheet.getRange(row, 2).setValue(att.ageGroup || '');    // Col B: 11+ / 10-
   sheet.getRange(row, 3).setValue(food);                  // Col C: Food signup
-
-  sheet.getRange(row, 4).setValue(att.gameVote ? '👍' : '');  // Col D: White Elephant vote
-  sheet.getRange(row, 5).setValue(att.cashVote ? '👍' : '');  // Col E: Cash donation vote
 
   // Col K: Entered By – set only if blank, so the original "inviter" is preserved
   var enteredByCell = sheet.getRange(row, 11);
