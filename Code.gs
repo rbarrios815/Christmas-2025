@@ -1,3 +1,43 @@
+/***************
+ * WEB APP API (for GitHub Pages)
+ * Paste ABOVE: const SHEET_ID = '...';
+ ***************/
+function doPost(e) {
+  try {
+    const body = parseJsonBody_(e);
+    const action = body && body.action ? String(body.action) : "";
+    const payload = body && body.payload ? body.payload : {};
+
+    if (action === "getChristmasData") {
+      const data = getChristmasData(); // <-- your real function
+      return jsonOut_({ ok: true, data });
+    }
+
+    if (action === "saveAttendee") {
+      const data = saveAttendee(payload); // <-- your real function
+      return jsonOut_({ ok: true, data });
+    }
+
+    return jsonOut_({ ok: false, error: "Unknown action: " + action });
+  } catch (err) {
+    return jsonOut_({ ok: false, error: String(err && err.message ? err.message : err) });
+  }
+}
+
+function parseJsonBody_(e) {
+  const raw = e && e.postData && e.postData.contents ? e.postData.contents : "";
+  if (!raw) return {};
+  return JSON.parse(raw);
+}
+
+function jsonOut_(obj) {
+  return ContentService
+    .createTextOutput(JSON.stringify(obj))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+
+
 // Code.gs
 // Christmas 2025 Web App – Sheet backend
 
@@ -7,41 +47,8 @@ const HEADER_ROW = 1;
 const FIRST_DATA_ROW = 2;
 
 function doGet(e) {
-  return HtmlService.createHtmlOutputFromFile('index')
+  return HtmlService.createHtmlOutputFromFile('Index')
     .setTitle('Christmas 2025 Sign-Up');
-}
-
-function doPost(e) {
-  var output = ContentService.createTextOutput();
-  output.setMimeType(ContentService.MimeType.JSON);
-  output.setHeader('Access-Control-Allow-Origin', '*');
-  output.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-  output.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
-  try {
-    var body = e && e.postData && e.postData.contents;
-    var parsed = body ? JSON.parse(body) : {};
-    var action = parsed && parsed.action;
-    var payload = parsed && parsed.payload;
-    var data;
-
-    switch (action) {
-      case 'getChristmasData':
-        data = getChristmasData();
-        break;
-      case 'saveAttendee':
-        data = saveAttendee(payload);
-        break;
-      default:
-        throw new Error('Unknown action: ' + action);
-    }
-
-    output.setContent(JSON.stringify({ ok: true, data: data }));
-  } catch (err) {
-    output.setContent(JSON.stringify({ ok: false, error: err && err.message ? err.message : String(err) }));
-  }
-
-  return output;
 }
 
 /**
