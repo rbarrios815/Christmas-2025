@@ -1427,7 +1427,20 @@ select.appendChild(placeholder);
 
         const helper = document.createElement('div');
         helper.className = 'holly-note';
-        helper.textContent = toShortName(inviterEntry.fullName) + ' is on Santa’s Nice List';
+        const helperHeadline = document.createElement('span');
+        helperHeadline.textContent = toShortName(inviterEntry.fullName) + ' is on Santa’s Nice List';
+        helper.appendChild(helperHeadline);
+
+        const claimedFoods = parseFoods(inviterEntry.food);
+        const foodNote = document.createElement('span');
+        foodNote.textContent = 'Food: ' + (claimedFoods.length ? claimedFoods.join(', ') : 'TBD');
+        helper.appendChild(foodNote);
+        const guestEntries = cluster.filter(function(entry) { return !isClusterOwner(entry); });
+        if (guestEntries.length) {
+          const guestNote = document.createElement('span');
+          guestNote.textContent = 'Guests: ' + guestEntries.map(displayName).join(', ');
+          helper.appendChild(guestNote);
+        }
         wrap.appendChild(helper);
 
         const tree = document.createElement('div');
