@@ -744,6 +744,8 @@
               </div>
             </div>
 
+            <div id="personalTreeWrap" class="personal-tree-wrap" aria-live="polite" style="display:none;"></div>
+
             <div class="branch-grid">
               <div class="form-grid">
                 <div id="foodSignupBlock">
@@ -1269,6 +1271,7 @@ select.appendChild(placeholder);
         }
 
         updateDishButton();
+        renderPersonalTree();
       }
 
       function updateFoodLabel() {
@@ -1407,8 +1410,87 @@ select.appendChild(placeholder);
       }
 
       function renderPersonalTree() {
-        // Personal Nice List display removed – keeping hook for future use.
-        return;
+        const wrap = $('personalTreeWrap');
+        if (!wrap) return;
+
+        const inviterName = currentInviterName();
+        const inviterEntry = findAttendeeByName(inviterName);
+        const cluster = inviterEntry ? getClusterEntries(inviterEntry.fullName) : [];
+
+        wrap.innerHTML = '';
+        if (!inviterEntry || !cluster.length) {
+          wrap.style.display = 'none';
+          return;
+        }
+
+        wrap.style.display = 'grid';
+
+        const helper = document.createElement('div');
+        helper.className = 'holly-note';
+        helper.textContent = toShortName(inviterEntry.fullName) + ' is on Santa’s Nice List';
+        wrap.appendChild(helper);
+
+        const tree = document.createElement('div');
+        tree.className = 'personal-tree';
+
+        const star = document.createElement('div');
+        star.className = 'tree-star';
+        star.textContent = '⭐';
+        tree.appendChild(star);
+
+        const owner = document.createElement('div');
+        owner.className = 'tree-owner';
+        owner.textContent = displayName(inviterEntry);
+        tree.appendChild(owner);
+
+        const branches = document.createElement('ul');
+        branches.className = 'tree-branches';
+
+        const sorted = cluster
+          .slice()
+          .sort(function(a, b) {
+            const aOwner = isClusterOwner(a);
+            const bOwner = isClusterOwner(b);
+            if (aOwner && !bOwner) return -1;
+            if (!aOwner && bOwner) return 1;
+            return displayName(a).localeCompare(displayName(b));
+          });
+
+        sorted.forEach(function(entry) {
+          const li = document.createElement('li');
+
+          const title = document.createElement('div');
+          title.className = 'branch-title';
+
+          const icon = document.createElement('span');
+          icon.textContent = isClusterOwner(entry) ? '⭐' : ageEmoji(entry.ageGroup);
+          title.appendChild(icon);
+
+          const name = document.createElement('span');
+          name.textContent = displayName(entry);
+          title.appendChild(name);
+
+          if (!isClusterOwner(entry)) {
+            const age = document.createElement('span');
+            age.className = 'age-chip';
+            age.textContent = ageLabel(entry.ageGroup);
+            title.appendChild(age);
+          }
+
+          li.appendChild(title);
+
+          if (isClusterOwner(entry)) {
+            const food = document.createElement('div');
+            food.className = 'cluster-food';
+            food.textContent = entry.food ? 'Food: ' + entry.food : 'Food: TBD';
+            li.appendChild(food);
+          }
+
+          branches.appendChild(li);
+        });
+
+        tree.appendChild(branches);
+        wrap.appendChild(tree);
       }
 
       function prepGuestAdd() {
