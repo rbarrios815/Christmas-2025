@@ -727,7 +727,7 @@
           <span id="guestCount" class="meta-chip guest-count" aria-live="polite"></span>
         </div>
         <div class="hero-line">🧦✨🎄🦌🎁☃️🍪🧦 <br>Ho Ho Ho!<br>Christmas 2025<br>Santa's Nice List is open! Add your name & your tastiest treat! 🍪</div>
-        <div class="subtitle">Add yourself with a dish, then list any guests and ages.</div>
+        <div class="subtitle">Add yourself (dish optional), then list any guests and ages.</div>
 
         <div class="merged-top">
           <div class="tagline" id="activeInviterTag" style="display:none;"></div>
@@ -752,9 +752,9 @@
                   <label for="foodSelect" id="foodLabel">
                     <span class="label-title">🍽️🍪🎄 <strong>Food signup</strong></span>
                   </label>
-<select id="foodSelect" size="6" multiple aria-label="Food signup options">
-  <option value="" disabled selected>-- Pick at least one dish --</option>
-</select>
+                  <select id="foodSelect" size="6" multiple aria-label="Food signup options">
+                    <option value="" disabled selected>-- Pick dishes (optional) --</option>
+                  </select>
 
                   <div id="foodNote"></div>
                 </div>
@@ -1051,15 +1051,15 @@
         const select = $('foodSelect');
         select.innerHTML = '';
 
-     const placeholder = document.createElement('option');
-placeholder.value = '';
-placeholder.textContent = '-- Pick at least one dish --';
-placeholder.disabled = true;
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = '-- Pick dishes (optional) --';
+        placeholder.disabled = true;
 
-// selected ONLY when nothing is selected yet
-placeholder.selected = !(selectedFoodList && selectedFoodList.length);
+        // selected ONLY when nothing is selected yet
+        placeholder.selected = !(selectedFoodList && selectedFoodList.length);
 
-select.appendChild(placeholder);
+        select.appendChild(placeholder);
 
 
         const selectedSet = new Set((selectedFoodList || []).map(normalizeFoodItem));
@@ -1104,7 +1104,7 @@ select.appendChild(placeholder);
 
         const note = $('foodNote');
         if (!state.menu || !state.menu.length) {
-          note.textContent = 'Menu will go in column J (starting J2). Once items are listed, pick one dish and save it to your star.';
+          note.textContent = 'Menu will go in column J (starting J2). Once items are listed, you can pick dishes to share—totally optional.';
         } else {
           note.textContent = '';
         }
@@ -1595,7 +1595,7 @@ select.appendChild(placeholder);
 
         const isGuest = typedName && inviter.toLowerCase() !== typedName.toLowerCase();
         if (isGuest && !guestFieldsUnlocked) {
-          showStatus('Save your name with a food choice using ⭐ I\'m Attending to unlock guest spots.', true);
+          showStatus('Save your name using ⭐ I\'m Attending to unlock guest spots.', true);
           return;
         }
 
@@ -1609,11 +1609,6 @@ select.appendChild(placeholder);
         }
 
         const selectedFoods = isClusterHead ? getSelectedFoods() : [];
-        if (isClusterHead && !selectedFoods.length) {
-          showStatus('Pick at least one food item before saving your star.', true);
-          return;
-        }
-
         const food = isClusterHead ? selectedFoods.join('; ') : '';
 
         const lookup = name.toLowerCase();
@@ -1670,8 +1665,8 @@ select.appendChild(placeholder);
             setSaveButtonsDisabled(false);
             const unlockedText = guestFieldsUnlocked
               ? ' 🎄 Guests + ages are unlocked—add another under ' + toShortName(inviter || name) + ' when you’re ready.'
-              : ' Add a food choice to unlock guests beneath your star.';
-            showStatus('Saved!' + unlockedText, !guestFieldsUnlocked);
+              : ' Add guests beneath your star whenever you’re ready.';
+            showStatus('Saved!' + unlockedText, false);
 
             if (isClusterHead && guestFieldsUnlocked) {
               flashGuestNameField();
