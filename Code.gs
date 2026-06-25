@@ -8,7 +8,7 @@ const SHEET_NAME = 'Christmas 2025 Sheet 1';
 const FIRST_DATA_ROW = 2;
 
 function doGet() {
-  return HtmlService.createHtmlOutputFromFile('Index')
+  return HtmlService.createHtmlOutputFromFile('index')
     .setTitle('Christmas 2025 Sign-Up')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1, viewport-fit=cover');
 }
