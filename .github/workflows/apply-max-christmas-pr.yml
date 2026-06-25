@@ -1,0 +1,40 @@
+name: Apply Christmas styling on PR
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.head_ref == 'design/max-christmas-magic' && github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/max-christmas-magic
+
+      - name: Extract and run festive patch
+        shell: bash
+        run: |
+          awk '
+            /python3 - <<.PY./ { capture=1; next }
+            capture && /^          PY$/ { capture=0; exit }
+            capture { sub(/^          /, ""); print }
+          ' .github/workflows/apply-max-christmas.yml > /tmp/apply_max_christmas.py
+          python3 /tmp/apply_max_christmas.py
+          node --check /tmp/christmas.js
+          cmp --silent index.html docs/index.html
+
+      - name: Commit generated design
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm .github/workflows/apply-max-christmas.yml .github/workflows/apply-max-christmas-pr.yml
+          git add index.html docs/index.html .github/workflows/apply-max-christmas.yml .github/workflows/apply-max-christmas-pr.yml
+          git commit -m "Make Christmas 2025 dramatically more festive"
+          git push origin HEAD:design/max-christmas-magic
