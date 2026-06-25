@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_INDEX="Index.html"
+ROOT_INDEX="index.html"
 DOCS_INDEX="docs/index.html"
 
 if [[ ! -f "$ROOT_INDEX" ]]; then
