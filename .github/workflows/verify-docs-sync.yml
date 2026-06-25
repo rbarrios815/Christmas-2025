@@ -1,4 +1,4 @@
-name: Verify docs/index.html matches Index.html
+name: Verify docs/index.html matches index.html
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Ensure docs/index.html is synced
         run: |
-          if ! cmp --silent Index.html docs/index.html; then
-            echo "docs/index.html is out of sync with Index.html. Run ./scripts/sync-docs.sh." >&2
+          if ! cmp --silent index.html docs/index.html; then
+            echo "docs/index.html is out of sync with index.html. Run ./scripts/sync-docs.sh." >&2
             exit 1
           fi
