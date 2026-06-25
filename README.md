@@ -1,23 +1,44 @@
-# Christmas-2025
+# Christmas 2025
 
-Apps Script web app for the Christmas 2025 sign-up.
+A responsive Google Apps Script sign-up app backed by the **Christmas 2025** Google Sheet.
 
-- `Code.gs` serves the HTML and connects to the Google Sheet backend.
-- `index.html` is the template rendered by the web app (served via `HtmlService.createHtmlOutputFromFile('index')`).
-- `docs/index.html` is a copy of the template so GitHub Pages can serve a preview; keep it in sync with `index.html` when making changes. Run `./scripts/sync-docs.sh` after editing `index.html` to copy the latest HTML into `docs/`.
+## What the app does
 
-## Configure the Apps Script API URL
+- One-step RSVP with no account or required dish
+- Optional guest entry in a focused dialog
+- Optional dish selection using mobile-friendly checkboxes
+- Compact desktop dashboard with the RSVP and party summary visible together
+- Short iPhone home screen with bottom navigation and sheet-style dialogs
+- Nice List, dish lineup, gift rules, and contact details without one long scrolling page
+- Apps Script first, with a direct JSON fallback for the GitHub Pages preview
+- Duplicate protection based on both attendee name and the family member who entered the guest
 
-1. Deploy the Apps Script project as a Web App that runs as you and is accessible to anyone with the link.
-2. Copy the `/exec` URL from the deployment.
-3. Paste the Apps Script `/exec` URL into the `APPS_SCRIPT_API_URL` constant near the top of `index.html` and `docs/index.html` so GitHub Pages can call it directly.
+## Files
 
-> Note: The older Cloudflare Worker proxy is optional and no longer required now that the client calls the Apps Script URL directly with `text/plain` requests. The `worker.js` file remains for reference.
+- `Code.gs` — Apps Script backend, validation, locking, and Google Sheet reads/writes
+- `Index.html` — source-of-truth interface served by Apps Script
+- `docs/index.html` — GitHub Pages copy of `Index.html`
+- `scripts/sync-docs.sh` — copies `Index.html` to `docs/index.html`
+- `.github/workflows/verify-docs-sync.yml` — prevents the Pages copy from drifting
+- `appsscript.json` — Apps Script project settings
 
-## Redeploying Apps Script after changes
+## Keep GitHub Pages in sync
 
-After updating `Code.gs` or other server logic:
+After editing `Index.html`, run:
 
-1. Open the Apps Script editor.
-2. Choose **Deploy > Manage deployments**.
-3. Create a new version (or update the existing Web App) so the latest server changes are live.
+```bash
+./scripts/sync-docs.sh
+```
+
+The verification workflow checks that `Index.html` and `docs/index.html` are identical.
+
+## Deploy Apps Script changes
+
+GitHub changes do not automatically update the existing Apps Script deployment unless a separate `clasp` deployment workflow is configured.
+
+1. Copy `Code.gs`, `Index.html`, and `appsscript.json` into the Apps Script project.
+2. In Apps Script, choose **Deploy → Manage deployments**.
+3. Edit the web app deployment and create a new version.
+4. Confirm it runs as the deploying user and is accessible to anyone.
+
+The current Google Sheet remains the source of event details, attendees, and dishes.
