@@ -1,18 +1,20 @@
 name: One-time Christmas PR finalizer
 
 on:
-  push:
+  pull_request:
     branches:
       - main
-    paths:
-      - .github/workflows/one-time-finalize-christmas.yml
+    types:
+      - opened
+      - reopened
+      - synchronize
 
 permissions:
   contents: write
 
 jobs:
   finalize-feature:
-    if: github.actor != 'github-actions[bot]'
+    if: github.head_ref == 'design/max-christmas-magic' && github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -95,7 +97,7 @@ jobs:
           git push origin HEAD:design/max-christmas-magic
 
   cleanup-main:
-    if: always() && github.actor != 'github-actions[bot]'
+    if: always() && github.head_ref == 'design/max-christmas-magic' && github.actor != 'github-actions[bot]'
     needs: finalize-feature
     runs-on: ubuntu-latest
     steps:
