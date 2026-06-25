@@ -1,0 +1,115 @@
+name: One-time Christmas PR finalizer
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/one-time-finalize-christmas.yml
+
+permissions:
+  contents: write
+
+jobs:
+  finalize-feature:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: design/max-christmas-magic
+          fetch-depth: 0
+
+      - name: Finalize mobile Christmas styling and clean branch
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path('index.html')
+          html = path.read_text(encoding='utf-8')
+          marker = 'MAX-CHRISTMAS-MOBILE-FINAL'
+
+          if marker not in html:
+              css = r'''
+
+    /* MAX-CHRISTMAS-MOBILE-FINAL: keep the iPhone home screen compact and fully festive */
+    @media (max-width: 900px) {
+      .hero { min-height: 210px; padding: 18px; border-width: 4px; }
+      .merry-title { max-width: 290px; font-size: clamp(2.3rem, 10.5vw, 3.05rem); }
+      .nice-list-title { font-size: .86rem; }
+      .hero-copy { max-width: calc(100% - 72px); margin-top: 7px; font-size: .88rem; }
+      .meta-bar { margin-top: 9px; }
+      .mobile-nav {
+        border: 1px solid rgba(255,255,255,.24);
+        border-top: 3px solid rgba(241,213,138,.92);
+        background: radial-gradient(circle at 50% -20%, rgba(207,51,74,.46), transparent 9rem), rgba(5,38,27,.97);
+        box-shadow: 0 16px 44px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.08);
+      }
+      .nav-button.active {
+        color: #fff6c8;
+        background: linear-gradient(145deg, rgba(207,51,74,.52), rgba(255,255,255,.12));
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,.14), 0 4px 12px rgba(0,0,0,.16);
+      }
+    }
+
+    @media (max-width: 420px) {
+      .north-pole-banner { max-width: calc(100% - 8px); font-size: .61rem; }
+      .hero { min-height: 205px; }
+      .merry-title { max-width: 245px; font-size: 2.25rem; }
+      .nice-list-title { font-size: .76rem; padding: 6px 10px 7px; }
+      .hero-copy { max-width: calc(100% - 60px); font-size: .82rem; line-height: 1.32; }
+      .hero-scene { width: 68px; min-height: 84px; }
+      .hero-tree { font-size: 3.55rem; }
+      .hero-gifts { font-size: 1.55rem; }
+    }
+              '''
+              target = '    @media (prefers-reduced-motion: reduce) {'
+              if target not in html:
+                  raise SystemExit('Reduced-motion marker not found')
+              html = html.replace(target, css + '\n\n' + target, 1)
+
+          path.write_text(html, encoding='utf-8')
+          Path('docs/index.html').write_text(html, encoding='utf-8')
+
+          script = re.search(r'<script>(.*?)</script>', html, flags=re.S)
+          if not script:
+              raise SystemExit('JavaScript block not found')
+          Path('/tmp/christmas.js').write_text(script.group(1), encoding='utf-8')
+          PY
+
+          node --check /tmp/christmas.js
+          cmp --silent index.html docs/index.html
+          rm -f .github/workflows/apply-max-christmas-pr.yml
+          rm -f .github/workflows/finalize-max-christmas.yml
+          rm -f .christmas-finalize-trigger
+
+      - name: Commit clean feature branch
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Finalize maximum Christmas styling"
+          git push origin HEAD:design/max-christmas-magic
+
+  cleanup-main:
+    if: always() && github.actor != 'github-actions[bot]'
+    needs: finalize-feature
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Remove one-time workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -f .github/workflows/one-time-finalize-christmas.yml
+          git add -A
+          git commit -m "Remove one-time Christmas finalizer"
+          git push origin HEAD:main
